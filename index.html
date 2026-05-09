@@ -5988,6 +5988,49 @@ document.addEventListener('click', function(e){
   }, 200);
 }, true);
 </script>
-<!-- ★ 패스트로 끝 ★ -->
+<script>
+// 패스트로 정보 추출 개선 (인덱스 기반 매핑)
+(function(){
+  var origOpen = window.openFastroModal;
+  window.openFastroModal = function(pid, orderNo, sheetName) {
+    var input = document.getElementById('baeji-input-'+pid);
+    if (!input) { alert('주문 정보를 찾을 수 없습니다'); return; }
+    var allBaejiInputs = Array.from(document.querySelectorAll('input[id^="baeji-input-"]'));
+    var idx = allBaejiInputs.findIndex(function(el){ return el.id === 'baeji-input-'+pid; });
+    if (idx < 0) { alert('인덱스를 찾을 수 없습니다'); return; }
+    var uid = 'c' + idx;
+    var name = (document.getElementById('hname-'+uid)?.textContent || '').trim();
+    var ph1 = (document.getElementById('hph1-'+uid)?.textContent || '').trim();
+    var ph2 = (document.getElementById('hph2-'+uid)?.textContent || '').trim();
+    var phone1 = ph1 || ph2 || pid || '';
+    var customs = (document.getElementById('hcust-'+uid)?.textContent || '').trim().replace(/^-$/, '');
+    var addrText = (document.getElementById('haddr-'+uid)?.textContent || '').trim();
+    var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
+    var zipCode = zipMatch ? zipMatch[1] : '';
+    var address = addrText.replace(/^\[\d{5}\]\s*/, '').replace(/^-$/, '');
+    window.fastroData = { name: name, phone1: phone1, customs: customs, zipCode: zipCode, address: address, orderNo: orderNo };
+    var rows = [
+      ['수취인', name, '👤'],
+      ['연락처', phone1, '📞'],
+      ['통관번호', customs, '🛂'],
+      ['우편번호', zipCode, '📮'],
+      ['주소', address, '🏠'],
+      ['주문번호', orderNo, '📋']
+    ];
+    var html = rows.map(function(r){
+      var v = r[1] || '<span style="color:#c62828;">정보 없음</span>';
+      return '<div style="padding:10px 0;border-bottom:1px solid #eee;display:flex;align-items:center;gap:10px;">'+
+        '<div style="font-size:18px;width:24px;">'+r[2]+'</div>'+
+        '<div style="flex:1;min-width:0;"><div style="font-size:11px;color:#888;font-weight:600;">'+r[0]+'</div>'+
+        '<div style="font-size:14px;color:#333;font-weight:700;word-break:break-all;">'+v+'</div></div>'+
+        '<button onclick="copyFastroOne(\''+r[0]+'\',this)" style="padding:6px 10px;background:#fff;color:#0277bd;border:1.5px solid #0277bd;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">📋</button>'+
+        '</div>';
+    }).join('');
+    document.getElementById('fastroModalBody').innerHTML = html;
+    document.getElementById('fastroModal').style.display = 'flex';
+  };
+})();
+</script>
+  <!-- ★ 패스트로 끝 ★ -->
   </body> 
 </html> 
