@@ -5885,6 +5885,7 @@ function drawCharts(data) {
       b.onmouseover=function(){this.style.background='#c62828';this.style.color='#fff';};
       b.onmouseout=function(){this.style.background='#fff';this.style.color='#c62828';};
       b.onclick=function(){if(confirm('로그아웃하시겠습니까?')){localStorage.removeItem('moda_auth_v1');location.reload();}};
+      document.querySelectorAll('button').forEach(function(x){if(x.textContent.includes('🚪 로그아웃')&&x!==b)x.remove();});
       bar.appendChild(b);
     }
   },2000);
