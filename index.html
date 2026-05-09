@@ -6008,137 +6008,178 @@ window.fastroData = null;
   window.fhCloseHelper = fhCloseHelper;
   window.fhCopyVal = fhCopyVal;
   window.fhOpenSite = fhOpenSite;
+// ═══════════════════════════════════════════════════════════════
+// 🌐 패스트로 원클릭 자동입력 도우미 (한번에 복사)
+// ═══════════════════════════════════════════════════════════════
+window.openFastroModal = function(pid, orderNo, sheetName) {
+  // 시트에서 데이터 가져오기 (기존 로직 유지)
+  var input = document.getElementById('baeji-input-'+pid);
+  if (!input) { alert('주문 정보를 찾을 수 없습니다'); return; }
+  var allBaejiInputs = Array.from(document.querySelectorAll('input[id^="baeji-input-"]'));
+  var idx = allBaejiInputs.findIndex(function(el){ return el.id === 'baeji-input-'+pid; });
+  if (idx < 0) { alert('인덱스를 찾을 수 없습니다'); return; }
+  var uid = 'c' + idx;
 
-  // ═════════ 메인 함수: openFastroModal ═════════
-  window.openFastroModal = function(pid, orderNo, sheetName) {
-    // 인덱스 기반 매핑
-    var input = document.getElementById('baeji-input-'+pid);
-    if (!input) { alert('주문 정보를 찾을 수 없습니다'); return; }
-    var allBaejiInputs = Array.from(document.querySelectorAll('input[id^="baeji-input-"]'));
-    var idx = allBaejiInputs.findIndex(function(el){ return el.id === 'baeji-input-'+pid; });
-    if (idx < 0) { alert('인덱스를 찾을 수 없습니다'); return; }
-    var uid = 'c' + idx;
+  // 데이터 추출
+  var name    = (document.getElementById('hname-'+uid)?.textContent || '').trim();
+  var ph1     = (document.getElementById('hph1-'+uid)?.textContent || '').trim();
+  var ph2     = (document.getElementById('hph2-'+uid)?.textContent || '').trim();
+  var phone   = (ph2 || ph1 || pid || '').replace(/-/g,'');
+  var customs = (document.getElementById('hcust-'+uid)?.textContent || '').trim().replace(/^-$/, '');
+  var addrText = (document.getElementById('haddr-'+uid)?.textContent || '').trim();
+  var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
+  var zipCode = zipMatch ? zipMatch[1] : '';
+  var address = addrText.replace(/^\[\d{5}\]\s*/, '').replace(/^-$/, '');
 
-    // 데이터 추출
-    var name    = (document.getElementById('hname-'+uid)?.textContent || '').trim();
-    var ph1     = (document.getElementById('hph1-'+uid)?.textContent || '').trim();
-    var ph2     = (document.getElementById('hph2-'+uid)?.textContent || '').trim();
-    // ★ 연락처는 휴대폰2 우선 (요청사항)
-    var phone   = (ph2 || ph1 || pid || '').replace(/-/g,'');
-    var customs = (document.getElementById('hcust-'+uid)?.textContent || '').trim().replace(/^-$/, '');
-    var addrText = (document.getElementById('haddr-'+uid)?.textContent || '').trim();
-    var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
-    var zipCode = zipMatch ? zipMatch[1] : '';
-    var address = addrText.replace(/^\[\d{5}\]\s*/, '').replace(/^-$/, '');
+  // 빈 항목 체크
+  var missing = [];
+  if (!name)    missing.push('수령인');
+  if (!phone)   missing.push('연락처');
+  if (!customs) missing.push('통관번호');
+  if (!zipCode) missing.push('우편번호');
+  if (!address) missing.push('주소');
 
-    // 표시용 휴대폰 포맷
-    var phoneFmt = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+  if (missing.length > 0) {
+    if (!confirm('⚠ 다음 항목이 비어있습니다:\n\n' + missing.join(', ') + '\n\n그래도 진행하시겠습니까?')) {
+      return;
+    }
+  }
 
-    // 데이터 저장 (복사 함수에서 사용)
-    window.fastroData = {
-      name: name, phone: phone, phoneFmt: phoneFmt,
-      customs: customs, zipCode: zipCode, address: address,
-      orderNo: orderNo
-    };
+  // ★ Tab으로 구분된 한 줄 문자열 만들기
+  // 패스트로 폼 입력 순서: 수령인 → 연락처 → 통관번호 → 우편번호 → 주소
+  var combined = [name, phone, customs, zipCode, address].join('\t');
 
-    // 기존 도우미 모달 제거
-    var existing = document.getElementById('fhWrap');
-    if (existing) existing.remove();
+  // 클립보드에 복사
+  var copySuccess = false;
 
-    // 값 표시 헬퍼
-    var sv = function(v) { return v ? fhEsc(v) : '<span class="empty">(없음)</span>'; };
+  function tryClipboard(callback) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(combined).then(function() {
+        copySuccess = true;
+        callback();
+      }).catch(function() {
+        // fallback
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = combined;
+          ta.style.position='fixed'; ta.style.left='-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          copySuccess = document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch(e) {}
+        callback();
+      });
+    } else {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = combined;
+        ta.style.position='fixed'; ta.style.left='-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        copySuccess = document.execCommand('copy');
+        document.body.removeChild(ta);
+      } catch(e) {}
+      callback();
+    }
+  }
 
-    var html = ''+
-      '<div class="fh-overlay" onclick="if(event.target===this)fhCloseHelper()">'+
-        '<div class="fh-modal">'+
-          '<div class="fh-hd">'+
-            '<div class="fh-tt">🌐 패스트로 자동 입력 도우미</div>'+
-            '<button class="fh-x" onclick="fhCloseHelper()">✕</button>'+
+  tryClipboard(function() {
+    // 패스트로 새 탭 열기
+    window.open('https://fast-ro.com/service/service_03_apply.php', '_blank');
+
+    // 안내 모달 표시
+    showFastroGuide(name, phone, customs, zipCode, address, combined, copySuccess);
+  });
+};
+
+// 안내 모달 (사용법 + 개별 복사 백업 버튼)
+function showFastroGuide(name, phone, customs, zipCode, address, combined, copySuccess) {
+  // 기존 모달 제거
+  var existing = document.getElementById('fhWrap');
+  if (existing) existing.remove();
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  var phoneFmt = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+
+  var html =
+    '<div class="fh-overlay" onclick="if(event.target===this)fhCloseHelper()">'+
+      '<div class="fh-modal">'+
+        '<div class="fh-hd">'+
+          '<div class="fh-tt">🌐 패스트로 원클릭 입력</div>'+
+          '<button class="fh-x" onclick="fhCloseHelper()">✕</button>'+
+        '</div>'+
+        '<div class="fh-bd">'+
+          (copySuccess
+            ? '<div style="background:#e8f5e9;border:2px solid #4caf50;border-radius:10px;padding:14px;margin-bottom:14px;">'+
+              '  <div style="font-size:15px;font-weight:800;color:#2e7d32;margin-bottom:6px;">✅ 클립보드에 복사 완료!</div>'+
+              '  <div style="font-size:12px;color:#555;line-height:1.6;">패스트로 페이지가 새 탭에 열렸어요.<br>아래 사용법대로 진행하세요.</div>'+
+              '</div>'
+            : '<div style="background:#ffebee;border:2px solid #f44336;border-radius:10px;padding:14px;margin-bottom:14px;">'+
+              '  <div style="font-size:15px;font-weight:800;color:#c62828;margin-bottom:6px;">⚠ 자동 복사 실패</div>'+
+              '  <div style="font-size:12px;color:#555;">아래 [수동 복사] 버튼을 눌러주세요.</div>'+
+              '</div>')+
+
+          '<div style="background:#fff8e1;border:2px solid #ffc107;border-radius:10px;padding:14px;margin-bottom:14px;">'+
+            '<div style="font-size:14px;font-weight:800;color:#e65100;margin-bottom:10px;">📌 패스트로에서 사용법</div>'+
+            '<div style="font-size:13px;line-height:1.9;color:#5d4037;">'+
+              '<div><b>1.</b> 패스트로 <b>수령인</b> 칸 클릭</div>'+
+              '<div><b>2.</b> <b>Ctrl+V</b> (붙여넣기)</div>'+
+              '<div style="background:#fff;border-radius:6px;padding:6px 10px;margin:6px 0;font-weight:700;color:#2e7d32;">→ 자동으로 5개 칸이 채워집니다!</div>'+
+              '<div style="font-size:11px;color:#888;margin-top:8px;">※ 만약 한 칸에만 들어가면, Ctrl+V → Tab키 → Ctrl+V → Tab키... 반복</div>'+
+            '</div>'+
           '</div>'+
-          '<div class="fh-bd">'+
-            '<button class="fh-ob" onclick="fhOpenSite()">🌐 패스트로 신청 페이지 열기</button>'+
-            '<div class="fh-st">📋 항목별 복사 (각 칸 클릭 → 복사 → Ctrl+V)</div>'+
 
-            '<div class="fh-row" id="fh-r-name">'+
-              '<div class="fh-rl">수취인</div>'+
-              '<div class="fh-rv '+(name?'':'empty')+'">'+sv(name)+'</div>'+
-              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-name\',\'수취인\',event)">📋 복사</button>'+
+          '<div style="background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:14px;">'+
+            '<div style="font-size:12px;font-weight:700;color:#666;margin-bottom:8px;">📋 복사된 데이터 미리보기</div>'+
+            '<div style="font-family:monospace;font-size:12px;color:#212121;line-height:1.8;">'+
+              '<div><b>수령인:</b> '+esc(name||'(비어있음)')+'</div>'+
+              '<div><b>연락처:</b> '+esc(phoneFmt||'(비어있음)')+'</div>'+
+              '<div><b>통관번호:</b> '+esc(customs||'(비어있음)')+'</div>'+
+              '<div><b>우편번호:</b> '+esc(zipCode||'(비어있음)')+'</div>'+
+              '<div><b>주소:</b> '+esc(address||'(비어있음)')+'</div>'+
             '</div>'+
+          '</div>'+
 
-            '<div class="fh-row" id="fh-r-phone">'+
-              '<div class="fh-rl">연락처</div>'+
-              '<div class="fh-rv '+(phone?'':'empty')+'">'+sv(phoneFmt)+'</div>'+
-              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-phone\',\'연락처\',event)">📋 복사</button>'+
-            '</div>'+
+          '<button onclick="fhRecopyAll()" style="display:block;width:100%;padding:12px;background:#2196F3;color:#fff;border:0;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;">📋 다시 복사하기</button>'+
 
-            '<div class="fh-row" id="fh-r-customs">'+
-              '<div class="fh-rl">통관번호</div>'+
-              '<div class="fh-rv '+(customs?'':'empty')+'">'+sv(customs)+'</div>'+
-              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-customs\',\'통관번호\',event)">📋 복사</button>'+
-            '</div>'+
-
-            '<div class="fh-row" id="fh-r-zip">'+
-              '<div class="fh-rl">우편번호</div>'+
-              '<div class="fh-rv '+(zipCode?'':'empty')+'">'+sv(zipCode)+'</div>'+
-              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-zip\',\'우편번호\',event)">📋 복사</button>'+
-            '</div>'+
-
-            '<div class="fh-row" id="fh-r-addr">'+
-              '<div class="fh-rl">주소</div>'+
-              '<div class="fh-rv '+(address?'':'empty')+'">'+sv(address)+'</div>'+
-              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-addr\',\'주소\',event)">📋 복사</button>'+
-            '</div>'+
-
-            '<div class="fh-gd">'+
-              '<div style="font-weight:800;color:#e65100;margin-bottom:6px;">💡 사용 방법</div>'+
-              '<div class="fh-gs"><span class="fh-gn">1</span><div>위 <b>[🌐 패스트로 신청 페이지 열기]</b> 클릭</div></div>'+
-              '<div class="fh-gs"><span class="fh-gn">2</span><div>패스트로에서 각 칸 <b>클릭</b></div></div>'+
-              '<div class="fh-gs"><span class="fh-gn">3</span><div>이 모달에서 해당 항목 <b>[📋 복사]</b> 클릭</div></div>'+
-              '<div class="fh-gs"><span class="fh-gn">4</span><div>패스트로 칸에 <b>Ctrl+V</b> 붙여넣기</div></div>'+
-              '<div class="fh-gs"><span class="fh-gn">5</span><div>모든 칸 입력 후 <b>신청</b></div></div>'+
-              '<div class="fh-gs"><span class="fh-gn">6</span><div>받은 <b>SH번호</b>를 모다허브 [📋 배대지 신청] 칸에 입력</div></div>'+
-              '<div style="margin-top:8px;padding-top:8px;border-top:1px dashed #ffd54f;font-size:11px;color:#888;">※ 연락처는 휴대폰2가 자동 선택됩니다.<br>※ 상세주소/택배사요청사항은 직접 입력하세요.</div>'+
-            '</div>'+
+          '<div style="font-size:11px;color:#888;text-align:center;line-height:1.6;margin-top:10px;">'+
+            '※ 신청서 작성 후 패스트로에서 받은 <b>SH번호</b>를<br>'+
+            '모다허브 [📋 배대지 신청] 칸에 입력하세요.'+
           '</div>'+
         '</div>'+
-      '</div>';
+      '</div>'+
+    '</div>';
 
-    var wrap = document.createElement('div');
-    wrap.id = 'fhWrap';
-    wrap.innerHTML = html;
-    document.body.appendChild(wrap);
-  };
+  var wrap = document.createElement('div');
+  wrap.id = 'fhWrap';
+  wrap.innerHTML = html;
+  document.body.appendChild(wrap);
 
-  // ESC 키로 닫기
-  document.addEventListener('keydown', function(e) {
-    if ((e.key === 'Escape' || e.key === 'Esc') && document.getElementById('fhWrap')) {
-      fhCloseHelper();
+  // 다시 복사 함수
+  window.fhRecopyAll = function() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(combined).then(function() {
+        fhToast('✅ 다시 복사되었습니다');
+      }).catch(function() { fhToast('⚠ 복사 실패'); });
+    } else {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = combined;
+        ta.style.position='fixed'; ta.style.left='-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        fhToast('✅ 다시 복사되었습니다');
+      } catch(e) { fhToast('⚠ 복사 실패'); }
     }
-  });
+  };
+}
 
-  // 배대지 입력칸 옆에 [🌐] 버튼 자동 추가 (기존 로직 유지)
-  document.addEventListener('click', function(e){
-    setTimeout(function(){
-      document.querySelectorAll('.act-baeji-inline').forEach(function(el){
-        if (el.querySelector('.fastro-btn')) return;
-        var input = el.querySelector('input[id^="baeji-input-"]');
-        if (!input) return;
-        var pid = input.id.replace('baeji-input-','');
-        var card = document.querySelector('[data-pid="'+pid+'"]');
-        if (!card) return;
-        var orderNo = card.getAttribute('data-orderno');
-        var sheetName = card.getAttribute('data-sheet');
-        var btn = document.createElement('button');
-        btn.className = 'fastro-btn';
-        btn.textContent = '🌐';
-        btn.title = '패스트로 신청서 작성';
-        btn.style.cssText = 'margin-left:4px;padding:6px 10px;background:#6cd11e;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;';
-        btn.onclick = function(ev){ ev.stopPropagation(); window.openFastroModal(pid, orderNo, sheetName); };
-        el.appendChild(btn);
-      });
-    }, 200);
-  }, true);
-})();
 </script>
 
 
