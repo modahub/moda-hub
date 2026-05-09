@@ -5872,6 +5872,18 @@ function drawCharts(data) {
     </div>
   </div>
 </footer>
-
+<script>
+(function(){
+  setTimeout(function(){
+    if(localStorage.getItem('moda_auth_v1')){
+      var b=document.createElement('button');
+      b.textContent='🚪 로그아웃';
+      b.style.cssText='position:fixed;bottom:24px;left:24px;z-index:999999;padding:12px 20px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;font-family:Malgun Gothic,sans-serif;box-shadow:0 4px 12px rgba(198,40,40,0.4);';
+      b.onclick=function(){if(confirm('로그아웃하시겠습니까?')){localStorage.removeItem('moda_auth_v1');location.reload();}};
+      document.body.appendChild(b);
+    }
+  },2000);
+})();
+</script>
 </body>
 </html>
