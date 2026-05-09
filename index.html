@@ -5906,88 +5906,254 @@ function drawCharts(data) {
   </div>
 </div>
 <script>
+// ═══════════════════════════════════════════════════════════════
+// 🌐 패스트로 자동 입력 도우미 v2 (항목별 복사 + 휴대폰2)
+// ═══════════════════════════════════════════════════════════════
 window.fastroData = null;
-window.openFastroModal = function(pid, orderNo, sheetName) {
-  var card = document.querySelector('[data-pid="'+pid+'"][data-orderno="'+orderNo+'"]');
-  if (!card) { alert('주문 정보를 찾을 수 없습니다'); return; }
-  var name = (card.querySelector('[id^="hname-"]')?.textContent || '').trim();
-  var phone1 = (card.querySelector('[id^="hph1-"]')?.textContent || pid || '').trim();
-  var customs = (card.querySelector('[id^="hcust-"]')?.textContent || '').trim().replace(/^-$/, '');
-  var addrEl = card.querySelector('[id^="haddr-"]');
-  var addrText = (addrEl?.textContent || '').trim();
-  var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
-  var zipCode = zipMatch ? zipMatch[1] : '';
-  var address = addrText.replace(/^\[\d{5}\]\s*/, '').replace(/^-$/, '');
-  window.fastroData = { name: name, phone1: phone1, customs: customs, zipCode: zipCode, address: address, orderNo: orderNo };
-  var rows = [
-    ['수취인', name, '👤'],
-    ['연락처', phone1, '📞'],
-    ['통관번호', customs, '🛂'],
-    ['우편번호', zipCode, '📮'],
-    ['주소', address, '🏠'],
-    ['주문번호', orderNo, '📋']
-  ];
-  var html = rows.map(function(r){
-    var v = r[1] || '<span style="color:#c62828;">정보 없음</span>';
-    return '<div style="padding:10px 0;border-bottom:1px solid #eee;display:flex;align-items:center;gap:10px;">'+
-      '<div style="font-size:18px;width:24px;">'+r[2]+'</div>'+
-      '<div style="flex:1;min-width:0;"><div style="font-size:11px;color:#888;font-weight:600;">'+r[0]+'</div>'+
-      '<div style="font-size:14px;color:#333;font-weight:700;word-break:break-all;">'+v+'</div></div>'+
-      '<button onclick="copyFastroOne(\''+r[0]+'\',this)" style="padding:6px 10px;background:#fff;color:#0277bd;border:1.5px solid #0277bd;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">📋</button>'+
+(function(){
+  // CSS 주입 (한 번만)
+  if (!document.getElementById('fhStyle')) {
+    var style = document.createElement('style');
+    style.id = 'fhStyle';
+    style.textContent = ''+
+      '.fh-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;animation:fhFI 0.15s ease-out}'+
+      '@keyframes fhFI{from{opacity:0}to{opacity:1}}'+
+      '.fh-modal{background:#fff;border-radius:14px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:fhSU 0.2s ease-out}'+
+      '@keyframes fhSU{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}'+
+      '.fh-hd{padding:16px 20px;background:linear-gradient(135deg,#FF9800,#F57C00);color:#fff;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1}'+
+      '.fh-tt{font-size:16px;font-weight:800}'+
+      '.fh-x{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.25);color:#fff;border:0;cursor:pointer;font-size:18px;line-height:1}'+
+      '.fh-x:hover{background:rgba(255,255,255,0.4)}'+
+      '.fh-bd{padding:16px 20px}'+
+      '.fh-ob{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#4CAF50,#388E3C);color:#fff;border:0;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:16px;box-shadow:0 3px 10px rgba(76,175,80,0.3);transition:all 0.15s}'+
+      '.fh-ob:hover{transform:translateY(-1px);box-shadow:0 5px 15px rgba(76,175,80,0.4)}'+
+      '.fh-st{font-size:13px;font-weight:700;color:#555;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #FF9800}'+
+      '.fh-row{display:flex;align-items:center;gap:8px;padding:10px;margin-bottom:8px;background:#fafafa;border:1px solid #eee;border-radius:8px;transition:all 0.15s}'+
+      '.fh-row.copied{background:#e8f5e9;border-color:#66bb6a}'+
+      '.fh-rl{width:80px;font-size:12px;font-weight:700;color:#666;flex-shrink:0}'+
+      '.fh-rv{flex:1;font-size:13px;font-weight:600;color:#212121;word-break:break-all;line-height:1.4;min-height:20px}'+
+      '.fh-rv.empty{color:#aaa;font-style:italic;font-weight:400}'+
+      '.fh-cb{flex-shrink:0;padding:7px 14px;background:#FF9800;color:#fff;border:0;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.15s}'+
+      '.fh-cb:hover{background:#F57C00}'+
+      '.fh-cb.done{background:#4CAF50}'+
+      '.fh-gd{margin-top:16px;padding:12px 14px;background:#fff8e1;border:1px solid #ffd54f;border-radius:8px;font-size:12px;line-height:1.7;color:#5d4037}'+
+      '.fh-gs{display:flex;align-items:flex-start;gap:6px;margin:4px 0}'+
+      '.fh-gn{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:#FF9800;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}'+
+      '.fh-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(76,175,80,0.95);color:#fff;padding:12px 22px;border-radius:24px;font-size:14px;font-weight:700;z-index:10000;animation:fhTI 1.8s ease forwards;box-shadow:0 4px 16px rgba(0,0,0,0.2)}'+
+      '@keyframes fhTI{0%{opacity:0;transform:translate(-50%,12px)}10%{opacity:1;transform:translate(-50%,0)}85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-12px)}}';
+    document.head.appendChild(style);
+  }
+
+  function fhEsc(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function fhToast(msg) {
+    var old = document.querySelector('.fh-toast');
+    if (old) old.remove();
+    var t = document.createElement('div');
+    t.className = 'fh-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 1900);
+  }
+
+  function fhCloseHelper() {
+    var w = document.getElementById('fhWrap');
+    if (w) w.remove();
+  }
+
+  function fhCopyVal(rowId, lbl, ev) {
+    var d = window.fastroData; if (!d) { fhToast('⚠ 데이터 없음'); return; }
+    var map = {
+      'fh-r-name':    d.name,
+      'fh-r-phone':   d.phone,
+      'fh-r-customs': d.customs,
+      'fh-r-zip':     d.zipCode,
+      'fh-r-addr':    d.address
+    };
+    var val = map[rowId] || '';
+    var btn = ev && ev.currentTarget ? ev.currentTarget : (window.event && window.event.currentTarget);
+
+    if (!val) { fhToast('⚠ ' + lbl + ' 정보가 비어있습니다'); return; }
+
+    var onSuccess = function() {
+      var row = document.getElementById(rowId);
+      if (row) { row.classList.add('copied'); setTimeout(function(){ row.classList.remove('copied'); }, 1500); }
+      if (btn) {
+        btn.textContent = '✅ 복사됨';
+        btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = '📋 복사'; btn.classList.remove('done'); }, 1500);
+      }
+      fhToast('✅ ' + lbl + ' 복사됨 → 패스트로 칸에 Ctrl+V');
+    };
+    var onError = function() { fhToast('⚠ 복사 실패: ' + val); };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(val).then(onSuccess).catch(function(){
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = val; ta.style.position='fixed'; ta.style.left='-9999px';
+          document.body.appendChild(ta); ta.select();
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          ok ? onSuccess() : onError();
+        } catch(e) { onError(); }
+      });
+    } else {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = val; ta.style.position='fixed'; ta.style.left='-9999px';
+        document.body.appendChild(ta); ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        ok ? onSuccess() : onError();
+      } catch(e) { onError(); }
+    }
+  }
+
+  function fhOpenSite() {
+    window.open('https://fast-ro.com/service/service_03_apply.php', '_blank');
+    fhToast('🌐 패스트로 페이지가 열렸어요. [📋 복사] 후 붙여넣으세요.');
+  }
+
+  // 전역 노출
+  window.fhCloseHelper = fhCloseHelper;
+  window.fhCopyVal = fhCopyVal;
+  window.fhOpenSite = fhOpenSite;
+
+  // ═════════ 메인 함수: openFastroModal ═════════
+  window.openFastroModal = function(pid, orderNo, sheetName) {
+    // 인덱스 기반 매핑
+    var input = document.getElementById('baeji-input-'+pid);
+    if (!input) { alert('주문 정보를 찾을 수 없습니다'); return; }
+    var allBaejiInputs = Array.from(document.querySelectorAll('input[id^="baeji-input-"]'));
+    var idx = allBaejiInputs.findIndex(function(el){ return el.id === 'baeji-input-'+pid; });
+    if (idx < 0) { alert('인덱스를 찾을 수 없습니다'); return; }
+    var uid = 'c' + idx;
+
+    // 데이터 추출
+    var name    = (document.getElementById('hname-'+uid)?.textContent || '').trim();
+    var ph1     = (document.getElementById('hph1-'+uid)?.textContent || '').trim();
+    var ph2     = (document.getElementById('hph2-'+uid)?.textContent || '').trim();
+    // ★ 연락처는 휴대폰2 우선 (요청사항)
+    var phone   = (ph2 || ph1 || pid || '').replace(/-/g,'');
+    var customs = (document.getElementById('hcust-'+uid)?.textContent || '').trim().replace(/^-$/, '');
+    var addrText = (document.getElementById('haddr-'+uid)?.textContent || '').trim();
+    var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
+    var zipCode = zipMatch ? zipMatch[1] : '';
+    var address = addrText.replace(/^\[\d{5}\]\s*/, '').replace(/^-$/, '');
+
+    // 표시용 휴대폰 포맷
+    var phoneFmt = phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+
+    // 데이터 저장 (복사 함수에서 사용)
+    window.fastroData = {
+      name: name, phone: phone, phoneFmt: phoneFmt,
+      customs: customs, zipCode: zipCode, address: address,
+      orderNo: orderNo
+    };
+
+    // 기존 도우미 모달 제거
+    var existing = document.getElementById('fhWrap');
+    if (existing) existing.remove();
+
+    // 값 표시 헬퍼
+    var sv = function(v) { return v ? fhEsc(v) : '<span class="empty">(없음)</span>'; };
+
+    var html = ''+
+      '<div class="fh-overlay" onclick="if(event.target===this)fhCloseHelper()">'+
+        '<div class="fh-modal">'+
+          '<div class="fh-hd">'+
+            '<div class="fh-tt">🌐 패스트로 자동 입력 도우미</div>'+
+            '<button class="fh-x" onclick="fhCloseHelper()">✕</button>'+
+          '</div>'+
+          '<div class="fh-bd">'+
+            '<button class="fh-ob" onclick="fhOpenSite()">🌐 패스트로 신청 페이지 열기</button>'+
+            '<div class="fh-st">📋 항목별 복사 (각 칸 클릭 → 복사 → Ctrl+V)</div>'+
+
+            '<div class="fh-row" id="fh-r-name">'+
+              '<div class="fh-rl">수취인</div>'+
+              '<div class="fh-rv '+(name?'':'empty')+'">'+sv(name)+'</div>'+
+              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-name\',\'수취인\',event)">📋 복사</button>'+
+            '</div>'+
+
+            '<div class="fh-row" id="fh-r-phone">'+
+              '<div class="fh-rl">연락처</div>'+
+              '<div class="fh-rv '+(phone?'':'empty')+'">'+sv(phoneFmt)+'</div>'+
+              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-phone\',\'연락처\',event)">📋 복사</button>'+
+            '</div>'+
+
+            '<div class="fh-row" id="fh-r-customs">'+
+              '<div class="fh-rl">통관번호</div>'+
+              '<div class="fh-rv '+(customs?'':'empty')+'">'+sv(customs)+'</div>'+
+              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-customs\',\'통관번호\',event)">📋 복사</button>'+
+            '</div>'+
+
+            '<div class="fh-row" id="fh-r-zip">'+
+              '<div class="fh-rl">우편번호</div>'+
+              '<div class="fh-rv '+(zipCode?'':'empty')+'">'+sv(zipCode)+'</div>'+
+              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-zip\',\'우편번호\',event)">📋 복사</button>'+
+            '</div>'+
+
+            '<div class="fh-row" id="fh-r-addr">'+
+              '<div class="fh-rl">주소</div>'+
+              '<div class="fh-rv '+(address?'':'empty')+'">'+sv(address)+'</div>'+
+              '<button class="fh-cb" onclick="fhCopyVal(\'fh-r-addr\',\'주소\',event)">📋 복사</button>'+
+            '</div>'+
+
+            '<div class="fh-gd">'+
+              '<div style="font-weight:800;color:#e65100;margin-bottom:6px;">💡 사용 방법</div>'+
+              '<div class="fh-gs"><span class="fh-gn">1</span><div>위 <b>[🌐 패스트로 신청 페이지 열기]</b> 클릭</div></div>'+
+              '<div class="fh-gs"><span class="fh-gn">2</span><div>패스트로에서 각 칸 <b>클릭</b></div></div>'+
+              '<div class="fh-gs"><span class="fh-gn">3</span><div>이 모달에서 해당 항목 <b>[📋 복사]</b> 클릭</div></div>'+
+              '<div class="fh-gs"><span class="fh-gn">4</span><div>패스트로 칸에 <b>Ctrl+V</b> 붙여넣기</div></div>'+
+              '<div class="fh-gs"><span class="fh-gn">5</span><div>모든 칸 입력 후 <b>신청</b></div></div>'+
+              '<div class="fh-gs"><span class="fh-gn">6</span><div>받은 <b>SH번호</b>를 모다허브 [📋 배대지 신청] 칸에 입력</div></div>'+
+              '<div style="margin-top:8px;padding-top:8px;border-top:1px dashed #ffd54f;font-size:11px;color:#888;">※ 연락처는 휴대폰2가 자동 선택됩니다.<br>※ 상세주소/택배사요청사항은 직접 입력하세요.</div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
       '</div>';
-  }).join('');
-  document.getElementById('fastroModalBody').innerHTML = html;
-  var modal = document.getElementById('fastroModal');
-  modal.style.display = 'flex';
-};
-window.copyFastroOne = function(label, btn) {
-  var d = window.fastroData; if (!d) return;
-  var map = { '수취인': d.name, '연락처': d.phone1, '통관번호': d.customs, '우편번호': d.zipCode, '주소': d.address, '주문번호': d.orderNo };
-  var v = map[label] || '';
-  if (!v) { alert(label+' 정보가 없습니다'); return; }
-  navigator.clipboard.writeText(v).then(function(){
-    btn.textContent = '✓';
-    btn.style.background = '#4caf00';
-    btn.style.color = '#fff';
-    setTimeout(function(){ btn.textContent='📋'; btn.style.background='#fff'; btn.style.color='#0277bd'; }, 1500);
+
+    var wrap = document.createElement('div');
+    wrap.id = 'fhWrap';
+    wrap.innerHTML = html;
+    document.body.appendChild(wrap);
+  };
+
+  // ESC 키로 닫기
+  document.addEventListener('keydown', function(e) {
+    if ((e.key === 'Escape' || e.key === 'Esc') && document.getElementById('fhWrap')) {
+      fhCloseHelper();
+    }
   });
-};
-window.copyFastroAll = function() {
-  var d = window.fastroData; if (!d) return;
-  var text = '수취인: '+d.name+'\n연락처: '+d.phone1+'\n개인통관번호: '+d.customs+'\n우편번호: '+d.zipCode+'\n주소: '+d.address+'\n주문번호: '+d.orderNo;
-  navigator.clipboard.writeText(text).then(function(){
-    alert('✅ 전체 정보가 복사되었습니다!\n\n패스트로에서 메모장 등에 붙여넣기(Ctrl+V) 하시고\n각 칸에 입력하세요.');
-  });
-};
-window.openFastroSite = function() {
-  var d = window.fastroData; if (!d) return;
-  var text = '수취인: '+d.name+'\n연락처: '+d.phone1+'\n개인통관번호: '+d.customs+'\n우편번호: '+d.zipCode+'\n주소: '+d.address+'\n주문번호: '+d.orderNo;
-  navigator.clipboard.writeText(text);
-  window.open('https://fast-ro.com/service/service_03_apply.php', '_blank');
-  setTimeout(function(){ document.getElementById('fastroModal').style.display='none'; }, 300);
-};
-document.addEventListener('click', function(e){
-  setTimeout(function(){
-    document.querySelectorAll('.act-baeji-inline').forEach(function(el){
-      if (el.querySelector('.fastro-btn')) return;
-      var input = el.querySelector('input[id^="baeji-input-"]');
-      if (!input) return;
-      var pid = input.id.replace('baeji-input-','');
-      var card = document.querySelector('[data-pid="'+pid+'"]');
-      if (!card) return;
-      var orderNo = card.getAttribute('data-orderno');
-      var sheetName = card.getAttribute('data-sheet');
-      var btn = document.createElement('button');
-      btn.className = 'fastro-btn';
-      btn.textContent = '🌐';
-      btn.title = '패스트로 신청서 작성';
-      btn.style.cssText = 'margin-left:4px;padding:6px 10px;background:#6cd11e;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;';
-      btn.onclick = function(ev){ ev.stopPropagation(); window.openFastroModal(pid, orderNo, sheetName); };
-      el.appendChild(btn);
-    });
-  }, 200);
-}, true);
+
+  // 배대지 입력칸 옆에 [🌐] 버튼 자동 추가 (기존 로직 유지)
+  document.addEventListener('click', function(e){
+    setTimeout(function(){
+      document.querySelectorAll('.act-baeji-inline').forEach(function(el){
+        if (el.querySelector('.fastro-btn')) return;
+        var input = el.querySelector('input[id^="baeji-input-"]');
+        if (!input) return;
+        var pid = input.id.replace('baeji-input-','');
+        var card = document.querySelector('[data-pid="'+pid+'"]');
+        if (!card) return;
+        var orderNo = card.getAttribute('data-orderno');
+        var sheetName = card.getAttribute('data-sheet');
+        var btn = document.createElement('button');
+        btn.className = 'fastro-btn';
+        btn.textContent = '🌐';
+        btn.title = '패스트로 신청서 작성';
+        btn.style.cssText = 'margin-left:4px;padding:6px 10px;background:#6cd11e;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;';
+        btn.onclick = function(ev){ ev.stopPropagation(); window.openFastroModal(pid, orderNo, sheetName); };
+        el.appendChild(btn);
+      });
+    }, 200);
+  }, true);
+})();
 </script>
+
 <script>
 // 패스트로 정보 추출 개선 (인덱스 기반 매핑)
 (function(){
