@@ -5876,14 +5876,41 @@ function drawCharts(data) {
 (function(){
   setTimeout(function(){
     if(localStorage.getItem('moda_auth_v1')){
+      var bar=document.querySelector('.biz-bar');
+      if(!bar)return;
       var b=document.createElement('button');
       b.textContent='🚪 로그아웃';
-      b.style.cssText='position:fixed;bottom:24px;left:24px;z-index:999999;padding:12px 20px;background:#c62828;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;font-family:Malgun Gothic,sans-serif;box-shadow:0 4px 12px rgba(198,40,40,0.4);';
+      b.className='view-btn';
+      b.style.cssText='margin-left:4px;border-color:#c62828;color:#c62828;background:#fff;font-weight:700;';
+      b.onmouseover=function(){this.style.background='#c62828';this.style.color='#fff';};
+      b.onmouseout=function(){this.style.background='#fff';this.style.color='#c62828';};
       b.onclick=function(){if(confirm('로그아웃하시겠습니까?')){localStorage.removeItem('moda_auth_v1');location.reload();}};
-      document.body.appendChild(b);
+      bar.appendChild(b);
     }
   },2000);
 })();
 </script>
+단계 5: Commit
+우상단 초록색 [Commit changes...] → [Commit changes]
+단계 6: 테스트
+
+1~2분 대기
+modahub.co.kr 강제 새로고침 (Ctrl + Shift + R)
+비밀번호 입력
+2초 후 → 화면 우상단 통계 버튼 옆에 🚪 로그아웃 버튼 등장!
+
+
+새 디자인
+기존 통계 버튼과 똑같은 스타일이지만:
+
+테두리: 빨간색
+글자: 빨간색
+마우스 올리면: 빨간 배경 + 흰 글자 (강조 효과)
+
+→ 다른 버튼들과 자연스럽게 어울리되, 빨간색으로 "조심해서 누르라" 느낌
+
+막히면
+5875~5887줄 선택해서 삭제하는 게 어려우시면 화면 캡처 보내주세요. 어떻게 선택하면 되는지 짚어드릴게요.
+진행하시고 결과 보여주세요! 거의 다 왔습니다!Opus 4.7
 </body>
 </html>
