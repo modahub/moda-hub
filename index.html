@@ -2964,7 +2964,12 @@ function openPasteModal() {
   document.getElementById('paste-btn').disabled = true;
   fillPasteSheetSelect();
 }
-
+  
+function openCookieModal() {
+  document.getElementById('cookie-modal-bg').classList.add('open');
+  document.getElementById('cookie-input').value = '';
+  document.getElementById('cookie-result').innerHTML = '';
+}
 function closeCookieModal() {
   document.getElementById('cookie-modal-bg').classList.remove('open');
 }
