@@ -3156,68 +3156,117 @@ async function doPasteUpload() {
   const sel = document.getElementById('paste-sheet-select');
   const sheetNm = sel ? sel.value : ((selectedMonth && selectedMonth !== 'all') ? selectedMonth : monthSheetName);
 
-  let success = 0, fail = 0;
-
   // 헤더행 자동 제거 (첫 행이 숫자가 아니면 헤더로 판단)
   const firstCols = rows[0].split('\t');
   const isHeader = isNaN(parseInt(firstCols[1])) && firstCols[1] && firstCols[1].trim() !== '';
   const dataRows = isHeader ? rows.slice(1) : rows;
 
-  for (let i = 0; i < dataRows.length; i++) {
-    progress.textContent = '처리 중 (' + (i+1) + '/' + dataRows.length + ')...';
-    const cols = dataRows[i].split('\t');
+  // ★★★ 사업자별로 자동 분류 ★★★
+  // F열(인덱스 5) 첫 글자로 사업자 판정
+  // 1~5 = 해당 사업자 / 6~99 = 6번 불사자(통합)
+  const bizGroups = { '1':[], '2':[], '3':[], '4':[], '5':[], '6':[] };
+  const skipped = [];
 
-    // 주문번호(G열=인덱스6)가 없으면 건너뜀
-    if (!cols[6] || !cols[6].trim()) continue;
+  dataRows.forEach((row, idx) => {
+    const cols = row.split('\t');
+    if (!cols[6] || !cols[6].trim()) return; // 주문번호 없으면 스킵
 
-    // A~P열 (인덱스 0~15) + T열(인덱스 19) + U열(인덱스 20)
-    const rowData = {
-      A: cols[0]  || '', B: cols[1]  || '', C: cols[2]  || '', D: cols[3]  || '',
-      E: cols[4]  || '', F: cols[5]  || '', G: cols[6]  || '', H: cols[7]  || '',
-      I: cols[8]  || '', J: cols[9]  || '', K: cols[10] || '', L: cols[11] || '',
-      M: cols[12] || '', N: cols[13] || '', O: cols[14] || '', P: cols[15] || '',
-      Q: cols[19] || '', // T열(인덱스19) → Q열
-      U: cols[20] || '', // U열(인덱스20) → U열
-    };
+    const sourceVal = (cols[5] || '').trim();
+    const m = sourceVal.match(/^(\d+)/);
+    if (!m) {
+      skipped.push({ idx: idx+1, reason: '판매처 형식 오류', val: sourceVal });
+      return;
+    }
+    const num = parseInt(m[1], 10);
+    let bizId;
+    if (num >= 1 && num <= 5) bizId = String(num);
+    else if (num >= 6) bizId = '6';  // 6 이상은 모두 불사자
+    else {
+      skipped.push({ idx: idx+1, reason: '잘못된 사업자번호', val: sourceVal });
+      return;
+    }
+    bizGroups[bizId].push(cols);
+  });
 
-    try {
-      const url = GAS_BASE
-        + '?ssId='      + encodeURIComponent(currentBiz)
-        + '&action=appendRow'
-        + '&sheetName=' + encodeURIComponent(sheetNm)
-        + '&A=' + encodeURIComponent(rowData.A)
-        + '&B=' + encodeURIComponent(rowData.B)
-        + '&C=' + encodeURIComponent(rowData.C)
-        + '&D=' + encodeURIComponent(rowData.D)
-        + '&E=' + encodeURIComponent(rowData.E)
-        + '&F=' + encodeURIComponent(rowData.F)
-        + '&G=' + encodeURIComponent(rowData.G)
-        + '&H=' + encodeURIComponent(rowData.H)
-        + '&I=' + encodeURIComponent(rowData.I)
-        + '&J=' + encodeURIComponent(rowData.J)
-        + '&K=' + encodeURIComponent(rowData.K)
-        + '&L=' + encodeURIComponent(rowData.L)
-        + '&M=' + encodeURIComponent(rowData.M)
-        + '&N=' + encodeURIComponent(rowData.N)
-        + '&O=' + encodeURIComponent(rowData.O)
-        + '&P=' + encodeURIComponent(rowData.P)
-        + '&Q=' + encodeURIComponent(rowData.Q)
-        + '&U=' + encodeURIComponent(rowData.U);
-      const r = await jsonp(url);
-      if (r && r.success) success++;
-      else { fail++; console.log('행 추가 실패:', r && r.error); }
-    } catch(e) { fail++; console.log('행 추가 예외:', e.message); }
+  // 사업자별 건수 집계
+  const bizNames = { '1':'모다mall', '2':'모다mall2', '3':'모다mall3', '4':'모다mall4', '5':'수기mall', '6':'불사자(통합)' };
+  const summary = [];
+  for (const bid of ['1','2','3','4','5','6']) {
+    if (bizGroups[bid].length > 0) summary.push(bizNames[bid] + ' ' + bizGroups[bid].length + '건');
+  }
+  progress.textContent = '📊 분류 완료: ' + (summary.join(', ') || '없음');
+
+  // 사업자 데이터가 하나도 없으면 종료
+  const totalToUpload = Object.values(bizGroups).reduce((a, b) => a + b.length, 0);
+  if (totalToUpload === 0) {
+    btn.disabled = false;
+    showToast('⚠ 처리할 데이터가 없습니다');
+    return;
+  }
+
+  // 사업자별로 순차 업로드
+  let totalSuccess = 0, totalFail = 0;
+  let processedCount = 0;
+
+  for (const bid of ['1','2','3','4','5','6']) {
+    const bizCols = bizGroups[bid];
+    if (!bizCols.length) continue;
+
+    for (let i = 0; i < bizCols.length; i++) {
+      processedCount++;
+      progress.textContent = '🏪 ' + bizNames[bid] + ' (' + (i+1) + '/' + bizCols.length + ') · 전체 ' + processedCount + '/' + totalToUpload;
+      const cols = bizCols[i];
+
+      const rowData = {
+        A: cols[0]  || '', B: cols[1]  || '', C: cols[2]  || '', D: cols[3]  || '',
+        E: cols[4]  || '', F: cols[5]  || '', G: cols[6]  || '', H: cols[7]  || '',
+        I: cols[8]  || '', J: cols[9]  || '', K: cols[10] || '', L: cols[11] || '',
+        M: cols[12] || '', N: cols[13] || '', O: cols[14] || '', P: cols[15] || '',
+        Q: cols[19] || '', // T열(인덱스19) → Q열
+        U: cols[20] || '', // U열(인덱스20) → U열
+      };
+
+      try {
+        const url = GAS_BASE
+          + '?ssId='      + encodeURIComponent(bid)  // ★ 자동 분류된 사업자 ID
+          + '&action=appendRow'
+          + '&sheetName=' + encodeURIComponent(sheetNm)
+          + '&A=' + encodeURIComponent(rowData.A)
+          + '&B=' + encodeURIComponent(rowData.B)
+          + '&C=' + encodeURIComponent(rowData.C)
+          + '&D=' + encodeURIComponent(rowData.D)
+          + '&E=' + encodeURIComponent(rowData.E)
+          + '&F=' + encodeURIComponent(rowData.F)
+          + '&G=' + encodeURIComponent(rowData.G)
+          + '&H=' + encodeURIComponent(rowData.H)
+          + '&I=' + encodeURIComponent(rowData.I)
+          + '&J=' + encodeURIComponent(rowData.J)
+          + '&K=' + encodeURIComponent(rowData.K)
+          + '&L=' + encodeURIComponent(rowData.L)
+          + '&M=' + encodeURIComponent(rowData.M)
+          + '&N=' + encodeURIComponent(rowData.N)
+          + '&O=' + encodeURIComponent(rowData.O)
+          + '&P=' + encodeURIComponent(rowData.P)
+          + '&Q=' + encodeURIComponent(rowData.Q)
+          + '&U=' + encodeURIComponent(rowData.U);
+        const r = await jsonp(url);
+        if (r && r.success) totalSuccess++;
+        else { totalFail++; console.log('행 추가 실패:', r && r.error); }
+      } catch(e) { totalFail++; console.log('행 추가 예외:', e.message); }
+    }
   }
 
   btn.disabled = false;
-
-  // 모달 닫기
   closePasteModal();
 
-  if (success > 0) {
-    // 토스트 표시
-    showToast('✅ ' + success + '행 추가 완료!' + (fail ? ' (실패 ' + fail + '행)' : ''));
-    // 토스트 사라질 때 새로고침
+  if (totalSuccess > 0) {
+    let msg = '✅ ' + totalSuccess + '건 등록 완료';
+    msg += '\n' + summary.join(', ');
+    if (totalFail) msg += '\n(실패 ' + totalFail + '건)';
+    if (skipped.length) msg += '\n(스킵 ' + skipped.length + '건)';
+    showToast(msg);
+
+    // 현재 보고 있는 사업자 데이터 새로고침
     setTimeout(async () => {
       try {
         const r2 = await jsonp(GAS_BASE + '?ssId=' + encodeURIComponent(currentBiz) + '&action=getMonthData&sheetName=' + encodeURIComponent(sheetNm));
