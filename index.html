@@ -6082,10 +6082,41 @@ setInterval(function(){
     var btn = document.createElement('button');
     btn.className = 'fastro-btn';
     btn.textContent = '🌐';
-    btn.title = '패스트로 신청 페이지 열기';
+    btn.title = '패스트로 신청';
     btn.style.cssText = 'margin-left:4px;padding:6px 10px;background:#6cd11e;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;';
     btn.onclick = function(ev){ 
       ev.stopPropagation();
+      
+      // 사업자별 mb_id 매핑
+      var mbIdMap = {
+        '1': 'kjm6421',
+        '2': 'kjm5696421',
+        '3': 'kjm5696423',
+        '4': 'kjm5696424',
+        '5': 'kjm5697425',
+        '6': 'kjm5696426'
+      };
+      var bizName = {
+        '1': '모다mall',
+        '2': '모다mall2',
+        '3': '모다mall3',
+        '4': '모다mall4',
+        '5': '수기mall',
+        '6': '불사자(통합)'
+      };
+      var mbId = mbIdMap[currentBiz] || '';
+      var name = bizName[currentBiz] || '';
+      
+      // 안내 후 패스트로 열기
+      var msg = '🏪 현재 사업자: ' + name + '\n';
+      msg += '🔑 패스트로 ID: ' + mbId + '\n\n';
+      msg += '⚠️ 패스트로에 위 ID로 로그인되어 있는지 확인하세요.\n';
+      msg += '다른 ID로 로그인되어 있으면, 패스트로 페이지에서\n';
+      msg += '로그아웃 후 위 ID로 다시 로그인하세요.\n\n';
+      msg += '계속 진행하시겠습니까?';
+      
+      if (!confirm(msg)) return;
+      
       window.open('https://fast-ro.com/service/service_03.php', '_blank');
     };
     el.appendChild(btn);
