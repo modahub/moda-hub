@@ -1690,7 +1690,7 @@ function trackCJ(invoice) {
 // 경동택배 운송장 조회 페이지 열기
 function trackKdong(invoice) {
   if (!invoice) { fastroToast('운송장번호 없음'); return; }
-  const url = 'https://kdexp.com/Goods/goodsTrack?barcode=' + encodeURIComponent(invoice);
+  const url = 'https://kdexp.com/service/delivery/etc/delivery.do?barcode=' + encodeURIComponent(invoice);
   window.open(url, '_blank');
 }
   
