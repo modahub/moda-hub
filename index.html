@@ -1680,6 +1680,20 @@ function fastroStateClass(state, hasInvoice) {
   return 'fastro-wait';
 }
 
+// CJ대한통운 운송장 조회 페이지 열기
+function trackCJ(invoice) {
+  if (!invoice) { fastroToast('운송장번호 없음'); return; }
+  const url = 'https://trace.cjlogistics.com/web/detail.jsp?slipno=' + encodeURIComponent(invoice);
+  window.open(url, '_blank');
+}
+
+// 경동택배 운송장 조회 페이지 열기
+function trackKdong(invoice) {
+  if (!invoice) { fastroToast('운송장번호 없음'); return; }
+  const url = 'https://kdexp.com/Goods/goodsTrack?barcode=' + encodeURIComponent(invoice);
+  window.open(url, '_blank');
+}
+  
 // 운송장번호 클립보드 복사
 function copyFastroInvoice(invoice) {
   if (!invoice) return;
@@ -1744,15 +1758,15 @@ function showFastroModal(orderNo) {
           </div>
           <div class="fastro-row">
             <div class="lbl">한국운송장 (CJ)</div>
-            <div class="val ${info.invoice?'invoice':''}" ${info.invoice?`onclick="copyFastroInvoice('${info.invoice}')" title="클릭하여 복사"`:''}>
-              ${info.invoice ? esc(info.invoice) + ' 📋' : '<span style="color:#999">아직 미발급</span>'}
+            <div class="val ${info.invoice?'invoice':''}" ${info.invoice?`onclick="trackCJ('${info.invoice}')" title="클릭하여 CJ대한통운 조회"`:''}>
+              ${info.invoice ? esc(info.invoice) + ' 🔍' : '<span style="color:#999">아직 미발급</span>'}
             </div>
           </div>
           ${info.kdongInvoice ? `
           <div class="fastro-row">
             <div class="lbl">경동택배</div>
-            <div class="val invoice" onclick="copyFastroInvoice('${info.kdongInvoice}')" title="클릭하여 복사" style="color:#4527a0;">
-              ${esc(info.kdongInvoice)} 📋
+            <div class="val invoice" onclick="trackKdong('${info.kdongInvoice}')" title="클릭하여 경동택배 조회" style="color:#4527a0;">
+              ${esc(info.kdongInvoice)} 🔍
             </div>
           </div>` : ''}
           <div class="fastro-row">
@@ -1783,8 +1797,8 @@ function showFastroModal(orderNo) {
           </div>` : ''}
         </div>
         <div class="fastro-modal-actions">
-          ${info.invoice ? `<button class="fastro-btn primary" onclick="copyFastroInvoice('${info.invoice}')">📋 CJ 복사</button>` : ''}
-          ${info.kdongInvoice ? `<button class="fastro-btn primary" style="background:#4527a0;" onclick="copyFastroInvoice('${info.kdongInvoice}')">📋 경동 복사</button>` : ''}
+          ${info.invoice ? `<button class="fastro-btn primary" onclick="trackCJ('${info.invoice}')">🔍 CJ 조회</button>` : ''}
+          ${info.kdongInvoice ? `<button class="fastro-btn primary" style="background:#4527a0;" onclick="trackKdong('${info.kdongInvoice}')">🔍 경동 조회</button>` : ''}
           <button class="fastro-btn secondary" onclick="closeFastroModal()">닫기</button>
         </div>
       </div>
@@ -3991,10 +4005,10 @@ function cardHtml(c, idx, totalCount) {
           </div>`;
           // 경동택배가 있으면 경동을 우선 표시 (마지막 단계 배송)
           // CJ는 경동이 없을 때만 표시 (한국 도착 후 경동 발송 전)
-          if (fastroInfo.kdongInvoice) {
-            html += `<div class="fastro-invoice-line kdong-color">경동 ${fastroInfo.kdongInvoice}</div>`;
+         if (fastroInfo.kdongInvoice) {
+            html += `<div class="fastro-invoice-line kdong-color" onclick="event.stopPropagation();trackKdong('${fastroInfo.kdongInvoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 경동택배 조회">경동 ${fastroInfo.kdongInvoice} 🔍</div>`;
           } else if (fastroInfo.invoice) {
-            html += `<div class="fastro-invoice-line">CJ ${fastroInfo.invoice}</div>`;
+            html += `<div class="fastro-invoice-line" onclick="event.stopPropagation();trackCJ('${fastroInfo.invoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 CJ대한통운 조회">CJ ${fastroInfo.invoice} 🔍</div>`;
           }
           return html;
         })()}
