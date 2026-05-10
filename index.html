@@ -2963,12 +2963,6 @@ function openPasteModal() {
   document.getElementById('paste-preview').textContent = '';
   document.getElementById('paste-progress').textContent = '';
   document.getElementById('paste-btn').disabled = true;
-function openCookieModal() {
-  document.getElementById('cookie-modal-bg').classList.add('open');
-  document.getElementById('cookie-input').value = '';
-  document.getElementById('cookie-result').innerHTML = '';
-  document.getElementById('cookie-input').focus();
-}
 
 function closeCookieModal() {
   document.getElementById('cookie-modal-bg').classList.remove('open');
@@ -6346,8 +6340,8 @@ async function checkCookieStatus() {
 
 </body>
 </html>
-  </body> 
-  <div class="paste-modal-bg" id="cookie-modal-bg" onclick="closeCookieModalBG(event)">
+ 
+ <div class="paste-modal-bg" id="cookie-modal-bg" onclick="closeCookieModalBG(event)">
   <div class="paste-modal" style="max-width:560px;">
     <div style="float:right;font-size:20px;cursor:pointer;color:#888;" onclick="closeCookieModal()">✕</div>
     <h3>🔑 패스트로 쿠키 갱신</h3>
@@ -6359,7 +6353,7 @@ async function checkCookieStatus() {
 
     <div style="background:#fff8e1;border:1px solid #ffc107;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#5d4037;">
       <b>💡 북마클릿 코드 (북마크 URL에 붙여넣기):</b>
-      <textarea readonly style="width:100%;box-sizing:border-box;margin-top:6px;height:60px;font-size:10px;font-family:monospace;border:1px solid #ddd;border-radius:4px;padding:4px;" onclick="this.select()">javascript:(function(){var c=document.cookie.split(';').map(function(s){return s.trim();}).filter(function(s){return s.indexOf('PHPSESSID=')===0;})[0];if(!c){alert('❌ PHPSESSID 없음');return;}var full=c+'; hd_pops_78=1; hd_pops_77=1';navigator.clipboard.writeText(full).then(function(){alert('✅ 복사됨!\n'+full);}).catch(function(){var ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('✅ 복사됨!');});})();</textarea>
+      <textarea readonly style="width:100%;box-sizing:border-box;margin-top:6px;height:60px;font-size:10px;font-family:monospace;border:1px solid #ddd;border-radius:4px;padding:4px;" onclick="this.select()">javascript:(function(){var c=document.cookie.split(';').map(function(s){return s.trim();}).filter(function(s){return s.indexOf('PHPSESSID=')===0;})[0];if(!c){alert('PHPSESSID 없음');return;}var full=c+'; hd_pops_78=1; hd_pops_77=1';navigator.clipboard.writeText(full).then(function(){alert('복사됨!\n'+full);}).catch(function(){var ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('복사됨!');});})();</textarea>
     </div>
 
     <div style="margin-bottom:10px;">
@@ -6389,4 +6383,102 @@ async function checkCookieStatus() {
   </div>
 </div>
 
-</html> 
+<script>
+function openCookieModal() {
+  document.getElementById('cookie-modal-bg').classList.add('open');
+  document.getElementById('cookie-input').value = '';
+  document.getElementById('cookie-result').innerHTML = '';
+  document.getElementById('cookie-input').focus();
+}
+
+function closeCookieModal() {
+  document.getElementById('cookie-modal-bg').classList.remove('open');
+}
+
+function closeCookieModalBG(e) {
+  if (e.target === document.getElementById('cookie-modal-bg')) closeCookieModal();
+}
+
+async function saveCookie() {
+  const cookie = document.getElementById('cookie-input').value.trim();
+  const target = document.getElementById('cookie-target').value;
+  const result = document.getElementById('cookie-result');
+  const btn    = document.getElementById('cookie-save-btn');
+
+  if (!cookie) {
+    result.innerHTML = '<span style="color:#c62828;">⚠ 쿠키값을 입력하세요</span>';
+    return;
+  }
+  if (cookie.indexOf('PHPSESSID=') < 0) {
+    result.innerHTML = '<span style="color:#c62828;">⚠ PHPSESSID가 포함되지 않았습니다</span>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 저장 + 검증 중...';
+  result.innerHTML = '<span style="color:#666;">패스트로 응답 확인 중...</span>';
+
+  try {
+    const url = GAS_BASE
+      + '?action=updateFastroCookie'
+      + '&targetSsId=' + encodeURIComponent(target)
+      + '&cookie=' + encodeURIComponent(cookie);
+    const r = await jsonp(url);
+
+    if (r && r.success) {
+      const verifiedIcon = r.verified ? '✅' : '⚠️';
+      const verifiedColor = r.verified ? '#2e7d32' : '#ef6c00';
+      result.innerHTML =
+        '<div style="background:#e8f5e9;border:1px solid #66bb6a;border-radius:8px;padding:10px;color:#1b5e20;">' +
+        '<b>✅ 저장 완료</b><br>' +
+        '갱신된 사업자: ' + r.updatedCount + '개 (' + r.updated.join(', ') + ')<br>' +
+        '<span style="color:' + verifiedColor + ';">' + verifiedIcon + ' ' + r.verifyMessage + '</span>' +
+        '</div>';
+      showToast('✅ 쿠키 갱신 완료');
+      if (r.verified) setTimeout(closeCookieModal, 3000);
+    } else {
+      result.innerHTML = '<span style="color:#c62828;">❌ ' + (r.error || '알 수 없는 오류') + '</span>';
+    }
+  } catch(e) {
+    result.innerHTML = '<span style="color:#c62828;">❌ ' + e.message + '</span>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 저장 + 검증';
+  }
+}
+
+async function checkCookieStatus() {
+  const result = document.getElementById('cookie-result');
+  result.innerHTML = '<span style="color:#666;">⏳ 6개 사업자 쿠키 상태 확인 중... (약 5초)</span>';
+
+  try {
+    const r = await jsonp(GAS_BASE + '?action=checkFastroStatus');
+    if (r && r.success) {
+      const bizNames = {
+        '1':'모다mall','2':'모다mall2','3':'모다mall3',
+        '4':'모다mall4','5':'수기mall','6':'불사자(통합)'
+      };
+      let html = '<div style="text-align:left;background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;padding:10px;font-size:12px;">';
+      r.statusList.forEach(s => {
+        const color = s.valid ? '#2e7d32' : '#c62828';
+        const bg    = s.valid ? '#e8f5e9' : '#ffebee';
+        html += '<div style="background:' + bg + ';padding:6px 10px;margin:3px 0;border-radius:4px;color:' + color + ';">' +
+          '<b>' + s.ssId + '. ' + (bizNames[s.ssId]||'') + '</b> (' + s.mbId + ') · ' + s.message +
+          '</div>';
+      });
+      html += '</div>';
+      result.innerHTML = html;
+    } else {
+      result.innerHTML = '<span style="color:#c62828;">❌ ' + (r.error || '오류') + '</span>';
+    }
+  } catch(e) {
+    result.innerHTML = '<span style="color:#c62828;">❌ ' + e.message + '</span>';
+  }
+}
+</script>
+
+</body>
+</html>
+
+----- 여기까지 복사 끝 -----
+
