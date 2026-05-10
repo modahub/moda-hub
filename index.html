@@ -6085,32 +6085,33 @@ setInterval(function(){
     btn.title = '패스트로 자동입력 도우미';
     btn.style.cssText = 'margin-left:4px;padding:6px 10px;background:#6cd11e;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;';
     btn.onclick = function(ev){ 
-  ev.stopPropagation();
-  
-  // 데이터 추출
-  var input = document.getElementById('baeji-input-'+pid);
-  if (!input) return;
-  var allInputs = Array.from(document.querySelectorAll('input[id^="baeji-input-"]'));
-  var idx = allInputs.findIndex(function(el){ return el.id === 'baeji-input-'+pid; });
-  var uid = 'c' + idx;
-  
-  var name = (document.getElementById('hname-'+uid)?.textContent||'').trim();
-  var ph2 = (document.getElementById('hph2-'+uid)?.textContent||'').trim();
-  var ph1 = (document.getElementById('hph1-'+uid)?.textContent||'').trim();
-  var phone = (ph2||ph1||pid).replace(/-/g,'');
-  var customs = (document.getElementById('hcust-'+uid)?.textContent||'').trim().replace(/^-$/,'');
-  var addrText = (document.getElementById('haddr-'+uid)?.textContent||'').trim();
-  var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
-  var zipCode = zipMatch ? zipMatch[1] : '';
-  var address = addrText.replace(/^\[\d{5}\]\s*/,'').replace(/^-$/,'');
-  
-  var data = { name:name, phone:phone, customs:customs, zipCode:zipCode, address:address };
-  var encoded = encodeURIComponent(JSON.stringify(data));
-  
-  // 동의 페이지로 데이터 전달
-  var url = 'https://fast-ro.com/service/service_03.php#' + encoded;
-  window.open(url, '_blank');
-};
+      ev.stopPropagation();
+      
+      // 데이터 추출
+      var allInputs = Array.from(document.querySelectorAll('input[id^="baeji-input-"]'));
+      var idx = allInputs.findIndex(function(el){ return el.id === 'baeji-input-'+pid; });
+      var uid = 'c' + idx;
+      
+      var name = (document.getElementById('hname-'+uid)?.textContent||'').trim();
+      var ph2 = (document.getElementById('hph2-'+uid)?.textContent||'').trim();
+      var ph1 = (document.getElementById('hph1-'+uid)?.textContent||'').trim();
+      var phone = (ph2||ph1||pid).replace(/-/g,'');
+      var customs = (document.getElementById('hcust-'+uid)?.textContent||'').trim().replace(/^-$/,'');
+      var addrText = (document.getElementById('haddr-'+uid)?.textContent||'').trim();
+      var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
+      var zipCode = zipMatch ? zipMatch[1] : '';
+      var address = addrText.replace(/^\[\d{5}\]\s*/,'').replace(/^-$/,'');
+      
+      var data = { name:name, phone:phone, customs:customs, zipCode:zipCode, address:address };
+      var encoded = encodeURIComponent(JSON.stringify(data));
+      
+      // 동의 페이지로 데이터 전달
+      var url = 'https://fast-ro.com/service/service_03.php#' + encoded;
+      window.open(url, '_blank');
+    };
+    el.appendChild(btn);
+  });
+}, 1000);
 </script>
   <!-- ★ 패스트로 끝 ★ -->
   </body> 
