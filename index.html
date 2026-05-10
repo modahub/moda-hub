@@ -3019,7 +3019,27 @@ async function saveInfoEdit() {
     prog.textContent = '⚠ 저장 실패: ' + e.message;
   }
 }
-
+  
+function fillPasteSheetSelect() {
+  const sel = document.getElementById('paste-sheet-select');
+  if (!sel) return;
+  sel.innerHTML = '';
+  const tabs = document.querySelectorAll('.mtab');
+  tabs.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.textContent.trim();
+    opt.textContent = t.textContent.trim();
+    if (t.classList.contains('active')) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  // 탭이 없으면 monthSheetName 사용
+  if (!sel.options.length) {
+    const opt = document.createElement('option');
+    opt.value = monthSheetName;
+    opt.textContent = monthSheetName;
+    sel.appendChild(opt);
+  }
+}
 function openPasteModal() {
   document.getElementById('paste-modal-bg').classList.add('open');
   document.getElementById('paste-textarea').value = '';
