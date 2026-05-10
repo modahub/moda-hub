@@ -1220,7 +1220,6 @@ body {
     <button class="add-btn" onclick="openPasteModal()">➕ 신규주문등록</button>
     <button class="view-btn active" id="view-main" onclick="switchView('main')">📋 주문관리</button>
     <button class="view-btn" id="view-stats" onclick="switchView('stats')">📊 통계</button>
-    <button class="add-btn" onclick="openCookieModal()" style="background:#FF9800;border-color:#FF9800;">🔑 쿠키 갱신</button>
 
   </div>
   <div class="month-tab-bar" id="month-tab-bar"></div>
@@ -6214,75 +6213,5 @@ setInterval(function(){
   });
 }, 1000);
 </script>
- ...
-
-<!-- [2번] 모달 HTML이 여기 있어야 함 -->
-<div class="paste-modal-bg" id="cookie-modal-bg" ...>
-  ...
-</div>
-
-<!-- ★★★ 여기에 [3번] script 통째로 붙여넣기 ★★★ -->
-<script>
-function openCookieModal() {
-  ...
-}
-function closeCookieModal() {
-  ...
-}
-function closeCookieModalBG(e) {
-  ...
-}
-async function saveCookie() {
-  ...
-}
-async function checkCookieStatus() {
-  ...
-}
-</script>
-
 </body>
 </html>
-  </body> 
-  <div class="paste-modal-bg" id="cookie-modal-bg" onclick="closeCookieModalBG(event)">
-  <div class="paste-modal" style="max-width:560px;">
-    <div style="float:right;font-size:20px;cursor:pointer;color:#888;" onclick="closeCookieModal()">✕</div>
-    <h3>🔑 패스트로 쿠키 갱신</h3>
-    <div class="paste-modal-sub">
-      <b>1단계:</b> 브라우저에서 <a href="https://fast-ro.com" target="_blank" style="color:#0277bd;font-weight:700;">fast-ro.com</a>에 로그인<br>
-      <b>2단계:</b> 북마크 [🔑 패스트로 쿠키 복사] 클릭<br>
-      <b>3단계:</b> 아래 입력창에 붙여넣기 (Ctrl+V)
-    </div>
-
-    <div style="background:#fff8e1;border:1px solid #ffc107;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#5d4037;">
-      <b>💡 북마클릿 코드 (북마크 URL에 붙여넣기):</b>
-      <textarea readonly style="width:100%;box-sizing:border-box;margin-top:6px;height:60px;font-size:10px;font-family:monospace;border:1px solid #ddd;border-radius:4px;padding:4px;" onclick="this.select()">javascript:(function(){var c=document.cookie.split(';').map(function(s){return s.trim();}).filter(function(s){return s.indexOf('PHPSESSID=')===0;})[0];if(!c){alert('❌ PHPSESSID 없음');return;}var full=c+'; hd_pops_78=1; hd_pops_77=1';navigator.clipboard.writeText(full).then(function(){alert('✅ 복사됨!\n'+full);}).catch(function(){var ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);alert('✅ 복사됨!');});})();</textarea>
-    </div>
-
-    <div style="margin-bottom:10px;">
-      <label style="font-size:12px;font-weight:700;color:#2c5f75;">🍪 쿠키값 (PHPSESSID=...; hd_pops_78=1; hd_pops_77=1)</label>
-      <textarea id="cookie-input" placeholder="PHPSESSID=xxxxxxxxxxxxxxxxxxxxxx; hd_pops_78=1; hd_pops_77=1"
-        style="width:100%;box-sizing:border-box;margin-top:4px;padding:10px;border:1.5px solid #dce8f0;border-radius:8px;font-size:12px;font-family:monospace;height:80px;outline:none;resize:vertical;"></textarea>
-    </div>
-
-    <div style="margin-bottom:12px;">
-      <label style="font-size:12px;font-weight:700;color:#2c5f75;">🏪 적용 범위</label>
-      <select id="cookie-target" style="width:100%;margin-top:4px;padding:8px;border:1.5px solid #dce8f0;border-radius:8px;font-size:13px;font-weight:600;outline:none;">
-        <option value="all" selected>🌐 전체 사업자 (6개 모두)</option>
-        <option value="1">1번 - 모다mall</option>
-        <option value="2">2번 - 모다mall2</option>
-        <option value="3">3번 - 모다mall3</option>
-        <option value="4">4번 - 모다mall4</option>
-        <option value="5">5번 - 수기mall</option>
-        <option value="6">6번 - 불사자(통합)</option>
-      </select>
-    </div>
-
-    <div id="cookie-result" style="margin-top:8px;font-size:13px;font-weight:600;text-align:center;min-height:20px;"></div>
-
-    <button onclick="saveCookie()" id="cookie-save-btn" style="margin-top:12px;width:100%;padding:13px;background:#FF9800;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">💾 저장 + 검증</button>
-    <button onclick="checkCookieStatus()" style="margin-top:8px;width:100%;padding:11px;background:#0288d1;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">🔍 현재 쿠키 상태 확인</button>
-    <button onclick="closeCookieModal()" style="margin-top:8px;width:100%;padding:11px;background:#f0f0f0;color:#888;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">취소</button>
-  </div>
-</div>
-
-</html> 
