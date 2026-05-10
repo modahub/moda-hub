@@ -6221,24 +6221,128 @@ setInterval(function(){
   ...
 </div>
 
-<!-- ★★★ 여기에 [3번] script 통째로 붙여넣기 ★★★ -->
 <script>
 function openCookieModal() {
-  ...
+  document.getElementById('cookie-modal-bg').classList.add('open');
+  document.getElementById('cookie-input').value = '';
+  document.getElementById('cookie-result').innerHTML = '';
+  document.getElementById('cookie-input').focus();
 }
+
 function closeCookieModal() {
-  ...
+  document.getElementById('cookie-modal-bg').classList.remove('open');
 }
+
 function closeCookieModalBG(e) {
-  ...
+  if (e.target === document.getElementById('cookie-modal-bg')) closeCookieModal();
 }
+
 async function saveCookie() {
-  ...
+  const cookie = document.getElementById('cookie-input').value.trim();
+  const target = document.getElementById('cookie-target').value;
+  const result = document.getElementById('cookie-result');
+  const btn    = document.getElementById('cookie-save-btn');
+
+  if (!cookie) {
+    result.innerHTML = '<span style="color:#c62828;">⚠ 쿠키값을 입력하세요</span>';
+    return;
+  }
+  if (cookie.indexOf('PHPSESSID=') < 0) {
+    result.innerHTML = '<span style="color:#c62828;">⚠ PHPSESSID가 포함되지 않았습니다</span>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 저장 + 검증 중...';
+  result.innerHTML = '<span style="color:#666;">패스트로 응답 확인 중...</span>';
+
+  try {
+    const url = GAS_BASE
+      + '?action=updateFastroCookie'
+      + '&targetSsId=' + encodeURIComponent(target)
+      + '&cookie=' + encodeURIComponent(cookie);
+    const r = await jsonp(url);
+
+    if (r && r.success) {
+      const verifiedIcon = r.verified ? '✅' : '⚠️';
+      const verifiedColor = r.verified ? '#2e7d32' : '#ef6c00';
+      result.innerHTML =
+        '<div style="background:#e8f5e9;border:1px solid #66bb6a;border-radius:8px;padding:10px;color:#1b5e20;">' +
+        '<b>✅ 저장 완료</b><br>' +
+        '갱신된 사업자: ' + r.updatedCount + '개 (' + r.updated.join(', ') + ')<br>' +
+        '<span style="color:' + verifiedColor + ';">' + verifiedIcon + ' ' + r.verifyMessage + '</span>' +
+        '</div>';
+      showToast('✅ 쿠키 갱신 완료');
+      if (r.verified) setTimeout(closeCookieModal, 3000);
+    } else {
+      result.innerHTML = '<span style="color:#c62828;">❌ ' + (r.error || '알 수 없는 오류') + '</span>';
+    }
+  } catch(e) {
+    result.innerHTML = '<span style="color:#c62828;">❌ ' + e.message + '</span>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 저장 + 검증';
+  }
 }
+
 async function checkCookieStatus() {
-  ...
+  const result = document.getElementById('cookie-result');
+  result.innerHTML = '<span style="color:#666;">⏳ 6개 사업자 쿠키 상태 확인 중... (약 5초)</span>';
+
+  try {
+    const r = await jsonp(GAS_BASE + '?action=checkFastroStatus');
+    if (r && r.success) {
+      const bizNames = {
+        '1':'모다mall','2':'모다mall2','3':'모다mall3',
+        '4':'모다mall4','5':'수기mall','6':'불사자(통합)'
+      };
+      let html = '<div style="text-align:left;background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;padding:10px;font-size:12px;">';
+      r.statusList.forEach(s => {
+        const color = s.valid ? '#2e7d32' : '#c62828';
+        const bg    = s.valid ? '#e8f5e9' : '#ffebee';
+        html += '<div style="background:' + bg + ';padding:6px 10px;margin:3px 0;border-radius:4px;color:' + color + ';">' +
+          '<b>' + s.ssId + '. ' + (bizNames[s.ssId]||'') + '</b> (' + s.mbId + ') · ' + s.message +
+          '</div>';
+      });
+      html += '</div>';
+      result.innerHTML = html;
+    } else {
+      result.innerHTML = '<span style="color:#c62828;">❌ ' + (r.error || '오류') + '</span>';
+    }
+  } catch(e) {
+    result.innerHTML = '<span style="color:#c62828;">❌ ' + e.message + '</span>';
+  }
 }
 </script>
+
+===== 복사 끝 =====
+
+
+============================================================
+  ※ 정리된 작업 순서
+============================================================
+
+1) index.html 에서 잘못 들어간 [3번] 블록 모두 삭제
+   - <script> 부터 </script> 까지
+   - 그리고 그 뒤에 따라온 </body> </html> 도 (두 번째인 것)
+   - 즉, 화면에 </body> 가 2개 보였다면 첫 번째 것 삭제
+
+2) 모달 div(<div class="paste-modal-bg" id="cookie-modal-bg">...) 가
+   원래 </body> 보다 위에 있는지 확인
+
+3) </body> 바로 위에 위 [복사 시작]~[복사 끝] 사이 코드 붙여넣기
+
+4) 결과 구조:
+   ...
+   <div class="paste-modal-bg" id="cookie-modal-bg">
+     모달 내용
+   </div>
+   
+   <script>
+     function openCookieModal() { ... 진짜 코드 ... }
+     ... 
+   </script>
+
 
 </body>
 </html>
