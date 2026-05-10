@@ -6224,7 +6224,27 @@ window.fhCopyOne = function(value, label, btn) {
     }
   }
 };
-
+// 배대지 입력칸 옆에 [🌐] 버튼 자동 추가
+document.addEventListener('click', function(e){
+  setTimeout(function(){
+    document.querySelectorAll('.act-baeji-inline').forEach(function(el){
+      if (el.querySelector('.fastro-btn')) return;
+      var input = el.querySelector('input[id^="baeji-input-"]');
+      if (!input) return;
+      var pid = input.id.replace('baeji-input-','');
+      var btn = document.createElement('button');
+      btn.className = 'fastro-btn';
+      btn.textContent = '🌐';
+      btn.title = '패스트로 자동입력';
+      btn.style.cssText = 'margin-left:4px;padding:6px 10px;background:#6cd11e;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;';
+      btn.onclick = function(ev){ 
+        ev.stopPropagation(); 
+        window.openFastroModal(pid, '', ''); 
+      };
+      el.appendChild(btn);
+    });
+  }, 200);
+}, true);
 
   <!-- ★ 패스트로 끝 ★ -->
   </body> 
