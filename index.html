@@ -6104,30 +6104,13 @@ setInterval(function(){
   var zipCode = zipMatch ? zipMatch[1] : '';
   var address = addrText.replace(/^\[\d{5}\]\s*/,'').replace(/^-$/,'');
   
-  // ★ 데이터를 URL 해시로 패스트로에 전달 (Tampermonkey가 받음)
-  var data = {
-    name: name,
-    phone: phone,
-    customs: customs,
-    zipCode: zipCode,
-    address: address,
-    _timestamp: Date.now()
-  };
+  var data = { name:name, phone:phone, customs:customs, zipCode:zipCode, address:address };
   var encoded = encodeURIComponent(JSON.stringify(data));
   
-  // 패스트로 신청 페이지 열기 (해시에 데이터 포함)
-  // 동의 페이지 거치고 신청서 페이지 가면 Tampermonkey가 자동으로 받음
+  // 동의 페이지로 데이터 전달
   var url = 'https://fast-ro.com/service/service_03.php#' + encoded;
   window.open(url, '_blank');
-  
-  // 백업: localStorage에도 저장 (5분 유효)
-  // 같은 도메인은 아니지만, 사용자가 신청서 페이지 가면 Tampermonkey가 알아서 처리
-  
-  alert('✅ 정보 준비 완료!\n\n패스트로 신청서 페이지에서\n주황색 [⚡ 6개 칸 자동입력] 버튼을 클릭하세요');
 };
-    el.appendChild(btn);
-  });
-}, 1000);
 </script>
   <!-- ★ 패스트로 끝 ★ -->
   </body> 
