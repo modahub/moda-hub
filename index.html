@@ -3050,25 +3050,6 @@ async function checkCookieStatus() {
   }
 }
 
-  // 현재 달 목록으로 드롭다운 채우기
-  const sel = document.getElementById('paste-sheet-select');
-  sel.innerHTML = '';
-  const tabs = document.querySelectorAll('.mtab');
-  tabs.forEach(t => {
-    const opt = document.createElement('option');
-    opt.value = t.textContent.trim();
-    opt.textContent = t.textContent.trim();
-    if (t.classList.contains('active')) opt.selected = true;
-    sel.appendChild(opt);
-  });
-  // 탭이 없으면 monthSheetName 사용
-  if (!sel.options.length) {
-    const opt = document.createElement('option');
-    opt.value = monthSheetName;
-    opt.textContent = monthSheetName;
-    sel.appendChild(opt);
-  }
-}
 
 function closePasteModal() {
   document.getElementById('paste-modal-bg').classList.remove('open');
