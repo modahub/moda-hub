@@ -6101,13 +6101,67 @@ setInterval(function(){
       var zipMatch = addrText.match(/^\[(\d{5})\]\s*/);
       var zipCode = zipMatch ? zipMatch[1] : '';
       var address = addrText.replace(/^\[\d{5}\]\s*/,'').replace(/^-$/,'');
+      var phoneFmt = phone.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
       
-      var data = { name:name, phone:phone, customs:customs, zipCode:zipCode, address:address };
-      var encoded = encodeURIComponent(JSON.stringify(data));
+      // 화면 크기 계산
+      var screenW = screen.availWidth;
+      var screenH = screen.availHeight;
+      var leftW = Math.floor(screenW * 0.62);
+      var rightW = screenW - leftW - 20;
+      var rightX = leftW + 10;
       
-      // 동의 페이지로 데이터 전달
-      var url = 'https://fast-ro.com/service/service_03.php#' + encoded;
-      window.open(url, '_blank');
+      // 1. 패스트로 신청 페이지 (왼쪽 큰 팝업)
+      window.open(
+        'https://fast-ro.com/service/service_03.php',
+        'fastroSite',
+        'width='+leftW+',height='+screenH+',left=0,top=0,scrollbars=yes,resizable=yes'
+      );
+      
+      // 2. 자동입력 도우미 (오른쪽 작은 팝업)
+      var fnEsc = function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); };
+      var helperHtml = 
+        '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>🌐 패스트로 자동입력 도우미</title>'+
+        '<style>'+
+        '*{box-sizing:border-box;margin:0;padding:0;font-family:"Malgun Gothic",sans-serif}'+
+        'body{background:#f5f5f5;padding:12px;color:#333}'+
+        '.hd{background:linear-gradient(135deg,#FF9800,#F57C00);color:#fff;padding:12px 16px;border-radius:8px;margin-bottom:12px;text-align:center}'+
+        '.hd h1{font-size:15px;font-weight:800}'+
+        '.hd p{font-size:11px;margin-top:4px;opacity:0.9}'+
+        '.guide{background:#fff8e1;border:2px solid #ffc107;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:11px;line-height:1.6;color:#5d4037}'+
+        '.guide b{color:#e65100}'+
+        '.row{background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px;margin-bottom:8px;transition:all 0.2s}'+
+        '.row.copied{background:#e8f5e9;border-color:#4caf50}'+
+        '.row .label{font-size:10px;font-weight:700;color:#888;margin-bottom:3px}'+
+        '.row .val{font-size:13px;font-weight:600;color:#212121;margin-bottom:8px;word-break:break-all;line-height:1.4}'+
+        '.row .val.empty{color:#bbb;font-style:italic;font-weight:400}'+
+        '.btn{display:block;width:100%;padding:10px;background:#FF9800;color:#fff;border:0;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer}'+
+        '.btn:hover{background:#F57C00}'+
+        '.btn.done{background:#4CAF50}'+
+        '.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(76,175,80,0.95);color:#fff;padding:10px 18px;border-radius:20px;font-size:12px;font-weight:700;z-index:9999}'+
+        '</style></head><body>'+
+        '<div class="hd"><h1>🌐 자동입력 도우미</h1><p>패스트로 칸 클릭 → 복사 → Ctrl+V</p></div>'+
+        '<div class="guide"><b>📌 사용법:</b><br>1. 패스트로 칸 클릭<br>2. 아래 [📋 복사] 클릭<br>3. 패스트로에서 <b>Ctrl+V</b></div>'+
+        '<div class="row"><div class="label">수취인</div><div class="val'+(name?'':' empty')+'">'+fnEsc(name||'(비어있음)')+'</div><button class="btn" onclick="cp(\'name\',this)">📋 수취인 복사</button></div>'+
+        '<div class="row"><div class="label">연락처</div><div class="val'+(phone?'':' empty')+'">'+fnEsc(phoneFmt||'(비어있음)')+'</div><button class="btn" onclick="cp(\'phone\',this)">📋 연락처 복사</button></div>'+
+        '<div class="row"><div class="label">통관번호</div><div class="val'+(customs?'':' empty')+'">'+fnEsc(customs||'(비어있음)')+'</div><button class="btn" onclick="cp(\'customs\',this)">📋 통관번호 복사</button></div>'+
+        '<div class="row"><div class="label">우편번호</div><div class="val'+(zipCode?'':' empty')+'">'+fnEsc(zipCode||'(비어있음)')+'</div><button class="btn" onclick="cp(\'zip\',this)">📋 우편번호 복사</button></div>'+
+        '<div class="row"><div class="label">주소</div><div class="val'+(address?'':' empty')+'">'+fnEsc(address||'(비어있음)')+'</div><button class="btn" onclick="cp(\'addr\',this)">📋 주소 복사</button></div>'+
+        '<script>'+
+        'var data={name:'+JSON.stringify(name)+',phone:'+JSON.stringify(phone)+',customs:'+JSON.stringify(customs)+',zipCode:'+JSON.stringify(zipCode)+',address:'+JSON.stringify(address)+'};'+
+        'function toast(msg){var old=document.querySelector(".toast");if(old)old.remove();var t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.remove();},2000);}'+
+        'function cp(key,btn){var map={name:["수취인",data.name],phone:["연락처",data.phone],customs:["통관번호",data.customs],zip:["우편번호",data.zipCode],addr:["주소",data.address]};var arr=map[key];if(!arr||!arr[1]){toast("⚠ "+arr[0]+"이 비어있습니다");return;}var v=arr[1];var done=function(){btn.textContent="✅ 복사됨";btn.classList.add("done");setTimeout(function(){btn.textContent="📋 "+arr[0]+" 복사";btn.classList.remove("done");},1500);toast("✅ "+arr[0]+" 복사됨 → 패스트로에서 Ctrl+V");};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(done).catch(function(){var ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);done();});}else{var ta=document.createElement("textarea");ta.value=v;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);done();}}'+
+        '<\/script></body></html>';
+      
+      var helperPopup = window.open(
+        '',
+        'fastroHelper',
+        'width='+rightW+',height='+screenH+',left='+rightX+',top=0,scrollbars=yes,resizable=yes'
+      );
+      
+      if (helperPopup) {
+        helperPopup.document.write(helperHtml);
+        helperPopup.document.close();
+      }
     };
     el.appendChild(btn);
   });
