@@ -1150,7 +1150,7 @@ function showUpdateNotice(newVer, note) {
 // 앱 시작 후 5초 뒤 첫 체크 (다른 데이터 로딩 안 방해하게)
 setTimeout(checkForUpdate, 5000);
 // 30분마다 재체크
-setInterval(checkForUpdate, 30 * 60 * 1000);
+setInterval(checkForUpdate, 60 * 1000);
 
 // ─── 3. 데스크톱 앱 느낌: F12, 우클릭, 텍스트 선택 ───
 // 단, 입력 필드(input, textarea, contenteditable)에서는 정상 동작
