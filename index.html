@@ -4013,7 +4013,18 @@ function cardHtml(c, idx, totalCount) {
           return html;
         })()}
       </div>
-      <div class="rc-hcell rc-source rc-hcell-col ${(smap[pid]&&smap[pid].s==='fast')?'src-fast':(smap[pid]&&smap[pid].s==='joeun-air')?'src-jair':(smap[pid]&&smap[pid].s==='joeun-sea')?'src-jsea':(smap[pid]&&smap[pid].s==='lcl-out')?'src-lclout':''}">
+      <div class="rc-hcell rc-source rc-hcell-col ${(() => {
+        const f = (c.fBg||'').toLowerCase();
+        if (f.includes('ff9800') || f.includes('ff6d00') || f.includes('e65100') || f.includes('ffa726')) return 'src-fast';
+        if (f.includes('8bc34a') || f.includes('7cb342') || f.includes('689f38') || f.includes('33691e')) return 'src-jair';
+        if (f.includes('9c27b0') || f.includes('7b1fa2') || f.includes('6a1b9a')) return 'src-jsea';
+        if (f.includes('a04545') || f.includes('c62828') || f.includes('b71c1c')) return 'src-lclout';
+        if (smap[pid]&&smap[pid].s==='fast') return 'src-fast';
+        if (smap[pid]&&smap[pid].s==='joeun-air') return 'src-jair';
+        if (smap[pid]&&smap[pid].s==='joeun-sea') return 'src-jsea';
+        if (smap[pid]&&smap[pid].s==='lcl-out') return 'src-lclout';
+        return '';
+      })()}">
         <span class="rc-truncate ${(c.sourceNote && c.sourceNote.trim()!=='LCL출고')?'rc-has-memo':''}" id="hsrc-${uid}">${c.source||'-'}</span>
         ${(smap[pid]&&smap[pid].s==='lcl-out') ? '<span class="lclout-label">LCL출고</span>' : ''}
         <div class="rc-memo-inline" id="snote-line-${uid}">${(c.sourceNote && c.sourceNote.trim()!=='LCL출고') ? '<span class="rc-memo-text">' + c.sourceNote.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>' : ''}</div>
