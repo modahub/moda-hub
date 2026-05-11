@@ -1151,6 +1151,14 @@ function showUpdateNotice(newVer, note) {
 setTimeout(checkForUpdate, 5000);
 // 30분마다 재체크
 setInterval(checkForUpdate, 60 * 1000);
+  
+  // ★ 1분마다 데이터 자동 갱신
+setInterval(() => {
+  if (typeof loadAll === 'function' && typeof currentMid !== 'undefined' && currentMid) {
+    console.log('[자동갱신] 데이터 새로고침:', new Date().toLocaleTimeString());
+    loadAll(currentMid, true);
+  }
+}, 60 * 1000);
 
 // ─── 3. 데스크톱 앱 느낌: F12, 우클릭, 텍스트 선택 ───
 // 단, 입력 필드(input, textarea, contenteditable)에서는 정상 동작
