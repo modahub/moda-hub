@@ -1152,29 +1152,7 @@ setTimeout(checkForUpdate, 5000);
 // 30분마다 재체크
 setInterval(checkForUpdate, 60 * 1000);
 
-  // ★ 1분마다 데이터 백그라운드 자동 갱신 (화면 깜빡임 없음)
-setInterval(async () => {
-  if (typeof currentBiz === 'undefined' || !currentBiz) return;
-  if (typeof jsonp !== 'function' || typeof GAS_BASE === 'undefined') return;
-  
-  try {
-    console.log('[자동갱신] 백그라운드:', new Date().toLocaleTimeString());
-    const r = await jsonp(GAS_BASE + '?action=fast&ssId=' + currentBiz);
-    if (r && !r.error) {
-      // 데이터 업데이트 (화면은 깜빡임 없이)
-      if (typeof customers !== 'undefined') customers = r.customers || [];
-      if (typeof scripts !== 'undefined') scripts = r.scripts || [];
-      if (typeof monthData !== 'undefined') monthData = r.monthData || r.customers || [];
-      // 화면 다시 그리기
-      if (typeof renderMonthPage === 'function') renderMonthPage();
-    }
-  } catch (e) {
-    console.log('[자동갱신] 실패:', e.message);
-  }
-}, 60 * 1000);
-  
-  // ★ 1분마다 데이터 자동 갱신
-setInterval(() => {
+ setInterval(() => {
   if (typeof loadAll === 'function' && typeof currentMid !== 'undefined' && currentMid) {
     console.log('[자동갱신] 데이터 새로고침:', new Date().toLocaleTimeString());
     loadAll(currentMid, true);
