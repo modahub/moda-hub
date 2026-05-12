@@ -833,6 +833,7 @@ canvas { max-width: 100%; }
 .card { background:#fff; display:flex; flex-wrap:wrap; border-bottom:1px solid #d0d0d0; overflow:hidden; box-sizing:border-box; transition: background 0.1s; }
 .card:hover { background:#fafafa; }
 .card.cancelled-card { background:#ffb3b3 !important; }
+.card.shipped-card { background:#81D4FA !important; }
 /* ─────────────────────────────────────────────────── */
 
 /* ── 셀 너비 강제 고정 ───────────────────────────────── */
@@ -4008,7 +4009,7 @@ function cardHtml(c, idx, totalCount) {
   }).join('');
 
   return `
-  <div class="card ${sc}${isCancelled?' cancelled':''}${cancelledCard?' cancelled-card':''}${isYellow(c.gBg)?' sent-card':''}" id="card-${uid}">
+  <div class="card ${sc}${isCancelled?' cancelled':''}${cancelledCard?' cancelled-card':''}${smap[pid]&&smap[pid].dv?' shipped-card':''}${isYellow(c.gBg)?' sent-card':''}" id="card-${uid}">
 
     <!-- 헤더: 항상 보임 - 구글시트 행 스타일 -->
     <div class="rc-header" id="rch-${uid}">
@@ -4630,10 +4631,10 @@ async function selectDelivery(pid, orderNo, type) {
     btn.className = 'act-btn final' + (newType ? ' done' : '');
   }
 
-  // ★ G열 색상: 선택시 파란색, 취소시 주황색 (배대지수령)
+  // ★ G열 색상 + 카드 전체 색칠
   monthData.forEach(c => {
     if (c.orderNo === orderNo) {
-      c.gBg = newType ? '#87ceeb' : '#ff9800';
+      c.gBg = newType ? '#81D4FA' : '#ff9800';
     }
   });
 
@@ -4641,13 +4642,12 @@ async function selectDelivery(pid, orderNo, type) {
   monthPage = 1;
   renderMonthPage();
 
-  // 백그라운드에서 시트 업데이트
+  // 백그라운드에서 시트 업데이트 (행 전체 색칠)
   try {
     await jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=deliverySelect&orderNo=' + encodeURIComponent(orderNo) + '&type=' + encodeURIComponent(newType));
-    showToast(newType ? '✅ ' + newType + ' 선택완료' : '✅ 선택 취소');
+    showToast(newType ? '✅ ' + newType + ' - 완료 처리됨' : '✅ 선택 취소');
   } catch(e) { showToast('⚠ 저장실패'); }
 }
-
 function toggleKdongMenu(pid) {
   document.querySelectorAll('.kdong-dropdown.open').forEach(d => {
     if (d.id !== 'kdongdrop-'+pid) d.classList.remove('open');
