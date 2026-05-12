@@ -1152,10 +1152,27 @@ setTimeout(checkForUpdate, 5000);
 // 30분마다 재체크
 setInterval(checkForUpdate, 60 * 1000);
 
- setInterval(() => {
-  if (typeof loadAll === 'function' && typeof currentMid !== 'undefined' && currentMid) {
-    console.log('[자동갱신] 데이터 새로고침:', new Date().toLocaleTimeString());
-    loadAll(currentMid, true);
+// ★ 1분마다 백그라운드 자동 갱신 (최강 안전 버전)
+setInterval(async () => {
+  if (typeof currentBiz === 'undefined' || !currentBiz) return;
+  if (typeof jsonp !== 'function' || typeof GAS_BASE === 'undefined') return;
+  if (typeof searchQuery !== 'undefined' && searchQuery) return;
+  if (typeof openCards !== 'undefined' && openCards.size > 0) return;
+  try {
+    const r = await jsonp(GAS_BASE + '?action=fast&ssId=' + currentBiz);
+    if (!r) return;
+    if (r.error) { console.log('[자동갱신] 에러:', r.error); return; }
+    if (!r.monthList || !Array.isArray(r.monthList)) { console.log('[자동갱신] monthList 없음, 무시'); return; }
+    if (r.monthList.length === 0) { console.log('[자동갱신] 빈 배열, 무시'); return; }
+    console.log('[자동갱신] 성공:', new Date().toLocaleTimeString(), r.monthList.length + '건');
+    customers = r.customers || [];
+    scripts = r.scripts || [];
+    monthData = r.monthList;
+    monthData.forEach(m => { if (!m.message) m.message = makeDefaultMessage(m); });
+    if (typeof updateHeaderStats === 'function') updateHeaderStats();
+    if (typeof renderMonthPage === 'function') renderMonthPage();
+  } catch (e) {
+    console.log('[자동갱신 실패]', e.message);
   }
 }, 60 * 1000);
 
