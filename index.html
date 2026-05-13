@@ -2428,6 +2428,7 @@ function renderMonthPage() {
     sourceNote: c.sourceNote || '',
     orderNote:  c.orderNote  || '',
     recipientNote: c.recipientNote || '',
+    deliveryType: c.deliveryType || '',
     // C열 값이 SH로 시작하는 신청서번호인 경우만 표시 (기존 택배사명 등은 빈 값으로)
     baejiNo:    (c.baejiNo && (/^SH/i.test(String(c.baejiNo).trim()) || /^\d{8}$/.test(String(c.baejiNo).trim()))) ? c.baejiNo : '',
     sheetName:  c.sheetName || '',
