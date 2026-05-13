@@ -4025,7 +4025,7 @@ function cardHtml(c, idx, totalCount) {
     <!-- 헤더: 항상 보임 - 구글시트 행 스타일 -->
     <div class="rc-header" id="rch-${uid}">
       <div class="rc-hcell rc-hno" style="justify-content:center;font-weight:700;color:#212121;font-size:13px;background:#f5f5f5;">${rowNo}</div>
-      <div class="rc-hcell rc-hstatus ${smap[pid]&&smap[pid].dv?'cell-shipped':''}" style="justify-content:center;flex-direction:column;gap:2px;padding:2px 4px;"
+      <div class="rc-hcell rc-hstatus ${(c.deliveryType || (smap[pid]&&smap[pid].dv))?'cell-shipped':''}" style="justify-content:center;flex-direction:column;gap:2px;padding:2px 4px;"
            ${(() => {
              const fastroInfo = parseFastroNote(c.recipientNote);
              return fastroInfo ? `onclick="event.stopPropagation();showFastroModal('${c.orderNo}')" style="cursor:pointer;justify-content:center;flex-direction:column;gap:2px;padding:2px 4px;"` : '';
@@ -4050,7 +4050,7 @@ function cardHtml(c, idx, totalCount) {
           return html;
         })()}
       </div>
-      <div class="rc-hcell rc-source rc-hcell-col ${smap[pid]&&smap[pid].dv?'cell-shipped ':''}${(() => {
+      <div class="rc-hcell rc-source rc-hcell-col ${(c.deliveryType || (smap[pid]&&smap[pid].dv))?'cell-shipped ':''}${(() => {
         const f = (c.fBg||'').toLowerCase();
         if (f.includes('ff9800') || f.includes('ff6d00') || f.includes('e65100') || f.includes('ffa726')) return 'src-fast';
         if (f.includes('8bc34a') || f.includes('7cb342') || f.includes('689f38') || f.includes('33691e')) return 'src-jair';
@@ -4159,7 +4159,7 @@ function cardHtml(c, idx, totalCount) {
           </div>
         </div>
         <div class="ship-wrap" id="finalwrap-${pid}">
-          <button class="act-btn final ${getFinalShipBtnClass(pid)}" id="finalbtn-${pid}" onclick="event.stopPropagation();toggleFinalShipMenu('${pid}')">🚚 ${getFinalShipBtnLabel(pid)}</button>
+          <button id="finalbtn-${pid}" class="act-btn final${(c.deliveryType || (smap[pid]&&smap[pid].dv))?' done':''}" onclick="toggleFinalShipDrop('${pid}', event)">🚚 ${c.deliveryType || (smap[pid]&&smap[pid].dv) || '최종택배발송'}</button>
           <div class="ship-dropdown" id="finalshipdrop-${pid}" style="min-width:130px;">
             <div class="ship-option" onclick="selectDelivery('${pid}','${c.orderNo}','CJ대한통운')"><span class="opt-icon">🚚</span> CJ대한통운</div>
             <div class="ship-option" onclick="selectDelivery('${pid}','${c.orderNo}','경동화물')"><span class="opt-icon">🏭</span> 경동화물</div>
@@ -4646,6 +4646,7 @@ async function selectDelivery(pid, orderNo, type) {
   monthData.forEach(c => {
     if (c.orderNo === orderNo) {
       c.gBg = newType ? '#81D4FA' : '#ff9800';
+      c.deliveryType = newType;  // ★ 시트값도 즉시 업데이트
     }
   });
 
