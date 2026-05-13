@@ -834,6 +834,11 @@ canvas { max-width: 100%; }
 .card:hover { background:#fafafa; }
 .card.cancelled-card { background:#ffb3b3 !important; }
 .card.shipped-card { background:#81D4FA !important; }
+  /* ★ 펼쳐진 카드 구분 - 파란 테두리 */
+.card.expanded {
+  border: 3px solid #0277bd !important;
+  margin: 4px 0;
+}
 .card .rc-hcell.rc-hstatus.cell-shipped { background:#81D4FA !important; }
 .card .rc-hcell.rc-source.cell-shipped { background:#81D4FA !important; }
 /* ─────────────────────────────────────────────────── */
@@ -3810,6 +3815,7 @@ async function saveOptNote(pid, orderNo, sheetName, uid) {
 let openCards = new Set();
 
 function toggleCard(uid) {
+  const card = document.getElementById('card-' + uid);
   const body = document.getElementById('rc-body-' + uid);
   const act  = document.getElementById('rc-act-'  + uid);
   const exp  = document.getElementById('rc-exp-'  + uid);
@@ -3817,15 +3823,18 @@ function toggleCard(uid) {
   if (body) body.classList.toggle('open', !isOpen);
   if (act)  act.classList.toggle('open',  !isOpen);
   if (exp)  exp.classList.toggle('open',  !isOpen);
+  if (card) card.classList.toggle('expanded', !isOpen);
   if (isOpen) openCards.delete(uid);
   else openCards.add(uid);
 }
 
 function restoreOpenCards() {
   openCards.forEach(uid => {
+    const card = document.getElementById('card-' + uid);
     const body = document.getElementById('rc-body-' + uid);
     const act  = document.getElementById('rc-act-'  + uid);
     const exp  = document.getElementById('rc-exp-'  + uid);
+    if (card) card.classList.add('expanded');
     if (body) body.classList.add('open');
     if (act)  act.classList.add('open');
     if (exp)  exp.classList.add('open');
