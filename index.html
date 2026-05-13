@@ -4160,7 +4160,7 @@ function cardHtml(c, idx, totalCount) {
           </div>
         </div>
         <div class="ship-wrap" id="finalwrap-${pid}">
-          <button id="finalbtn-${pid}" class="act-btn final${(c.deliveryType || (smap[pid]&&smap[pid].dv))?' done':''}" onclick="toggleFinalShipDrop('${pid}', event)">🚚 ${c.deliveryType || (smap[pid]&&smap[pid].dv) || '최종택배발송'}</button>
+          <button id="finalbtn-${pid}" class="act-btn final${(c.deliveryType || (smap[pid]&&smap[pid].dv))?' done':''}" onclick="event.stopPropagation();toggleFinalShipMenu('${pid}')">🚚 ${c.deliveryType || (smap[pid]&&smap[pid].dv) || '최종택배발송'}</button>
           <div class="ship-dropdown" id="finalshipdrop-${pid}" style="min-width:130px;">
             <div class="ship-option" onclick="selectDelivery('${pid}','${c.orderNo}','CJ대한통운')"><span class="opt-icon">🚚</span> CJ대한통운</div>
             <div class="ship-option" onclick="selectDelivery('${pid}','${c.orderNo}','경동화물')"><span class="opt-icon">🏭</span> 경동화물</div>
