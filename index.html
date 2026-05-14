@@ -4132,7 +4132,9 @@ function cardHtml(c, idx, totalCount) {
 
       <div class="rc-hcell rc-hname ${isOrangeCell(c.hBg)?'name-orange':(isYellow(c.hBg)?'name-yellow':'')}">
         <span class="rc-truncate" id="hname-${uid}">${c.name}</span>
-        ${(c.baejiNo && (/^SH/i.test(String(c.baejiNo).trim()) || /^\d{8}$/.test(String(c.baejiNo).trim()))) ? `<div class="rc-baeji-no">${c.baejiNo}</div>` : ''}
+         ${(c.baejiNo && (/^SH/i.test(String(c.baejiNo).trim()) || /^\d{8}$/.test(String(c.baejiNo).trim()))) ? `<div class="rc-baeji-no">${c.baejiNo}${/^SH/i.test(String(c.baejiNo).trim()) ? ` <a href="https://www.fast-ro.com/service/service_03_apply.php?code=${String(c.baejiNo).trim()}" target="_blank" onclick="event.stopPropagation()" title="패스트로 상세페이지 (타오바오 URL 확인용)" style="text-decoration:none;font-size:11px;margin-left:2px;">🔗</a>` : ''}</div>` : ''}
+
+
       </div>
       <div class="rc-hcell rc-hprod rc-hcell-col ${isYellow(c.iBg)?'prod-yellow':''}" onclick="event.stopPropagation()">
         <span class="rc-truncate ${c.prodNote?'rc-has-memo':''}" id="hprod-${uid}">${c.product||'-'}</span>
