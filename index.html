@@ -6122,7 +6122,6 @@ function drawDailyChart(days, year, month) {
   const labels = days.map(d => month + '/' + d.day);
   const revenues = days.map(d => Math.round(d.revenue));
   const profits = days.map(d => Math.round(d.profit));
-  const orders = days.map(d => d.orders);
 
   chartDailyRevenue = new Chart(ctx, {
     type: 'bar',
@@ -6130,39 +6129,52 @@ function drawDailyChart(days, year, month) {
       labels,
       datasets: [
         {
-          type: 'bar', label: '매출', data: revenues,
-          backgroundColor: 'rgba(33,150,243,0.6)',
-          borderColor: 'rgba(33,150,243,1)', borderWidth: 1, yAxisID: 'y'
+          label: '매출',
+          data: revenues,
+          backgroundColor: 'rgba(33,150,243,0.75)',
+          borderColor: 'rgba(33,150,243,1)',
+          borderWidth: 1
         },
         {
-          type: 'line', label: '이익', data: profits,
+          label: '이익',
+          data: profits,
+          backgroundColor: 'rgba(76,175,80,0.75)',
           borderColor: 'rgba(76,175,80,1)',
-          backgroundColor: 'rgba(76,175,80,0.2)',
-          tension: 0.3, yAxisID: 'y'
-        },
-        {
-          type: 'line', label: '주문건수', data: orders,
-          borderColor: 'rgba(255,152,0,1)',
-          backgroundColor: 'rgba(255,152,0,0.2)',
-          tension: 0.3, yAxisID: 'y1', borderDash: [5,5]
+          borderWidth: 1
         }
       ]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       scales: {
-        y:  { beginAtZero: true, position: 'left',  title: { display: true, text: '금액 (원)' } },
-        y1: { beginAtZero: true, position: 'right', title: { display: true, text: '주문수' }, grid: { drawOnChartArea: false } }
+        x: {
+          title: { display: true, text: '날짜', font: { weight: 'bold' } },
+          ticks: { font: { size: 11 } }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: '금액 (원)', font: { weight: 'bold' } },
+          ticks: {
+            font: { size: 11 },
+            callback: function(v) {
+              if (v >= 10000000) return (v / 10000000).toFixed(1) + '천만';
+              if (v >= 10000) return (v / 10000).toFixed(0) + '만';
+              return v.toLocaleString();
+            }
+          }
+        }
       },
       plugins: {
-        legend: { position: 'bottom' },
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 13 } }
+        },
         tooltip: {
           callbacks: {
-            label: (ctx) => {
-              const v = ctx.parsed.y;
-              if (ctx.dataset.label === '주문건수') return ctx.dataset.label + ': ' + v + '건';
-              return ctx.dataset.label + ': ' + v.toLocaleString() + '원';
+            label: function(ctx) {
+              return ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() + '원';
             }
           }
         }
@@ -6170,6 +6182,8 @@ function drawDailyChart(days, year, month) {
     }
   });
 }
+
+
 
 function drawCharts(data) {
   const labels = data.map(m => m.month);
