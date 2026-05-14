@@ -1160,23 +1160,36 @@ setTimeout(checkForUpdate, 5000);
 // 30분마다 재체크
 setInterval(checkForUpdate, 60 * 1000);
 
-// ★ 1분마다 백그라운드 자동 갱신 (최강 안전 버전)
+// ★ 1분마다 백그라운드 자동 갱신 (최강 안전 버전 + 월 동기화)
 setInterval(async () => {
   if (typeof currentBiz === 'undefined' || !currentBiz) return;
   if (typeof jsonp !== 'function' || typeof GAS_BASE === 'undefined') return;
   if (typeof searchQuery !== 'undefined' && searchQuery) return;
   if (typeof openCards !== 'undefined' && openCards.size > 0) return;
   try {
-    const r = await jsonp(GAS_BASE + '?action=fast&ssId=' + currentBiz);
-    if (!r) return;
-    if (r.error) { console.log('[자동갱신] 에러:', r.error); return; }
-    if (!r.monthList || !Array.isArray(r.monthList)) { console.log('[자동갱신] monthList 없음, 무시'); return; }
-    if (r.monthList.length === 0) { console.log('[자동갱신] 빈 배열, 무시'); return; }
-    console.log('[자동갱신] 성공:', new Date().toLocaleTimeString(), r.monthList.length + '건');
-    customers = r.customers || [];
-    scripts = r.scripts || [];
-    monthData = r.monthList;
-    monthData.forEach(m => { if (!m.message) m.message = makeDefaultMessage(m); });
+    // ★ 현재 보고 있는 월이 있으면 그 월 데이터, 없으면 최신 월(fast)
+    let r;
+    if (typeof selectedMonth !== 'undefined' && selectedMonth && selectedMonth !== 'all') {
+      r = await jsonp(GAS_BASE + '?action=getMonthData&ssId=' + currentBiz + '&sheetName=' + encodeURIComponent(selectedMonth));
+      if (!r) return;
+      if (r.error) { console.log('[자동갱신] 에러:', r.error); return; }
+      if (!r.list || !Array.isArray(r.list)) { console.log('[자동갱신] list 없음, 무시'); return; }
+      if (r.list.length === 0) { console.log('[자동갱신] 빈 배열, 무시'); return; }
+      console.log('[자동갱신]', selectedMonth, '성공:', new Date().toLocaleTimeString(), r.list.length + '건');
+      monthData = r.list;
+      monthData.forEach(m => { if (!m.message) m.message = makeDefaultMessage(m); });
+    } else {
+      r = await jsonp(GAS_BASE + '?action=fast&ssId=' + currentBiz);
+      if (!r) return;
+      if (r.error) { console.log('[자동갱신] 에러:', r.error); return; }
+      if (!r.monthList || !Array.isArray(r.monthList)) { console.log('[자동갱신] monthList 없음, 무시'); return; }
+      if (r.monthList.length === 0) { console.log('[자동갱신] 빈 배열, 무시'); return; }
+      console.log('[자동갱신] 성공:', new Date().toLocaleTimeString(), r.monthList.length + '건');
+      customers = r.customers || [];
+      scripts = r.scripts || [];
+      monthData = r.monthList;
+      monthData.forEach(m => { if (!m.message) m.message = makeDefaultMessage(m); });
+    }
     if (typeof updateHeaderStats === 'function') updateHeaderStats();
     if (typeof renderMonthPage === 'function') renderMonthPage();
   } catch (e) {
