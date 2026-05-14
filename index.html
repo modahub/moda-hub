@@ -1659,21 +1659,41 @@ function formatOrderDate(raw) {
   if (!raw) return '-';
   var s = String(raw).trim();
   if (!s) return '-';
-  // Date 객체 or ISO 문자열 ("2026-05-14...", "Wed May 14 2026...")
-  if (s.match(/^\d{4}-\d{2}-\d{2}/) || s.indexOf('GMT') >= 0 || s.indexOf('T') === 10) {
+  
+  // ★ 우선순위 1: ISO/YYYY-MM-DD 형식
+  //    → 문자열에서 직접 추출 (Date 객체 안 씀 = 시차 없음)
+  var m1 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m1) {
+    return String(m1[1]).slice(2) + '/' + m1[2] + '/' + m1[3];
+  }
+  
+  // ★ 우선순위 2: "Wed May 14 2026..." 형태
+  //    (구글시트 Date 객체가 직렬화된 경우)
+  if (s.indexOf('GMT') >= 0 || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d+/.test(s)) {
     var d = new Date(s);
     if (!isNaN(d.getTime())) {
+      // 로컬 시간 기준 (한국 시간 유지)
       var yy = String(d.getFullYear()).slice(2);
       var mm = String(d.getMonth()+1).padStart(2,'0');
       var dd = String(d.getDate()).padStart(2,'0');
       return yy+'/'+mm+'/'+dd;
     }
   }
+  
+  // ★ 우선순위 3: YYYY/MM/DD 또는 YYYY.MM.DD 형식
+  var m2 = s.match(/^(\d{4})[\/\.](\d{1,2})[\/\.](\d{1,2})/);
+  if (m2) {
+    return String(m2[1]).slice(2) + '/' 
+         + String(m2[2]).padStart(2,'0') + '/' 
+         + String(m2[3]).padStart(2,'0');
+  }
+  
   // 짧은 형식 (5/14, 5월14일 등) → 그대로
   if (s.length <= 12) return s;
   // 그 외 → 앞 10글자만
   return s.slice(0, 10);
 }
+
   
 function isYellow(iBg) {
   const v = (iBg||'').toLowerCase().replace(/\s/g,'');
