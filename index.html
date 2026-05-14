@@ -1654,6 +1654,27 @@ let searchQuery = '';
 let currentBiz = '1';
 let selectedMonth = 'all';
 
+// ★ 주문일자 포맷팅 (다양한 형식 자동 인식)
+function formatOrderDate(raw) {
+  if (!raw) return '-';
+  var s = String(raw).trim();
+  if (!s) return '-';
+  // Date 객체 or ISO 문자열 ("2026-05-14...", "Wed May 14 2026...")
+  if (s.match(/^\d{4}-\d{2}-\d{2}/) || s.indexOf('GMT') >= 0 || s.indexOf('T') === 10) {
+    var d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      var yy = String(d.getFullYear()).slice(2);
+      var mm = String(d.getMonth()+1).padStart(2,'0');
+      var dd = String(d.getDate()).padStart(2,'0');
+      return yy+'/'+mm+'/'+dd;
+    }
+  }
+  // 짧은 형식 (5/14, 5월14일 등) → 그대로
+  if (s.length <= 12) return s;
+  // 그 외 → 앞 10글자만
+  return s.slice(0, 10);
+}
+  
 function isYellow(iBg) {
   const v = (iBg||'').toLowerCase().replace(/\s/g,'');
   return v.includes('ffff00') || v.includes('fff176') || v.includes('fff9c4') || v.includes('ffeb3b')
@@ -2427,6 +2448,7 @@ function renderMonthPage() {
     phone1:     c.phone1 || '',
     phone2:     c.phone2 || '',
     name:       c.name  || '',
+    orderDate:  c.orderDate || '', 
     orderNo:    c.orderNo || '',
     product:    c.product || '',
     option:     c.option  || '',
@@ -2481,6 +2503,7 @@ function renderMonthPage() {
     <div class="rc-hcell rc-col-th">NO</div>
     <div class="rc-hcell rc-col-th" style="justify-content:center;">상태</div>
     <div class="rc-hcell rc-col-th">판매처</div>
+    <div class="rc-hcell rc-col-th">주문일자</div>
     <div class="rc-hcell rc-col-th">주문번호</div>
     <div class="rc-hcell rc-col-th">수령자 📝</div>
     <div class="rc-hcell rc-col-th">상품명</div>
@@ -4080,6 +4103,7 @@ function cardHtml(c, idx, totalCount) {
         ${(smap[pid]&&smap[pid].s==='lcl-out') ? '<span class="lclout-label">LCL출고</span>' : ''}
         <div class="rc-memo-inline" id="snote-line-${uid}">${(c.sourceNote && c.sourceNote.trim()!=='LCL출고') ? '<span class="rc-memo-text">' + c.sourceNote.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>' : ''}</div>
       </div>
+      <div class="rc-hcell rc-horderDate" style="font-family:'Consolas','Courier New',monospace;font-size:12px;color:#555;justify-content:center;text-align:center;">${formatOrderDate(c.orderDate)}</div> 
       <div class="rc-hcell rc-horderNo rc-hcell-col ${isGBlue(c.gBg)?'orderno-blue':(isOrangeCell(c.gBg)?'orderno-orange':(isYellow(c.gBg)?'orderno-sent':''))}">
         <span class="rc-truncate ${c.orderNote?'rc-has-memo':''}">${c.orderNo||'-'}</span>
         <div class="rc-memo-inline" id="ordnote-line-${uid}">${c.orderNote ? '<span class="rc-memo-text">' + c.orderNote.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>' : ''}</div>
@@ -5238,7 +5262,7 @@ loadAll();
 
 // ── 컬럼 리사이즈 ────────────────────────────────────
 const COL_WIDTHS_KEY = 'rc_col_widths_v2';
-const COL_DEFAULTS = [36, 110, 80, 110, 100, 130, 120, 50, 90, 90, 90, 140, 70, 70, 55, 80, 65];
+const COL_DEFAULTS = [36, 110, 80, 70, 110, 100, 130, 120, 50, 90, 90, 90, 140, 70, 70, 55, 80, 65];
 let colWidths = (() => {
   try { return JSON.parse(localStorage.getItem(COL_WIDTHS_KEY)) || COL_DEFAULTS.slice(); }
   catch(e) { return COL_DEFAULTS.slice(); }
