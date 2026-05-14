@@ -1322,7 +1322,8 @@ body {
       <button class="stat-biz-btn" data-biz="5" onclick="setStatsBiz('5')">🏪 수기mall</button>
       <button class="stat-biz-btn" data-biz="6" onclick="setStatsBiz('6')">🔥 불사자</button>
       <div style="flex:1"></div>
-      <button onclick="toggleDailyView()" id="daily-toggle-btn" style="background:#FF9800;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;">📅 일자별</button>
+      <button onclick="toggleDailyView()" id="daily-toggle-btn" style="background:#1976D2;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;">📊 월별/년별 보기</button>
+
       <button onclick="refreshStatsBtn()">🔄 새로고침</button>
     </div>
   </div>
@@ -5442,8 +5443,20 @@ function switchView(view) {
     if (statsPage) statsPage.style.display = 'block';
     btnMain.classList.remove('active');
     btnStats.classList.add('active');
-    if (!statsLoaded) loadStats();
+    // ★ 통계 진입 시 일자별 모드 자동 켜기 (속도 빠른 일자별 우선)
+    if (!dailyViewActive) {
+      dailyViewActive = true;
+      const btn = document.getElementById('daily-toggle-btn');
+      if (btn) {
+        btn.textContent = '📊 월별/년별 보기';
+        btn.style.background = '#1976D2';
+      }
+      loadDailyStats();
+    } else if (Object.keys(dailyStatsData || {}).length === 0) {
+      loadDailyStats();
+    }
   } else {
+
     if (mainHeader) mainHeader.style.display = '';
     if (searchBar) searchBar.style.display = '';
     if (content) content.style.display = '';
@@ -5459,11 +5472,21 @@ function setStatsBiz(bizId) {
     b.classList.toggle('active', b.dataset.biz === bizId);
   });
   if (dailyViewActive) {
-    renderDailyStats();
+    // 일자별 데이터가 비어있으면 로드
+    if (Object.keys(dailyStatsData || {}).length === 0) {
+      loadDailyStats();
+    } else {
+      renderDailyStats();
+    }
   } else {
-    renderStats();
+    if (statsLoaded) {
+      renderStats();
+    } else {
+      loadStats();
+    }
   }
 }
+
 
 async function loadStats(force) {
   const contentDiv = document.getElementById('stats-content');
@@ -5787,16 +5810,23 @@ function toggleDailyView() {
   dailyViewActive = !dailyViewActive;
   const btn = document.getElementById('daily-toggle-btn');
   if (dailyViewActive) {
-    btn.textContent = '📊 월별로';
-    btn.style.background = '#4CAF50';
-    loadDailyStats();
+    // 일자별 모드 (빠른 화면 - 기본)
+    btn.textContent = '📊 월별/년별 보기';
+    btn.style.background = '#1976D2';
+    if (Object.keys(dailyStatsData || {}).length === 0) {
+      loadDailyStats();
+    } else {
+      renderDailyStats();
+    }
   } else {
-    btn.textContent = '📅 일자별';
+    // 월별 모드 (느림 - 추가 데이터 필요)
+    btn.textContent = '📅 일자별로 돌아가기';
     btn.style.background = '#FF9800';
     if (statsLoaded) renderStats();
     else loadStats();
   }
 }
+
 
 function refreshStatsBtn() {
   if (dailyViewActive) {
