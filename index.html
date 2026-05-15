@@ -4097,8 +4097,7 @@ function cardHtml(c, idx, totalCount) {
           }
           return `<span class="status-badge ${statusClass}">${statusLabel}</span>`;
         })()}
-        후 (조건 추가):
-
+        
         ${(() => {
           const fastroInfo = parseFastroNote(c.recipientNote);
           if (!fastroInfo) return '';
