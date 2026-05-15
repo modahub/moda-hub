@@ -4089,10 +4089,19 @@ function cardHtml(c, idx, totalCount) {
              const fastroInfo = parseFastroNote(c.recipientNote);
              return fastroInfo ? `onclick="event.stopPropagation();showFastroModal('${c.orderNo}')" style="cursor:pointer;justify-content:center;flex-direction:column;gap:2px;padding:2px 4px;"` : '';
            })()}>
-        <span class="status-badge ${statusClass}">${statusLabel}</span>
+        ${(() => {
+          const fastroInfo = parseFastroNote(c.recipientNote);
+          // 패스트로 "출고완료" + 모다허브 상태 "현지배송"이면 → 현지배송 배지 숨김
+          if (fastroInfo && fastroInfo.state === '출고완료' && statusClass === 'tao') {
+            return '';
+          }
+          return `<span class="status-badge ${statusClass}">${statusLabel}</span>`;
+        })()}
         ${(() => {
           const fastroInfo = parseFastroNote(c.recipientNote);
           if (!fastroInfo) return '';
+
+
           const stateLabel = fastroStateLabel(fastroInfo.state, !!fastroInfo.invoice);
           const stateCls = fastroStateClass(fastroInfo.state, !!fastroInfo.invoice);
           const icon = fastroInfo.state==='출고완료' ? '✅' : (fastroInfo.invoice ? '🚚' : '📦');
