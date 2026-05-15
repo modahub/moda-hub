@@ -341,7 +341,7 @@ canvas { max-width: 100%; }
 .status-badge.req    { background:#fff3e0; color:#bf3d00; border:1px solid #ffab91; }
 .status-badge.baeji  { background:#fff9c4; color:#f57f17; border:1px solid #fbc02d; }
 .status-badge.tao    { background:#ffe0b2; color:#bf6700; border:1px solid #ffb74d; }
-.status-badge.recv   { background:#ffe0b2; color:#bf6700; border:1px solid #ffb74d; }
+.status-badge.recv   { background:#ff9800; color:#fff; border:1px solid #f57c00; font-weight:800; }
 .source-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px 2px 4px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
 .source-badge img { width:16px; height:16px; border-radius:3px; object-fit:contain; flex-shrink:0; }
 .source-badge.smartstore { background:#03C75A18; color:#03873d; border:1px solid #03C75A40; }
@@ -2373,10 +2373,11 @@ function calcTab(c) {
   const lOrange2 = lBg2.includes('ff6d00')||lBg2.includes('ff6600')||lBg2.includes('e65100')||lBg2.includes('ff9900');
 
   // ★★★ 셀 색상 우선 판정 (구글시트 직접 칠한 색이 우선) ★★★
-  // H열 주황 = 배대지물품수령 (시트에 직접 칠한 경우만)
+  // H열 주황 = 발송처리완료 (사장님이 발송처리 버튼 누름)
   if (isOrangeCell(hBg2)) return 'recv';
   // G열 주황 = tao트래킹발급 (현지배송, 시트에 직접 칠한 경우만)
   if (isOrangeCell(gBg2)) return 'tao';
+
 
   // ★★★ 사용자 액션(smap) 처리 ★★★
   // 배대지 신청서 작성
@@ -4039,7 +4040,7 @@ function cardHtml(c, idx, totalCount) {
 
   const _orig = monthData.find(d => d.orderNo === c.orderNo && d.phone === pid) || c;
   const tabVal = calcTab(_orig);
-  const statusLabel = {all:'주문전',unsent:'주문완료',req:'주문요청중',baeji:'신청서작성',tao:'현지배송',recv:'배대지수령',s1:'배송',s2:'판매완료',cancel:'주문취소'}[tabVal]||'주문전';
+  const statusLabel = {all:'주문전',unsent:'주문완료',req:'주문요청중',baeji:'신청서작성',tao:'현지배송',recv:'발송처리',s1:'배송',s2:'판매완료',cancel:'주문취소'}[tabVal]||'주문전';
   const statusClass = tabVal || 'all';
   const cancelledCard = isCancelled || tabVal === 'cancel';
 
@@ -4647,13 +4648,15 @@ async function toggleShipDone(pid, orderNo, sheetName) {
   // 로컬 데이터 갱신
   if (mc) {
     if (isDone) {
-      mc.gBg = '#ffffff';
+      mc.hBg = '#ffffff';
       mc.orderNote = '';
     } else {
-      mc.gBg = '#81d4fa';
+      mc.hBg = '#FF9800';
       mc.orderNote = '발송처리완료';
     }
   }
+
+
   // 화면 즉시 갱신
   if (typeof renderMonthPage === 'function') renderMonthPage();
 
