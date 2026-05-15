@@ -4097,17 +4097,30 @@ function cardHtml(c, idx, totalCount) {
           }
           return `<span class="status-badge ${statusClass}">${statusLabel}</span>`;
         })()}
+        후 (조건 추가):
+
         ${(() => {
           const fastroInfo = parseFastroNote(c.recipientNote);
           if (!fastroInfo) return '';
-
-
+          // ★ 판매완료 상태 + 출고완료 → 출고완료 라인 숨김 (판매완료만 표시)
+          if (fastroInfo.state === '출고완료' && statusClass === 's2') {
+            // 운송장만 표시 (CJ/경동 조회 링크는 유지)
+            let html = '';
+            if (fastroInfo.kdongInvoice) {
+              html += `<div class="fastro-invoice-line kdong-color" onclick="event.stopPropagation();trackKdong('${fastroInfo.kdongInvoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 경동택배 조회">경동 ${fastroInfo.kdongInvoice} 🔍</div>`;
+            } else if (fastroInfo.invoice) {
+              html += `<div class="fastro-invoice-line" onclick="event.stopPropagation();trackCJ('${fastroInfo.invoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 CJ대한통운 조회">CJ ${fastroInfo.invoice} 🔍</div>`;
+            }
+            return html;
+          }
           const stateLabel = fastroStateLabel(fastroInfo.state, !!fastroInfo.invoice);
           const stateCls = fastroStateClass(fastroInfo.state, !!fastroInfo.invoice);
           const icon = fastroInfo.state==='출고완료' ? '✅' : (fastroInfo.invoice ? '🚚' : '📦');
           let html = `<div class="rc-fastro-line ${stateCls}" title="클릭하여 상세보기">
             <span class="fastro-icon">${icon}</span>${stateLabel}
           </div>`;
+
+
           // 경동택배가 있으면 경동을 우선 표시 (마지막 단계 배송)
           // CJ는 경동이 없을 때만 표시 (한국 도착 후 경동 발송 전)
          if (fastroInfo.kdongInvoice) {
