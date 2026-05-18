@@ -2361,13 +2361,9 @@ function calcTab(c) {
   // ★ 1순위: 구글 시트 빨간색 = 취소 (smap보다 우선)
   if (isRed(gBg2) || isRed(hBg2) || isRed(iBg2)) return 'cancel';
 
-  // ★ 2순위: 로컬 취소 상태
-  if (smap[c.phone] && smap[c.phone].cancelled) return 'cancel';
-
   // ★ 3순위: G열 파란색 = 최종발송 = 판매완료 (모든 다른 상태보다 우선)
   if (isGBlue(gBg2)) return 's2';
-  if (smap[c.phone] && smap[c.phone].dv && smap[c.phone].dv !== '') return 's2';
-
+  
   const hYellow2 = hBg2 !== '' && hBg2 !== '#ffffff' && hBg2 !== 'white' &&
                    (hBg2.includes('ffff00') || hBg2.includes('ffd700') || hBg2.includes('ffff4d') || hBg2.includes('ffd7'));
   const lOrange2 = lBg2.includes('ff6d00')||lBg2.includes('ff6600')||lBg2.includes('e65100')||lBg2.includes('ff9900');
@@ -2382,10 +2378,8 @@ function calcTab(c) {
   // ★★★ 사용자 액션(smap) 처리 ★★★
   // 배대지 신청서 작성
   if (smap[c.phone] && smap[c.phone].b) return 'baeji';
-  // 주문완료 (셀 색상보다 우선 - 사용자 의도 보존)
-  if (smap[c.phone] && smap[c.phone].oo) return 'unsent';
-
-  // ── 셀 색상 기반 자동 판정 ──
+  
+   // ── 셀 색상 기반 자동 판정 ──
   if (hYellow2) return 's1';           // H열 노란색 → 배송
   if (isYellow(iBg2)) return 'unsent'; // I열 노란색 → 주문완료
   if (lOrange2) return 'req';          // L열 주황색 → 주문요청중
