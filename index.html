@@ -6,6 +6,16 @@
 <meta name="theme-color" content="#0288d1">
 <title>MODA Hub - 통합 판매관리</title>
 
+<!-- GAS Web App에서 호스팅 시 자기 URL 자동 주입 -->
+<script>
+  try {
+    const _gasUrl = '<?= gasUrl ?>';
+    if (_gasUrl && _gasUrl.indexOf('script.google.com') >= 0) {
+      window.GAS_BASE_AUTO = _gasUrl;
+    }
+  } catch(e) {}
+</script>
+
 <!-- PWA: 데스크톱/모바일 앱처럼 설치 가능 -->
 <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22MODA%20Hub%20-%20%ED%86%B5%ED%95%A9%20%ED%8C%90%EB%A7%A4%EA%B4%80%EB%A6%AC%22%2C%22short_name%22%3A%22MODA%20Hub%22%2C%22description%22%3A%22%EB%AA%A8%EB%8B%A4%EC%BB%B4%ED%8D%BC%EB%8B%88%20%ED%86%B5%ED%95%A9%20%ED%8C%90%EB%A7%A4%EA%B4%80%EB%A6%AC%20%EC%8B%9C%EC%8A%A4%ED%85%9C%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230277bd%22%2C%22theme_color%22%3A%22%230277bd%22%2C%22orientation%22%3A%22any%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48cmVjdCB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgcng9JzIyJyBmaWxsPScjMDI3N2JkJy8%2BPGNpcmNsZSBjeD0nNTAnIGN5PSc1MCcgcj0nMTQnIGZpbGw9J3doaXRlJy8%2BPGNpcmNsZSBjeD0nNTAnIGN5PSc1MCcgcj0nNicgZmlsbD0nIzAyNzdiZCcvPjwvc3ZnPg%3D%3D%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%2C%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJz48cmVjdCB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgcng9JzIyJyBmaWxsPScjMDI3N2JkJy8%2BPGNpcmNsZSBjeD0nNTAnIGN5PSc1MCcgcj0nMTQnIGZpbGw9J3doaXRlJy8%2BPGNpcmNsZSBjeD0nNTAnIGN5PSc1MCcgcj0nNicgZmlsbD0nIzAyNzdiZCcvPjwvc3ZnPg%3D%3D%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
@@ -176,6 +186,13 @@ canvas { max-width: 100%; }
 .search-clear { font-size: 16px; color: #a0c4d8; cursor: pointer; padding: 0 2px; display: none; }
 .search-clear.show { display: block; }
 .search-count { font-size: 11px; color: #7eb8d4; font-weight: 600; white-space: nowrap; }
+.search-nav { display: none; gap: 2px; align-items: center; margin-left: 6px; }
+.search-nav.show { display: flex; }
+.search-nav-btn { background: #fff; border: 1px solid #2196F3; color: #2196F3; width: 22px; height: 22px; border-radius: 4px; cursor: pointer; font-size: 11px; padding: 0; line-height: 1; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.search-nav-btn:hover { background: #2196F3; color: #fff; }
+.search-nav-btn:active { transform: scale(0.95); }
+.search-nav-info { font-size: 11px; color: #2196F3; font-weight: 700; padding: 0 4px; white-space: nowrap; }
+.card.search-match-current { box-shadow: 0 0 0 3px #FF5722, 0 0 25px rgba(255,87,34,0.6) !important; border-radius: 12px; z-index: 3; }
 .search-result-bar { display: none; padding: 6px 16px; background: #fff; border-bottom: 1px solid #dce8f0; gap: 6px; flex-wrap: wrap; }
 .search-result-bar.show { display: flex; }
 
@@ -331,7 +348,7 @@ canvas { max-width: 100%; }
 .status-badge.req    { background:#fff3e0; color:#bf3d00; border:1px solid #ffab91; }
 .status-badge.baeji  { background:#fff9c4; color:#f57f17; border:1px solid #fbc02d; }
 .status-badge.tao    { background:#ffe0b2; color:#bf6700; border:1px solid #ffb74d; }
-.status-badge.recv   { background:#ffe0b2; color:#bf6700; border:1px solid #ffb74d; }
+.status-badge.recv   { background:#ff9800; color:#fff; border:1px solid #f57c00; font-weight:800; }
 .source-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 8px 2px 4px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
 .source-badge img { width:16px; height:16px; border-radius:3px; object-fit:contain; flex-shrink:0; }
 .source-badge.smartstore { background:#03C75A18; color:#03873d; border:1px solid #03C75A40; }
@@ -823,6 +840,15 @@ canvas { max-width: 100%; }
 .card { background:#fff; display:flex; flex-wrap:wrap; border-bottom:1px solid #d0d0d0; overflow:hidden; box-sizing:border-box; transition: background 0.1s; }
 .card:hover { background:#fafafa; }
 .card.cancelled-card { background:#ffb3b3 !important; }
+.rc-hcell.cell-cancelled { background:#ffb3b3 !important; }  
+.card.shipped-card { background:#81D4FA !important; }
+  /* ★ 펼쳐진 카드 구분 - 파란 테두리 */
+.card.expanded {
+  border: 10px solid #0277bd !important;
+  margin: 4px 0;
+}
+.card .rc-hcell.rc-hstatus.cell-shipped { background:#81D4FA !important; }
+.card .rc-hcell.rc-source.cell-shipped { background:#81D4FA !important; }
 /* ─────────────────────────────────────────────────── */
 
 /* ── 셀 너비 강제 고정 ───────────────────────────────── */
@@ -1048,9 +1074,28 @@ body, .rc-hcell, .rc-col-th, .rc-cell, .rc-lbl, .rc-val, input, select, textarea
   85%  { opacity: 1; transform: translate(-50%, 0); }
   100% { opacity: 0; transform: translate(-50%, -12px); }
 }
+
+/* ★ 검색 하이라이트 (파란색) ★ */
+.card.search-match {
+  animation: searchPulse 1.5s ease-out;
+  position: relative;
+  z-index: 2;
+}
+.card.search-match-first {
+  box-shadow: 0 0 0 3px #2196F3, 0 0 20px rgba(33,150,243,0.5) !important;
+  border-radius: 12px;
+}
+@keyframes searchPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(33,150,243,0.7); }
+  50%  { box-shadow: 0 0 0 8px rgba(33,150,243,0.3); }
+  100% { box-shadow: 0 0 0 3px #2196F3; }
+}
+
 </style>
 </head>
 <body>
+  <div id="auth-gate" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0288d1 0%,#01579b 100%);display:flex;align-items:center;justify-content:center;font-family:'Malgun Gothic',sans-serif;"><div style="background:#fff;padding:40px 32px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-width:360px;width:90%;text-align:center;"><div style="width:64px;height:64px;border-radius:14px;background:linear-gradient(135deg,#4fc3f7,#0277bd);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;">🔒</div><h2 style="font-size:22px;color:#0277bd;margin:0 0 6px;font-weight:900;">MODA <span style="color:#f9a825;">Hub</span></h2><p style="font-size:13px;color:#888;margin:0 0 24px;">접속 비밀번호를 입력하세요</p><input id="auth-pw" type="password" placeholder="비밀번호" style="width:100%;box-sizing:border-box;padding:14px;border:2px solid #e0e0e0;border-radius:10px;font-size:15px;outline:none;margin-bottom:12px;text-align:center;"><button id="auth-btn" style="width:100%;padding:14px;background:#0277bd;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">접속</button><div id="auth-msg" style="margin-top:12px;font-size:12px;color:#c62828;min-height:16px;font-weight:600;"></div></div></div>
+<script>(function(){var H='afea5096afd7610c56073e745d8b4e05a60a74bec4aa07620041e1864b67f04c',K='moda_auth_v1',g=document.getElementById('auth-gate'),p=document.getElementById('auth-pw'),b=document.getElementById('auth-btn'),m=document.getElementById('auth-msg');async function s(t){var x=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.from(new Uint8Array(x)).map(function(y){return y.toString(16).padStart(2,'0');}).join('');}if(localStorage.getItem(K)===H){g.style.display='none';}else{document.documentElement.style.overflow='hidden';}async function u(){var v=p.value;if(!v)return;b.disabled=true;b.textContent='확인 중...';var h=await s(v);if(h===H){localStorage.setItem(K,h);g.style.display='none';document.documentElement.style.overflow='';}else{m.textContent='❌ 비밀번호가 일치하지 않습니다';p.value='';p.focus();b.disabled=false;b.textContent='접속';}}b.onclick=u;p.addEventListener('keydown',function(e){if(e.key==='Enter')u();});setTimeout(function(){p.focus();},100);window.modaLogout=function(){if(confirm('로그아웃하시겠습니까?')){localStorage.removeItem(K);location.reload();}};setTimeout(function(){if(localStorage.getItem(K)===H){var btn=document.createElement('button');btn.textContent='🚪 로그아웃';btn.style.cssText='position:fixed;bottom:24px;left:24px;z-index:999999;padding:10px 18px;background:#c62828;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 4px rgba(0,0,0,0.1);';btn.onclick=window.modaLogout;document.body.appendChild(btn);}},2000);})();</script>
 
 <!-- MODA Hub 시작 스플래시 -->
 <div id="splash">
@@ -1068,10 +1113,23 @@ body, .rc-hcell, .rc-col-th, .rc-cell, .rc-lbl, .rc-val, input, select, textarea
 // ━━━━━━━━━━━━━━━━━━ MODA Hub 시스템 초기화 ━━━━━━━━━━━━━━━━━━
 
 // 현재 앱 버전 (이 번호와 GAS의 version이 다르면 자동 업데이트)
-const APP_VERSION = '1.0.4';
+const APP_VERSION = '1.0.3';
 
 // 스플래시 1.7초 후 완전 제거
 setTimeout(() => { const s = document.getElementById('splash'); if (s) s.remove(); }, 1800);
+
+// ─── GAS 상단 안내 배너 자동 숨김 시도 ───
+// Google Apps Script가 자동 추가하는 "이 애플리케이션은..." 배너 처리
+// (1) 상위 프레임에 메시지 전송으로 닫기 시도
+// (2) 본 페이지 상단 padding 보정
+try {
+  // 부모 창에 가능한 닫기 트리거 시도 (대부분 차단됨, 그래도 시도)
+  if (window.parent && window.parent !== window) {
+    setTimeout(() => {
+      try { window.parent.postMessage({type:'close-warning'}, '*'); } catch(e) {}
+    }, 500);
+  }
+} catch(e) {}
 
 // ─── 1. 데스크톱 앱 모드 감지 ───
 // PWA로 설치되어 standalone 모드면 'app-mode' 클래스 추가 (CSS로 감지)
@@ -1093,11 +1151,8 @@ async function checkForUpdate() {
       setTimeout(() => { if (window[cb]) { reject(new Error('타임아웃')); delete window[cb]; sc.remove(); } }, 8000);
     });
     if (r && r.version && r.version !== APP_VERSION) {
-      const dismissed = localStorage.getItem('modahub_update_dismissed');
-      if (dismissed !== r.version) {
-        console.log('[업데이트] 새 버전 발견:', r.version, '현재:', APP_VERSION);
-        showUpdateNotice(r.version, r.releaseNote);
-      }
+      console.log('[업데이트] 새 버전 발견:', r.version, '현재:', APP_VERSION);
+      showUpdateNotice(r.version, r.releaseNote);
     }
   } catch (e) {
     console.log('[업데이트] 체크 실패:', e.message);
@@ -1109,38 +1164,63 @@ function showUpdateNotice(newVer, note) {
   if (document.getElementById('update-notice')) return;
   const div = document.createElement('div');
   div.id = 'update-notice';
-  div.style.cssText = 'position:fixed;bottom:80px;right:20px;background:#0277bd;color:#fff;padding:14px 18px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:99999;max-width:340px;font-family:"Malgun Gothic",sans-serif;animation:slideInUp 0.4s ease;';
+  div.style.cssText = 'position:fixed;bottom:80px;right:20px;background:#0277bd;color:#fff;padding:14px 18px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.25);z-index:99999;max-width:340px;font-family:"Malgun Gothic",sans-serif;cursor:pointer;animation:slideInUp 0.4s ease;';
   div.innerHTML = '<div style="display:flex;align-items:center;gap:10px;">'
     + '<span style="font-size:24px;">🎉</span>'
-    + '<div style="flex:1;cursor:pointer;" id="update-notice-body">'
+    + '<div style="flex:1;">'
     + '<div style="font-weight:800;font-size:14px;margin-bottom:2px;">새 업데이트 v' + newVer + '</div>'
     + '<div style="font-size:11px;opacity:0.85;">' + (note || '클릭하여 업데이트') + '</div>'
-    + '</div>'
-    + '<span id="update-notice-close" style="font-size:18px;cursor:pointer;opacity:0.7;padding:0 2px;margin-left:6px;" title="닫기">✕</span>'
-    + '</div>';
-  div.querySelector('#update-notice-body').onclick = () => {
+    + '</div></div>';
+  div.onclick = () => {
     div.innerHTML = '<div style="text-align:center;font-weight:700;">🔄 업데이트 중...</div>';
     setTimeout(() => location.reload(true), 500);
   };
-  div.querySelector('#update-notice-close').onclick = (e) => {
-    e.stopPropagation();
-    localStorage.setItem('modahub_update_dismissed', newVer);
-    div.remove();
-  };
   document.body.appendChild(div);
-  // 자동 사라짐 (15초) — 닫은 것으로 간주해 저장
-  setTimeout(() => {
-    if (div.parentNode) {
-      localStorage.setItem('modahub_update_dismissed', newVer);
-      div.remove();
-    }
-  }, 15000);
+  // 자동 사라짐 (15초)
+  setTimeout(() => { if (div.parentNode) div.remove(); }, 15000);
 }
 
 // 앱 시작 후 5초 뒤 첫 체크 (다른 데이터 로딩 안 방해하게)
 setTimeout(checkForUpdate, 5000);
 // 30분마다 재체크
-setInterval(checkForUpdate, 30 * 60 * 1000);
+setInterval(checkForUpdate, 60 * 1000);
+
+// ★ 1분마다 백그라운드 자동 갱신 (최강 안전 버전 + 월 동기화)
+setInterval(async () => {
+  if (typeof currentBiz === 'undefined' || !currentBiz) return;
+  if (typeof jsonp !== 'function' || typeof GAS_BASE === 'undefined') return;
+  if (typeof searchQuery !== 'undefined' && searchQuery) return;
+  if (typeof openCards !== 'undefined' && openCards.size > 0) return;
+  try {
+    // ★ 현재 보고 있는 월이 있으면 그 월 데이터, 없으면 최신 월(fast)
+    let r;
+    if (typeof selectedMonth !== 'undefined' && selectedMonth && selectedMonth !== 'all') {
+      r = await jsonp(GAS_BASE + '?action=getMonthData&ssId=' + currentBiz + '&sheetName=' + encodeURIComponent(selectedMonth));
+      if (!r) return;
+      if (r.error) { console.log('[자동갱신] 에러:', r.error); return; }
+      if (!r.list || !Array.isArray(r.list)) { console.log('[자동갱신] list 없음, 무시'); return; }
+      if (r.list.length === 0) { console.log('[자동갱신] 빈 배열, 무시'); return; }
+      console.log('[자동갱신]', selectedMonth, '성공:', new Date().toLocaleTimeString(), r.list.length + '건');
+      monthData = r.list;
+      monthData.forEach(m => { if (!m.message) m.message = makeDefaultMessage(m); });
+    } else {
+      r = await jsonp(GAS_BASE + '?action=fast&ssId=' + currentBiz);
+      if (!r) return;
+      if (r.error) { console.log('[자동갱신] 에러:', r.error); return; }
+      if (!r.monthList || !Array.isArray(r.monthList)) { console.log('[자동갱신] monthList 없음, 무시'); return; }
+      if (r.monthList.length === 0) { console.log('[자동갱신] 빈 배열, 무시'); return; }
+      console.log('[자동갱신] 성공:', new Date().toLocaleTimeString(), r.monthList.length + '건');
+      customers = r.customers || [];
+      scripts = r.scripts || [];
+      monthData = r.monthList;
+      monthData.forEach(m => { if (!m.message) m.message = makeDefaultMessage(m); });
+    }
+    if (typeof updateHeaderStats === 'function') updateHeaderStats();
+    if (typeof renderMonthPage === 'function') renderMonthPage();
+  } catch (e) {
+    console.log('[자동갱신 실패]', e.message);
+  }
+}, 60 * 1000);
 
 // ─── 3. 데스크톱 앱 느낌: F12, 우클릭, 텍스트 선택 ───
 // 단, 입력 필드(input, textarea, contenteditable)에서는 정상 동작
@@ -1206,18 +1286,71 @@ body {
     <button class="biz-btn" id="biz-4" onclick="selectBiz('4','모다mall4')">🏪 모다mall4</button>
     <button class="biz-btn" id="biz-5" onclick="selectBiz('5','수기mall')">🏪 수기mall</button>
     <button class="biz-btn" id="biz-6" onclick="selectBiz('6','불사자(통합)')">🔥 불사자(통합)</button>
+    <button class="biz-btn" id="biz-lcl" onclick="openLclStatus()" style="margin-left:8px;">📋 LCL현황</button>
     <div style="flex:1"></div>
     <button class="add-btn" onclick="openPasteModal()">➕ 신규주문등록</button>
     <button class="view-btn active" id="view-main" onclick="switchView('main')">📋 주문관리</button>
+    <button class="view-btn" id="view-fastro-calc" onclick="openFastroCalcModal()" style="border-color:#7b1fa2;color:#7b1fa2;font-weight:700;">📦 운송비</button>
     <button class="view-btn" id="view-stats" onclick="switchView('stats')">📊 통계</button>
+    <button class="view-btn" id="view-cookie" onclick="openCookieModal()" style="border-color:#ff9800;color:#ff9800;font-weight:700;">🔑 쿠키 갱신</button>
   </div>
   <div class="month-tab-bar" id="month-tab-bar"></div>
+  <!-- ★ LCL 그룹 탭 (LCL 활성화 시 표시) ★ -->
+  <div class="month-tab-bar" id="lcl-tab-bar" style="display:none;border-bottom:1px solid #e0e6eb;background:#fff;">
+    <div class="month-tab active" onclick="filterLclGroup('all')" data-grp="all" style="padding:12px 16px;cursor:pointer;font-size:14px;font-weight:700;color:#0277bd;border-bottom:3px solid #0277bd;white-space:nowrap;">전체</div>
+    <div class="month-tab" onclick="filterLclGroup('A')" data-grp="A" style="padding:12px 16px;cursor:pointer;font-size:14px;font-weight:500;color:#666;white-space:nowrap;">출고대기</div>
+    <div class="month-tab" onclick="filterLclGroup('B')" data-grp="B" style="padding:12px 16px;cursor:pointer;font-size:14px;font-weight:500;color:#666;white-space:nowrap;">출고신청</div>
+    <div class="month-tab" onclick="filterLclGroup('C')" data-grp="C" style="padding:12px 16px;cursor:pointer;font-size:14px;font-weight:500;color:#666;white-space:nowrap;">출고완료</div>
+    <div style="flex:1"></div>
+    <button onclick="refreshLclList()" style="margin:8px 12px;padding:6px 12px;background:#fff;border:1.5px solid #607D8B;border-radius:6px;color:#455A64;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">🔄 새로고침</button>
+  </div>
+
+  <!-- ★ 패스트로 운송비 펼침 패널 (탭 아래) ★ -->
+  <div id="fastro-panel" style="display:none;background:linear-gradient(180deg,#f9f6fc 0%,#fff 100%);border-bottom:2px solid #7b1fa2;">
+    <div style="padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+      <span style="font-size:14px;font-weight:700;color:#7b1fa2;">📦 패스트로 운송비</span>
+
+      <div style="display:flex;gap:6px;align-items:center;">
+        <label style="font-size:13px;color:#666;">⚖</label>
+        <input type="number" id="fastro-weight" placeholder="무게" step="0.1" min="0.01"
+          style="width:90px;border:1.5px solid #e1bee7;border-radius:6px;padding:6px 8px;font-size:14px;outline:none;font-family:monospace;"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();openFastroResult(window._lastTrNo||29);}">
+        <span style="font-size:12px;color:#999;">kg</span>
+      </div>
+
+      <div style="display:flex;gap:5px;">
+        <button onclick="openFastroResult(29)" id="fr-btn-29" class="fr-btn" style="padding:6px 12px;background:#fff;border:1.5px solid #7b1fa2;border-radius:6px;font-size:12px;font-weight:700;color:#7b1fa2;cursor:pointer;">🚢 해운</button>
+        <button onclick="openFastroResult(28)" id="fr-btn-28" class="fr-btn" style="padding:6px 12px;background:#fff;border:1.5px solid #7b1fa2;border-radius:6px;font-size:12px;font-weight:700;color:#7b1fa2;cursor:pointer;">✈️ CJ</button>
+        <button onclick="openFastroResult(35)" id="fr-btn-35" class="fr-btn" style="padding:6px 12px;background:#fff;border:1.5px solid #7b1fa2;border-radius:6px;font-size:12px;font-weight:700;color:#7b1fa2;cursor:pointer;">✈️ 한진</button>
+        <button onclick="openFastroResult(32)" id="fr-btn-32" class="fr-btn" style="padding:6px 12px;background:#fff;border:1.5px solid #7b1fa2;border-radius:6px;font-size:12px;font-weight:700;color:#7b1fa2;cursor:pointer;">📦 LCL</button>
+      </div>
+
+      <div style="flex:1"></div>
+      <button onclick="closeFastroCalcModal()" style="padding:6px 12px;background:#fff;color:#888;border:1.5px solid #ccc;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">✕ 닫기</button>
+    </div>
+
+    <!-- iframe 컨테이너 (요율표) -->
+    <div id="fastro-iframe-container" style="position:relative;height:130px;overflow:hidden;background:#fafafa;border-top:1px solid #e1bee7;">
+      <div id="fastro-empty" style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:13px;text-align:center;">
+        ⬆ 무게 입력 후 운송방식을 선택하세요
+      </div>
+      <div id="fastro-iframe-wrapper" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;">
+        <iframe id="fastro-iframe" style="position:absolute;top:-1350px;left:0;width:100%;height:2000px;border:0;" scrolling="no"></iframe>
+      </div>
+    </div>
+  </div>
+
   <div class="search-bar">
     <div class="search-wrap">
       <span style="font-size:14px;color:#9e9e9e;">🔍</span>
-      <input type="text" id="search-input" placeholder="고객명, 전화번호, 주문번호, 상품명, 주소, 우편번호, SH번호 검색..." oninput="onSearch(this.value)">
+      <input type="text" id="search-input" placeholder="고객명, 전화번호, 주문번호, 상품명, 주소, 우편번호, SH번호 검색..." oninput="onSearch(this.value)" onkeydown="onSearchKeydown(event)">
       <span class="search-clear" id="search-clear" onclick="clearSearch()">✕</span>
       <span class="search-count" id="search-count"></span>
+      <span class="search-nav" id="search-nav">
+        <button class="search-nav-btn" id="search-prev" onclick="navigateSearchMatch(-1)" title="이전 (Shift+Enter)">▲</button>
+        <span class="search-nav-info" id="search-nav-info">1/1</span>
+        <button class="search-nav-btn" id="search-next" onclick="navigateSearchMatch(1)" title="다음 (Enter)">▼</button>
+      </span>
     </div>
     <select id="search-scope" class="search-scope" onchange="onScopeChange()">
       <option value="current1" selected>⚡ 현재 사업자 현재월 (가장 빠름)</option>
@@ -1265,7 +1398,8 @@ body {
       <button class="stat-biz-btn" data-biz="5" onclick="setStatsBiz('5')">🏪 수기mall</button>
       <button class="stat-biz-btn" data-biz="6" onclick="setStatsBiz('6')">🔥 불사자</button>
       <div style="flex:1"></div>
-      <button onclick="toggleDailyView()" id="daily-toggle-btn" style="background:#FF9800;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;">📅 일자별</button>
+      <button onclick="toggleDailyView()" id="daily-toggle-btn" style="background:#1976D2;color:#fff;border:none;padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer;">📊 월별/년별 보기</button>
+
       <button onclick="refreshStatsBtn()">🔄 새로고침</button>
     </div>
   </div>
@@ -1419,6 +1553,18 @@ body {
   .footer-address { font-size: 10px; }
 }
 </style>
+<!-- ★ LCL 현황 페이지 - 리스트 부분만 (탭은 별도 위치) ★ -->
+<div id="lcl-view" style="display:none;">
+  <!-- 리스트 컨테이너 -->
+  <div id="lcl-list-container" style="padding:14px 20px;background:#fff;">
+    <div style="text-align:center;color:#888;padding:40px;">⏳ 데이터를 불러오는 중...</div>
+  </div>
+  <!-- 푸터 -->
+  <div style="padding:8px 20px;border-top:1px solid #e0e0e0;background:#fafafa;text-align:right;font-size:12px;color:#666;">
+    <span id="lcl-total-info">총 0건</span>
+  </div>
+</div>
+
 <div id="content">
   <div class="loading"><div class="spinner"></div><div>불러오는 중...</div></div>
 </div>
@@ -1460,6 +1606,70 @@ body {
   </div>
 </div>
 
+  
+<div class="paste-modal-bg" id="cookie-modal-bg" onclick="closeCookieModalBG(event)">
+  <div class="paste-modal">
+    <div style="float:right;font-size:20px;cursor:pointer;color:#888;" onclick="closeCookieModal()">✕</div>
+    <h3>🔑 패스트로 쿠키 갱신</h3>
+    <div style="font-size:12px;color:#888;margin-bottom:14px;line-height:1.6;">
+      패스트로 사이트에 로그인 후 F12 → Application → Cookies에서<br>
+      <b>PHPSESSID</b> 값을 복사해서 붙여넣으세요.
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px;font-weight:700;color:#2c5f75;">📋 쿠키값</label>
+      <textarea id="cookie-input" placeholder="PHPSESSID=abc123def456..." style="width:100%;box-sizing:border-box;border:1.5px solid #dce8f0;border-radius:8px;padding:9px 12px;font-size:13px;outline:none;margin-top:3px;height:80px;font-family:monospace;resize:none;"></textarea>
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px;font-weight:700;color:#2c5f75;">🏪 적용 대상</label>
+      <select id="cookie-target" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #dce8f0;border-radius:8px;font-size:14px;outline:none;margin-top:3px;">
+        <option value="all">🌐 전체 사업자 (모두 같은 메인 계정)</option>
+        <option value="1">🏪 모다mall (1번)</option>
+        <option value="2">🏪 모다mall2 (2번)</option>
+        <option value="3">🏪 모다mall3 (3번)</option>
+        <option value="4">🏪 모다mall4 (4번)</option>
+        <option value="5">🏪 수기mall (5번)</option>
+        <option value="6">🔥 불사자 통합 (6번)</option>
+      </select>
+    </div>
+    <div id="cookie-result" style="margin-top:10px;font-size:12px;font-weight:600;text-align:center;min-height:18px;"></div>
+    <button id="cookie-save-btn" onclick="saveCookie()" style="margin-top:12px;width:100%;padding:13px;background:#ff9800;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">💾 저장 + 검증</button>
+    <button onclick="checkCookieStatus()" style="margin-top:8px;width:100%;padding:11px;background:#fff;color:#2c5f75;border:1.5px solid #2c5f75;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">🔍 6개 사업자 쿠키 상태 확인</button>
+    <button onclick="closeCookieModal()" style="margin-top:8px;width:100%;padding:11px;background:#f0f0f0;color:#888;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">취소</button>
+  </div>
+</div>
+
+  <!-- 쿠키 갱신 모달 -->
+<div class="paste-modal-bg" id="cookie-modal-bg" onclick="closeCookieModalBG(event)">
+  <div class="paste-modal">
+    <div style="float:right;font-size:20px;cursor:pointer;color:#888;" onclick="closeCookieModal()">✕</div>
+    <h3>🔑 패스트로 쿠키 갱신</h3>
+    <div style="font-size:12px;color:#888;margin-bottom:14px;line-height:1.6;">
+      패스트로 사이트에 로그인 후 F12 → Application → Cookies에서<br>
+      <b>PHPSESSID</b> 값을 복사해서 붙여넣으세요.
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px;font-weight:700;color:#2c5f75;">📋 쿠키값</label>
+      <textarea id="cookie-input" placeholder="PHPSESSID=abc123def456..." style="width:100%;box-sizing:border-box;border:1.5px solid #dce8f0;border-radius:8px;padding:9px 12px;font-size:13px;outline:none;margin-top:3px;height:80px;font-family:monospace;resize:none;"></textarea>
+    </div>
+    <div style="margin-bottom:10px;">
+      <label style="font-size:12px;font-weight:700;color:#2c5f75;">🏪 적용 대상</label>
+      <select id="cookie-target" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1.5px solid #dce8f0;border-radius:8px;font-size:14px;outline:none;margin-top:3px;">
+        <option value="all">🌐 전체 사업자 (모두 같은 메인 계정)</option>
+        <option value="1">🏪 모다mall (1번)</option>
+        <option value="2">🏪 모다mall2 (2번)</option>
+        <option value="3">🏪 모다mall3 (3번)</option>
+        <option value="4">🏪 모다mall4 (4번)</option>
+        <option value="5">🏪 수기mall (5번)</option>
+        <option value="6">🔥 불사자 통합 (6번)</option>
+      </select>
+    </div>
+    <div id="cookie-result" style="margin-top:10px;font-size:12px;font-weight:600;text-align:center;min-height:18px;"></div>
+    <button id="cookie-save-btn" onclick="saveCookie()" style="margin-top:12px;width:100%;padding:13px;background:#ff9800;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">💾 저장 + 검증</button>
+    <button onclick="checkCookieStatus()" style="margin-top:8px;width:100%;padding:11px;background:#fff;color:#2c5f75;border:1.5px solid #2c5f75;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">🔍 6개 사업자 쿠키 상태 확인</button>
+    <button onclick="closeCookieModal()" style="margin-top:8px;width:100%;padding:11px;background:#f0f0f0;color:#888;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">취소</button>
+  </div>
+</div>
+  
 <!-- 엑셀 붙여넣기 모달 -->
 <div class="paste-modal-bg" id="paste-modal-bg" onclick="closePasteModalBG(event)">
   <div class="paste-modal">
@@ -1512,7 +1722,13 @@ body {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
 <script>
-const GAS_BASE = 'https://script.google.com/macros/s/AKfycbw1XHGkVKve3KhVNe7jOy7oU9j2IZQCkA0Mx7FLk_FbhDn8Wm_2eoqzHUJJ1Q0oIj53/exec';
+// ★ GAS Web App URL ★
+// GAS 자체 호스팅 시 → 자동 감지
+// GitHub Pages / 다른 호스팅 시 → 아래 URL 사용
+// ⚠ GAS 재배포 시 새 URL로 교체 필요
+const GAS_BASE = (typeof GAS_BASE_AUTO !== 'undefined' && GAS_BASE_AUTO) 
+  ? GAS_BASE_AUTO 
+: 'https://script.google.com/macros/s/AKfycbyQeJ3hLG-YPNXZNkHYkWLfxHOGgG9mkdA0E9oo3Ak4VynsjyU0GVBcsF1oVr8Sl_Jf/exec';
 const GAS = GAS_BASE;
 
 const GROUPS = [
@@ -1528,6 +1744,47 @@ let searchQuery = '';
 let currentBiz = '1';
 let selectedMonth = 'all';
 
+// ★ 주문일자 포맷팅 (다양한 형식 자동 인식)
+function formatOrderDate(raw) {
+  if (!raw) return '-';
+  var s = String(raw).trim();
+  if (!s) return '-';
+  
+  // ★ 우선순위 1: ISO/YYYY-MM-DD 형식
+  //    → 문자열에서 직접 추출 (Date 객체 안 씀 = 시차 없음)
+  var m1 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m1) {
+    return String(m1[1]).slice(2) + '/' + m1[2] + '/' + m1[3];
+  }
+  
+  // ★ 우선순위 2: "Wed May 14 2026..." 형태
+  //    (구글시트 Date 객체가 직렬화된 경우)
+  if (s.indexOf('GMT') >= 0 || /^[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d+/.test(s)) {
+    var d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      // 로컬 시간 기준 (한국 시간 유지)
+      var yy = String(d.getFullYear()).slice(2);
+      var mm = String(d.getMonth()+1).padStart(2,'0');
+      var dd = String(d.getDate()).padStart(2,'0');
+      return yy+'/'+mm+'/'+dd;
+    }
+  }
+  
+  // ★ 우선순위 3: YYYY/MM/DD 또는 YYYY.MM.DD 형식
+  var m2 = s.match(/^(\d{4})[\/\.](\d{1,2})[\/\.](\d{1,2})/);
+  if (m2) {
+    return String(m2[1]).slice(2) + '/' 
+         + String(m2[2]).padStart(2,'0') + '/' 
+         + String(m2[3]).padStart(2,'0');
+  }
+  
+  // 짧은 형식 (5/14, 5월14일 등) → 그대로
+  if (s.length <= 12) return s;
+  // 그 외 → 앞 10글자만
+  return s.slice(0, 10);
+}
+
+  
 function isYellow(iBg) {
   const v = (iBg||'').toLowerCase().replace(/\s/g,'');
   return v.includes('ffff00') || v.includes('fff176') || v.includes('fff9c4') || v.includes('ffeb3b')
@@ -1599,6 +1856,20 @@ function fastroStateClass(state, hasInvoice) {
   return 'fastro-wait';
 }
 
+// CJ대한통운 운송장 조회 페이지 열기
+function trackCJ(invoice) {
+  if (!invoice) { fastroToast('운송장번호 없음'); return; }
+  const url = 'https://trace.cjlogistics.com/web/detail.jsp?slipno=' + encodeURIComponent(invoice);
+  window.open(url, '_blank');
+}
+
+// 경동택배 운송장 조회 페이지 열기
+function trackKdong(invoice) {
+  if (!invoice) { fastroToast('운송장번호 없음'); return; }
+  const url = 'https://kdexp.com/service/delivery/etc/delivery.do?barcode=' + encodeURIComponent(invoice);
+  window.open(url, '_blank');
+}
+  
 // 운송장번호 클립보드 복사
 function copyFastroInvoice(invoice) {
   if (!invoice) return;
@@ -1663,15 +1934,15 @@ function showFastroModal(orderNo) {
           </div>
           <div class="fastro-row">
             <div class="lbl">한국운송장 (CJ)</div>
-            <div class="val ${info.invoice?'invoice':''}" ${info.invoice?`onclick="copyFastroInvoice('${info.invoice}')" title="클릭하여 복사"`:''}>
-              ${info.invoice ? esc(info.invoice) + ' 📋' : '<span style="color:#999">아직 미발급</span>'}
+            <div class="val ${info.invoice?'invoice':''}" ${info.invoice?`onclick="trackCJ('${info.invoice}')" title="클릭하여 CJ대한통운 조회"`:''}>
+              ${info.invoice ? esc(info.invoice) + ' 🔍' : '<span style="color:#999">아직 미발급</span>'}
             </div>
           </div>
           ${info.kdongInvoice ? `
           <div class="fastro-row">
             <div class="lbl">경동택배</div>
-            <div class="val invoice" onclick="copyFastroInvoice('${info.kdongInvoice}')" title="클릭하여 복사" style="color:#4527a0;">
-              ${esc(info.kdongInvoice)} 📋
+            <div class="val invoice" onclick="trackKdong('${info.kdongInvoice}')" title="클릭하여 경동택배 조회" style="color:#4527a0;">
+              ${esc(info.kdongInvoice)} 🔍
             </div>
           </div>` : ''}
           <div class="fastro-row">
@@ -1702,8 +1973,8 @@ function showFastroModal(orderNo) {
           </div>` : ''}
         </div>
         <div class="fastro-modal-actions">
-          ${info.invoice ? `<button class="fastro-btn primary" onclick="copyFastroInvoice('${info.invoice}')">📋 CJ 복사</button>` : ''}
-          ${info.kdongInvoice ? `<button class="fastro-btn primary" style="background:#4527a0;" onclick="copyFastroInvoice('${info.kdongInvoice}')">📋 경동 복사</button>` : ''}
+          ${info.invoice ? `<button class="fastro-btn primary" onclick="trackCJ('${info.invoice}')">🔍 CJ 조회</button>` : ''}
+          ${info.kdongInvoice ? `<button class="fastro-btn primary" style="background:#4527a0;" onclick="trackKdong('${info.kdongInvoice}')">🔍 경동 조회</button>` : ''}
           <button class="fastro-btn secondary" onclick="closeFastroModal()">닫기</button>
         </div>
       </div>
@@ -1759,14 +2030,19 @@ function isRed(bg) {
 } // 선택된 월 ('all' = 전체)
 let monthData = [], monthPage = 1, monthSheetName = '금월';
 let sourceList = ['현금','세금계산서']; // 판매처 목록 (수정 가능한 것만)
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 99999;
 
-let smap = JSON.parse(localStorage.getItem('smap4') || '{}');
+let smap = JSON.parse(localStorage.getItem('smap3') || '{}');
 let pendingContact = null;
 
-function save() { localStorage.setItem('smap4', JSON.stringify(smap)); }
+function save() { localStorage.setItem('smap3', JSON.stringify(smap)); }
 function ini(p) { if (!smap[p]) smap[p] = { o: false, g: [false,false,false,false,false], c: false, r: false, b: false, s: 'none', l: false, k: 'none', oo: false, dv: '', cancelled: false, t: false, rc: false }; }
 async function selectBiz(bizId, bizName) {
+  // ★ LCL view 열려있으면 닫기
+  const lclView = document.getElementById('lcl-view');
+  if (lclView && lclView.style.display === 'block') {
+    closeLclStatus();
+  }
   currentBiz = bizId;
   // ★ 사업자 전환 시 필터/월/검색 초기화
   activeFilter = 'all';
@@ -1857,6 +2133,12 @@ let searchTimer = null;
 let searchData = [];
 
 function onSearch(val) {
+  // ★ LCL view 열려있으면 LCL 데이터에서만 검색
+  const lclView = document.getElementById('lcl-view');
+  if (lclView && lclView.style.display === 'block') {
+    renderLclList();
+    return;
+  }
   searchQuery = val.trim().toLowerCase();
   const clearBtn = document.getElementById('search-clear');
   if (clearBtn) clearBtn.classList.toggle('show', searchQuery.length > 0);
@@ -1867,16 +2149,306 @@ function onSearch(val) {
     const sheetsEl = document.getElementById('sr-sheets');
     if (sheetsEl) sheetsEl.textContent = '';
     searchData = [];
+    window.isQuickClientSearch = false;
     monthPage = 1;
     renderMonthPage();
+    // 하이라이트 해제
+    clearSearchHighlights();
     return;
   }
 
-  // 디바운스 300ms
+  // ★ 검색 범위가 'current1' (현재 사업자 현재월) 이면 클라이언트 검색
+  const scopeVal = document.getElementById('search-scope')?.value || 'current1';
+  if (scopeVal === 'current1') {
+    clearTimeout(searchTimer);
+    // 즉시 클라이언트 검색 (디바운스 짧게)
+    searchTimer = setTimeout(() => quickClientSearch(searchQuery), 150);
+    return;
+  }
+
+  // 다른 범위는 기존 서버 검색
+  window.isQuickClientSearch = false;
   clearTimeout(searchTimer);
   const cntEl = document.getElementById('search-count');
   if (cntEl) cntEl.textContent = '검색중...';
   searchTimer = setTimeout(() => doSearch(searchQuery), 300);
+}
+
+// ★★★ 빠른 클라이언트 검색 (현재 보고있는 데이터에서만) ★★★
+window.searchMatches = [];      // 현재 매치 리스트
+window.currentMatchIdx = 0;     // 현재 보고있는 매치 인덱스
+
+function quickClientSearch(q) {
+  console.log('[quickSearch] 호출됨, q=', q, 'monthData.length=', monthData ? monthData.length : 'null', 'selectedMonth=', selectedMonth);
+
+  // 현재 화면에 보이는 monthData에서 일치하는 카드 찾기
+  if (!monthData || monthData.length === 0) {
+    const cntEl = document.getElementById('search-count');
+    const sheetsEl = document.getElementById('sr-sheets');
+    const bar = document.getElementById('search-result-bar');
+    if (bar) bar.classList.add('show');
+    if (cntEl) cntEl.textContent = '0건';
+    if (sheetsEl) sheetsEl.textContent = '※ 데이터 없음';
+    console.log('[quickSearch] monthData 없음');
+    return;
+  }
+
+  // ★ 클라이언트 검색 모드 플래그 ON
+  window.isQuickClientSearch = true;
+
+  // 화면을 다시 그림 (monthData 전체 표시)
+  monthPage = 1;
+  renderMonthPage();
+
+  const qLower = q.toLowerCase();
+  const matches = [];
+
+  // ★ 모든 monthData 데이터에서 검색 (selectedMonth 필터 제거)
+  // selectedMonth가 'all' 이면 모든 월, 특정 월이면 해당 월만
+  monthData.forEach((c, idx) => {
+    // 월 필터: 'all'이 아니고 다른 월이면 건너뜀
+    if (selectedMonth && selectedMonth !== 'all') {
+      if (c.sheetName && c.sheetName !== selectedMonth) return;
+    }
+
+    const fields = [
+      c.name || '', c.phone || '', c.phone2 || '', c.phone1 || '',
+      c.orderNo || '', c.baejiNo || '',
+      c.product || '', c.option || '',
+      c.address || '', c.zipCode || ''
+    ];
+    const combined = fields.join(' ').toLowerCase();
+    if (combined.includes(qLower)) {
+      matches.push({ idx: idx, customer: c });
+    }
+  });
+
+  console.log('[quickSearch] 매치 결과:', matches.length, '건');
+
+  // 매치 저장 (네비게이션용)
+  window.searchMatches = matches;
+  window.currentMatchIdx = 0;
+
+  // 하이라이트 표시 (조금 기다린 후 - 카드 렌더링 완료 대기)
+  setTimeout(() => highlightSearchResults(matches, q), 50);
+}
+
+// ★ 검색창 키 이벤트 처리 (Enter = 다음, Shift+Enter = 이전)
+function onSearchKeydown(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+
+    // 디바운스된 검색이 아직 안 끝났으면 즉시 실행
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+      searchTimer = null;
+    }
+
+    // 검색어 있는데 매치가 없으면 → 즉시 동기 검색
+    const val = document.getElementById('search-input').value.trim();
+    const matches = window.searchMatches || [];
+
+    if (matches.length === 0 && val) {
+      console.log('[Enter] 매치 없음 → 즉시 검색 실행');
+      const scopeVal = document.getElementById('search-scope')?.value || 'current1';
+      if (scopeVal === 'current1') {
+        // 동기적으로 즉시 검색 (디바운스 없이)
+        quickClientSearch(val.toLowerCase());
+        // 검색 후 첫 매치로 자동 이동
+        setTimeout(() => {
+          if ((window.searchMatches || []).length > 0) {
+            console.log('[Enter] 검색 완료, 첫 매치로 이동');
+            // 이미 highlightSearchResults가 첫 매치로 스크롤함
+          }
+        }, 100);
+      }
+      return;
+    }
+
+    // 매치가 있으면 다음/이전으로 이동
+    if (matches.length > 0) {
+      console.log('[Enter] 매치 있음, 다음으로 이동');
+      navigateSearchMatch(event.shiftKey ? -1 : 1);
+    }
+  } else if (event.key === 'Escape') {
+    clearSearch();
+  }
+}
+
+// ★ 다음/이전 매치로 이동
+function navigateSearchMatch(direction) {
+  const matches = window.searchMatches || [];
+  if (matches.length === 0) {
+    console.log('[navigate] 매치 없음');
+    return;
+  }
+
+  // 인덱스 이동 (순환)
+  window.currentMatchIdx = (window.currentMatchIdx + direction + matches.length) % matches.length;
+  const current = matches[window.currentMatchIdx];
+  console.log('[navigate] 이동:', window.currentMatchIdx + 1, '/', matches.length, '→', current && current.customer.name);
+
+  // 모든 카드에서 'current' 클래스 제거
+  document.querySelectorAll('.search-match-current').forEach(el => {
+    el.classList.remove('search-match-current');
+  });
+
+  if (!current) return;
+
+  // ★ 매치 카드가 다른 월에 있다면 selectedMonth 변경
+  const targetSheet = current.customer.sheetName;
+  if (targetSheet && selectedMonth !== 'all' && selectedMonth !== targetSheet) {
+    console.log('[navigate] 월 변경:', selectedMonth, '→', targetSheet);
+    selectedMonth = targetSheet;
+    // 월 탭 UI 업데이트
+    document.querySelectorAll('.month-tab').forEach(t => {
+      t.classList.toggle('active', t.textContent.trim() === targetSheet);
+    });
+    monthPage = 1;
+    renderMonthPage();
+  }
+
+  // ★ 매치 카드가 페이지에 없으면 해당 페이지로 이동
+  let cardEl = findCardByOrderNo(current.customer.orderNo);
+  if (!cardEl) {
+    // monthData에서 인덱스 찾기 + 페이지 계산
+    const dataIdx = monthData.findIndex(c => c.orderNo === current.customer.orderNo);
+    if (dataIdx >= 0) {
+      // 필터링된 데이터에서의 순서 계산
+      const filtered = monthData.filter(c => {
+        if (selectedMonth && selectedMonth !== 'all' && c.sheetName !== selectedMonth) return false;
+        return true;
+      });
+      const filteredIdx = filtered.findIndex(c => c.orderNo === current.customer.orderNo);
+      if (filteredIdx >= 0) {
+        const targetPage = Math.floor(filteredIdx / PAGE_SIZE) + 1;
+        if (targetPage !== monthPage) {
+          console.log('[navigate] 페이지 변경:', monthPage, '→', targetPage);
+          monthPage = targetPage;
+          renderMonthPage();
+        }
+      }
+    }
+
+    // 렌더링 후 다시 찾기
+    setTimeout(() => {
+      cardEl = findCardByOrderNo(current.customer.orderNo);
+      if (cardEl) {
+        cardEl.classList.add('search-match');
+        cardEl.classList.add('search-match-current');
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        console.log('[navigate] 카드 못 찾음:', current.customer.orderNo);
+      }
+      updateNavInfo();
+    }, 100);
+    return;
+  }
+
+  // 카드 강조 + 스크롤
+  cardEl.classList.add('search-match-current');
+  cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  // 네비게이션 표시 업데이트
+  updateNavInfo();
+}
+
+// ★ 네비게이션 표시 업데이트 (1/2 형식)
+function updateNavInfo() {
+  const navInfo = document.getElementById('search-nav-info');
+  const nav = document.getElementById('search-nav');
+  const matches = window.searchMatches || [];
+  if (matches.length > 0) {
+    if (nav) nav.classList.add('show');
+    if (navInfo) navInfo.textContent = (window.currentMatchIdx + 1) + '/' + matches.length;
+  } else {
+    if (nav) nav.classList.remove('show');
+  }
+}
+
+// ★ orderNo로 카드 찾기 (공용 함수)
+function findCardByOrderNo(orderNo) {
+  const cards = document.querySelectorAll('.card');
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    const onoEl = card.querySelector('[data-orderno]');
+    if (onoEl && onoEl.getAttribute('data-orderno') === orderNo) return card;
+    if (card.textContent.includes(orderNo)) return card;
+  }
+  return null;
+}
+
+// 검색 결과 하이라이트 + 첫 번째로 스크롤
+function highlightSearchResults(matches, q) {
+  // 이전 하이라이트 모두 제거
+  clearSearchHighlights();
+
+  // ★★ 중요: clearSearchHighlights가 window.searchMatches를 비웠으므로 다시 저장 ★★
+  window.searchMatches = matches;
+  window.currentMatchIdx = 0;
+  console.log('[highlight] searchMatches 저장:', matches.length, '건');
+
+  // 검색 결과바 표시
+  const bar = document.getElementById('search-result-bar');
+  const cntEl = document.getElementById('search-count');
+  if (bar) bar.classList.add('show');
+  if (cntEl) cntEl.textContent = matches.length + '건';
+
+  const sheetsEl = document.getElementById('sr-sheets');
+  const nav = document.getElementById('search-nav');
+
+  if (matches.length === 0) {
+    // 매치 없음 안내
+    if (sheetsEl) sheetsEl.textContent = '※ 현재월에 없음 (전체 검색하려면 검색범위 변경)';
+    if (nav) nav.classList.remove('show');
+    return;
+  }
+
+  // 각 매치 카드에 하이라이트 클래스 추가 (orderNo 기반)
+  let firstCardEl = null;
+  matches.forEach((m, i) => {
+    const cardEl = findCardByOrderNo(m.customer.orderNo);
+    if (cardEl) {
+      cardEl.classList.add('search-match');
+      if (i === 0) {
+        cardEl.classList.add('search-match-current'); // 첫 매치는 현재
+        firstCardEl = cardEl;
+      }
+    }
+  });
+
+  // 첫 번째 매치로 부드럽게 스크롤
+  if (firstCardEl) {
+    setTimeout(() => {
+      firstCardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
+
+  // 네비게이션 표시 (▲ 1/2 ▼)
+  window.currentMatchIdx = 0;
+  updateNavInfo();
+
+  // 메시지 영역
+  if (sheetsEl) {
+    if (matches.length === 1) {
+      sheetsEl.innerHTML = '💡 1건 일치';
+    } else {
+      sheetsEl.innerHTML = '💡 ' + matches.length + '건 일치 → ▲▼ 버튼으로 이동';
+    }
+  }
+}
+
+// 하이라이트 모두 해제
+function clearSearchHighlights() {
+  document.querySelectorAll('.search-match, .search-match-first, .search-match-current').forEach(el => {
+    el.classList.remove('search-match', 'search-match-first', 'search-match-current');
+  });
+  // 네비게이션 숨김
+  const nav = document.getElementById('search-nav');
+  if (nav) nav.classList.remove('show');
+  // 매치 리스트 초기화
+  window.searchMatches = [];
+  window.currentMatchIdx = 0;
 }
 
 // 사업자 목록 (검색용)
@@ -2079,6 +2651,8 @@ function goSearchTab(filter) {
 }
 
 function clearSearch() {
+  // 하이라이트 해제
+  if (typeof clearSearchHighlights === 'function') clearSearchHighlights();
   searchQuery = '';
   const inp = document.getElementById('search-input');
   if (inp) inp.value = '';
@@ -2178,30 +2752,25 @@ function calcTab(c) {
   // ★ 1순위: 구글 시트 빨간색 = 취소 (smap보다 우선)
   if (isRed(gBg2) || isRed(hBg2) || isRed(iBg2)) return 'cancel';
 
-  // ★ 2순위: 로컬 취소 상태
-  if (smap[c.phone] && smap[c.phone].cancelled) return 'cancel';
-
   // ★ 3순위: G열 파란색 = 최종발송 = 판매완료 (모든 다른 상태보다 우선)
   if (isGBlue(gBg2)) return 's2';
-  if (smap[c.phone] && smap[c.phone].dv && smap[c.phone].dv !== '') return 's2';
-
+  
   const hYellow2 = hBg2 !== '' && hBg2 !== '#ffffff' && hBg2 !== 'white' &&
                    (hBg2.includes('ffff00') || hBg2.includes('ffd700') || hBg2.includes('ffff4d') || hBg2.includes('ffd7'));
   const lOrange2 = lBg2.includes('ff6d00')||lBg2.includes('ff6600')||lBg2.includes('e65100')||lBg2.includes('ff9900');
 
   // ★★★ 셀 색상 우선 판정 (구글시트 직접 칠한 색이 우선) ★★★
-  // H열 주황 = 배대지물품수령 (시트에 직접 칠한 경우만)
+  // H열 주황 = 발송처리완료 (사장님이 발송처리 버튼 누름)
   if (isOrangeCell(hBg2)) return 'recv';
   // G열 주황 = tao트래킹발급 (현지배송, 시트에 직접 칠한 경우만)
   if (isOrangeCell(gBg2)) return 'tao';
 
+
   // ★★★ 사용자 액션(smap) 처리 ★★★
   // 배대지 신청서 작성
-  if (smap[c.phone] && smap[c.phone].b) return 'baeji';
-  // 주문완료 (셀 색상보다 우선 - 사용자 의도 보존)
-  if (smap[c.phone] && smap[c.phone].oo) return 'unsent';
-
-  // ── 셀 색상 기반 자동 판정 ──
+  if (smap[c.orderNo] && smap[c.orderNo].b) return 'baeji';
+  
+   // ── 셀 색상 기반 자동 판정 ──
   if (hYellow2) return 's1';           // H열 노란색 → 배송
   if (isYellow(iBg2)) return 'unsent'; // I열 노란색 → 주문완료
   if (lOrange2) return 'req';          // L열 주황색 → 주문요청중
@@ -2235,17 +2804,22 @@ function updateHeaderStats() {
 function renderMonthPage() {
   updateHeaderStats();
   // 탭별 필터링
-  // 검색 중이면 searchData 사용, 아니면 monthData 사용
-  const baseData = searchQuery ? searchData : monthData;
+  // ★ 빠른 클라이언트 검색 모드일 땐 monthData 사용 + 검색 필터 안함 (스크롤로 찾기)
+  // ★ 일반 서버 검색 모드일 땐 searchData 사용
+  // ★ 검색 안할 땐 monthData 사용
+  const isQuickSearch = window.isQuickClientSearch === true;
+  const baseData = (searchQuery && !isQuickSearch) ? searchData : monthData;
   const filtered = baseData.filter(c => {
     const iBg = (c.iBg || '').toLowerCase();
     const lBg = (c.lBg || '').toLowerCase();
     const gBg = (c.gBg || '').toLowerCase();
     const noColor = v => !v || v === '#ffffff' || v === 'white' || v === '';
-    // 월 필터 (검색 중이면 전체 월에서 검색)
-    if (!searchQuery && selectedMonth !== 'all' && c.sheetName !== selectedMonth) return false;
-    // 검색 필터
-    if (searchQuery) {
+    // 월 필터 (서버 검색 중이면 전체 월에서 검색, 빠른 검색은 현재월만)
+    if (isQuickSearch || !searchQuery) {
+      if (selectedMonth !== 'all' && c.sheetName !== selectedMonth) return false;
+    }
+    // 서버 검색 필터 (빠른 검색은 필터 안함 - 스크롤로 찾기)
+    if (searchQuery && !isQuickSearch) {
       const q = searchQuery;
       const match = (c.name||'').toLowerCase().includes(q) ||
                     (c.phone||'').includes(q.replace(/-/g,'')) ||
@@ -2268,9 +2842,10 @@ function renderMonthPage() {
   }
 
   const total = filtered.length;
-  // 검색 건수 표시
+  // 검색 건수 표시 (빠른 검색 모드는 highlightSearchResults가 덮어씀)
+  const isQuickSearch2 = window.isQuickClientSearch === true;
   const cntEl = document.getElementById('search-count');
-  if (cntEl) cntEl.textContent = searchQuery ? total + '건' : '';
+  if (cntEl && !isQuickSearch2) cntEl.textContent = searchQuery ? total + '건' : '';
   if (!total) {
     document.getElementById('content').innerHTML = '<div class="empty">' + (searchQuery ? '🔍 검색 결과가 없습니다.' : '✅ 해당 목록이 없습니다.') + '</div>';
     return;
@@ -2287,6 +2862,7 @@ function renderMonthPage() {
     phone1:     c.phone1 || '',
     phone2:     c.phone2 || '',
     name:       c.name  || '',
+    orderDate:  c.orderDate || '', 
     orderNo:    c.orderNo || '',
     product:    c.product || '',
     option:     c.option  || '',
@@ -2301,6 +2877,7 @@ function renderMonthPage() {
     sourceNote: c.sourceNote || '',
     orderNote:  c.orderNote  || '',
     recipientNote: c.recipientNote || '',
+    deliveryType: c.deliveryType || '',
     // C열 값이 SH로 시작하는 신청서번호인 경우만 표시 (기존 택배사명 등은 빈 값으로)
     baejiNo:    (c.baejiNo && (/^SH/i.test(String(c.baejiNo).trim()) || /^\d{8}$/.test(String(c.baejiNo).trim()))) ? c.baejiNo : '',
     sheetName:  c.sheetName || '',
@@ -2315,6 +2892,7 @@ function renderMonthPage() {
     profitRate: (c.profitRate !== '' && c.profitRate != null) ? c.profitRate : '',
     marginRate: (c.marginRate !== '' && c.marginRate != null) ? c.marginRate : '',
     // ★ 배경색 필드 (calcTab에서 탭 분류에 사용)
+    fBg:        c.fBg || '',
     gBg:        c.gBg || '',
     hBg:        c.hBg || '',
     iBg:        c.iBg || '',
@@ -2339,6 +2917,7 @@ function renderMonthPage() {
     <div class="rc-hcell rc-col-th">NO</div>
     <div class="rc-hcell rc-col-th" style="justify-content:center;">상태</div>
     <div class="rc-hcell rc-col-th">판매처</div>
+    <div class="rc-hcell rc-col-th">주문일자</div>
     <div class="rc-hcell rc-col-th">주문번호</div>
     <div class="rc-hcell rc-col-th">수령자 📝</div>
     <div class="rc-hcell rc-col-th">상품명</div>
@@ -2655,10 +3234,10 @@ async function saveBaejiNoEdit(pid, orderNo, sheetName) {
   }
 
   // smap 상태 동기화
-  if (typeof ini === 'function') ini(pid);
-  if (smap[pid]) {
-    smap[pid].b = !!val;
-    smap[pid].baejiNo = val;
+  if (typeof ini === 'function') ini(orderNo);
+  if (smap[orderNo]) {
+    smap[orderNo].b = !!val;
+    smap[orderNo].baejiNo = val;
     if (typeof save === 'function') save();
   }
 
@@ -2775,7 +3354,7 @@ async function saveCustomsEdit(pid, orderNo, sheetName) {
 async function checkCustomsInline(pid, encName) {
   const inp = document.getElementById('cust-input-' + pid);
   // 입력창 현재값 > monthData 순으로 사용
-  const c2 = monthData.find(c => c.orderNo === pid);
+  const c2 = monthData.find(c => c.phone === pid);
   const customs = (inp && inp.value.trim().toUpperCase()) || (c2 && c2.customs) || '';
   if (!customs) {
     const resDiv = document.getElementById('cres-' + pid);
@@ -2790,7 +3369,7 @@ async function checkCustomsInline(pid, encName) {
 async function checkCustoms(pid, encName, encCust) {
   const name    = decodeURIComponent(encName);
   // 최신 통관번호: monthData > 인풋 > 파라미터 순으로 우선
-  const c2live  = monthData.find(c => c.orderNo === pid);
+  const c2live  = monthData.find(c => c.phone === pid);
   const custLive = (c2live && c2live.customs) || '';
   const customs = (custLive || decodeURIComponent(encCust || '')).trim().toUpperCase();
   const btn     = document.getElementById('custbtn2-'+pid);
@@ -2810,14 +3389,14 @@ async function checkCustoms(pid, encName, encCust) {
 
   try {
     // customers와 monthData 모두에서 주문번호 찾기
-    const c2 = customers.find(c => c.orderNo === pid)
-            || monthData.find(c => c.orderNo === pid);
+    const c2 = customers.find(c => c.phone === pid)
+            || monthData.find(c => c.phone === pid);
     const params = new URLSearchParams({
       action:  'verifyContact',
       unipass: customs,
       name:    name,
-      phone:   c2 ? (c2.phone || '') : '',
-      orderNo: c2 ? c2.orderNo : pid
+      phone:   pid,
+      orderNo: c2 ? c2.orderNo : ''
     });
     const d = await jsonp(GAS + '?' + params.toString());
     btn.style.pointerEvents = '';
@@ -2938,16 +3517,10 @@ async function saveInfoEdit() {
     prog.textContent = '⚠ 저장 실패: ' + e.message;
   }
 }
-
-function openPasteModal() {
-  document.getElementById('paste-modal-bg').classList.add('open');
-  document.getElementById('paste-textarea').value = '';
-  document.getElementById('paste-preview').textContent = '';
-  document.getElementById('paste-progress').textContent = '';
-  document.getElementById('paste-btn').disabled = true;
-
-  // 현재 달 목록으로 드롭다운 채우기
+  
+function fillPasteSheetSelect() {
   const sel = document.getElementById('paste-sheet-select');
+  if (!sel) return;
   sel.innerHTML = '';
   const tabs = document.querySelectorAll('.mtab');
   tabs.forEach(t => {
@@ -2965,6 +3538,388 @@ function openPasteModal() {
     sel.appendChild(opt);
   }
 }
+function openPasteModal() {
+  document.getElementById('paste-modal-bg').classList.add('open');
+  document.getElementById('paste-textarea').value = '';
+  document.getElementById('paste-preview').textContent = '';
+  document.getElementById('paste-progress').textContent = '';
+  document.getElementById('paste-btn').disabled = true;
+  fillPasteSheetSelect();
+}
+  
+// ★★★ 패스트로 운송비 계산기 (탭 아래 펼침 패널) ★★★
+function openFastroCalcModal() {
+  const panel = document.getElementById('fastro-panel');
+  const isOpen = panel.style.display === 'block';
+  if (isOpen) {
+    // 이미 열려있으면 닫기 (토글)
+    closeFastroCalcModal();
+    return;
+  }
+  panel.style.display = 'block';
+  setTimeout(() => {
+    const inp = document.getElementById('fastro-weight');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function closeFastroCalcModal() {
+  document.getElementById('fastro-panel').style.display = 'none';
+  // iframe 초기화
+  const iframe = document.getElementById('fastro-iframe');
+  const wrapper = document.getElementById('fastro-iframe-wrapper');
+  if (iframe) iframe.src = 'about:blank';
+  if (wrapper) wrapper.style.display = 'none';
+  const empty = document.getElementById('fastro-empty');
+  if (empty) empty.style.display = 'flex';
+  // 버튼 활성화 해제
+  document.querySelectorAll('.fr-btn').forEach(b => {
+    b.style.background = '#fff';
+    b.style.color = '#7b1fa2';
+  });
+}
+
+function openFastroResult(trNo) {
+  const weight = document.getElementById('fastro-weight').value.trim();
+  if (!weight || parseFloat(weight) <= 0) {
+    alert('무게(kg)를 먼저 입력해주세요!');
+    document.getElementById('fastro-weight').focus();
+    return;
+  }
+
+  // 엔터키 처리용
+  window._lastTrNo = trNo;
+
+  // 버튼 활성화 표시
+  document.querySelectorAll('.fr-btn').forEach(b => {
+    b.style.background = '#fff';
+    b.style.color = '#7b1fa2';
+  });
+  const activeBtn = document.getElementById('fr-btn-' + trNo);
+  if (activeBtn) {
+    activeBtn.style.background = '#7b1fa2';
+    activeBtn.style.color = '#fff';
+  }
+
+  // iframe에 패스트로 페이지 로드
+  const url = 'https://fast-ro.com/guide/guide_08.php?tr_no=' + trNo + '&mb_id=&value=' + parseFloat(weight);
+  const iframe = document.getElementById('fastro-iframe');
+  const wrapper = document.getElementById('fastro-iframe-wrapper');
+  const empty = document.getElementById('fastro-empty');
+
+  empty.style.display = 'none';
+  wrapper.style.display = 'block';
+  iframe.src = url;
+}
+
+// ★★★ LCL 현황 모달 ★★★
+window._lclAllData = [];
+window._lclCurrentFilter = 'all';
+
+function openLclStatus() {
+  // 메인 화면 영역 숨김
+  const monthTabBar = document.getElementById('month-tab-bar');
+  const lclTabBar = document.getElementById('lcl-tab-bar');
+  const content = document.getElementById('content');
+  const lclView = document.getElementById('lcl-view');
+  const fastroPanel = document.getElementById('fastro-panel');
+
+  if (monthTabBar) monthTabBar.style.display = 'none';     // 월별 탭 숨김
+  if (lclTabBar) lclTabBar.style.display = 'flex';         // LCL 탭 표시
+  if (content) content.style.display = 'none';
+  if (fastroPanel) fastroPanel.style.display = 'none';
+  // ★ 검색창은 그대로 유지
+
+  // 사업자 버튼 활성화 해제
+  document.querySelectorAll('.biz-btn').forEach(b => b.classList.remove('active'));
+  const lclBtn = document.getElementById('biz-lcl');
+  if (lclBtn) {
+    lclBtn.classList.add('active');
+  }
+
+  // LCL view 표시
+  if (lclView) lclView.style.display = 'block';
+
+  // URL hash 변경
+  try { location.hash = '#biz=7'; } catch(e) {}
+
+  // 데이터 로드
+  refreshLclList();
+}
+
+function closeLclStatus() {
+  // LCL view + LCL 탭바 숨김
+  const lclView = document.getElementById('lcl-view');
+  const lclTabBar = document.getElementById('lcl-tab-bar');
+  if (lclView) lclView.style.display = 'none';
+  if (lclTabBar) lclTabBar.style.display = 'none';
+
+  // 메인 화면 복원
+  const monthTabBar = document.getElementById('month-tab-bar');
+  const content = document.getElementById('content');
+
+  if (monthTabBar) monthTabBar.style.display = '';
+  if (content) content.style.display = '';
+
+  // LCL 버튼 비활성화
+  const lclBtn = document.getElementById('biz-lcl');
+  if (lclBtn) {
+    lclBtn.classList.remove('active');
+  }
+}
+
+async function refreshLclList() {
+  const container = document.getElementById('lcl-list-container');
+  container.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">⏳ 데이터를 불러오는 중...</div>';
+
+  try {
+    const r = await jsonp(GAS_BASE + '?action=lclList');
+    if (!r || !r.success) {
+      container.innerHTML = '<div style="text-align:center;color:#c62828;padding:40px;">⚠ 데이터 불러오기 실패</div>';
+      return;
+    }
+    window._lclAllData = r.list || [];
+    renderLclList();
+  } catch(e) {
+    container.innerHTML = '<div style="text-align:center;color:#c62828;padding:40px;">⚠ 오류: ' + e.message + '</div>';
+  }
+}
+
+function filterLclGroup(grp) {
+  window._lclCurrentFilter = grp;
+  // lcl-tab-bar 안의 탭 활성화 변경
+  document.querySelectorAll('#lcl-tab-bar .month-tab').forEach(t => {
+    const isActive = t.getAttribute('data-grp') === grp;
+    if (isActive) {
+      t.classList.add('active');
+      t.style.color = '#0277bd';
+      t.style.fontWeight = '700';
+      t.style.borderBottom = '3px solid #0277bd';
+    } else {
+      t.classList.remove('active');
+      t.style.color = '#666';
+      t.style.fontWeight = '500';
+      t.style.borderBottom = 'none';
+    }
+  });
+  renderLclList();
+}
+
+function renderLclList() {
+  const container = document.getElementById('lcl-list-container');
+  const allData = window._lclAllData || [];
+  const filter = window._lclCurrentFilter || 'all';
+
+  // 그룹 필터
+  let filtered = filter === 'all' ? allData.slice() : allData.filter(item => item.group === filter);
+
+  // ★ 검색어 필터링 (검색창에 입력된 값으로)
+  const searchInput = document.getElementById('search-input');
+  const q = (searchInput && searchInput.value || '').trim().toLowerCase();
+  if (q) {
+    filtered = filtered.filter(item => {
+      const fields = [
+        item.bizName || '', item.name || '',
+        item.phone || '', item.phone2 || '',
+        item.product || '', item.option || '',
+        item.address || '', item.zipCode || '',
+        item.customs || ''
+      ];
+      return fields.join(' ').toLowerCase().includes(q);
+    });
+  }
+
+  // 총 건수 표시
+  const totalInfo = document.getElementById('lcl-total-info');
+  if (totalInfo) {
+    totalInfo.textContent = '총 ' + filtered.length + '건 / 전체 ' + allData.length + '건';
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#888;padding:40px;">📋 LCL 진행 건이 없습니다</div>';
+    return;
+  }
+
+  // 그룹별 색상 + 이름
+  const groupColors = { 'A': '#FFE5E5', 'B': '#E5F0FF', 'C': '#E5FFE5' };
+  const groupLabels = { 'A': '출고대기', 'B': '출고신청', 'C': '출고완료' };
+
+  // 기존 모다허브와 동일한 컬럼 헤더
+  let html = '<div class="rc-col-header rc-header">';
+  html += '<div class="rc-hcell rc-col-th">NO</div>';
+  html += '<div class="rc-hcell rc-col-th" style="justify-content:center;">상태</div>';
+  html += '<div class="rc-hcell rc-col-th">판매처</div>';
+  html += '<div class="rc-hcell rc-col-th">주문일자</div>';
+  html += '<div class="rc-hcell rc-col-th">주문번호</div>';
+  html += '<div class="rc-hcell rc-col-th">수령자 📝</div>';
+  html += '<div class="rc-hcell rc-col-th">상품명</div>';
+  html += '<div class="rc-hcell rc-col-th">옵션명</div>';
+  html += '<div class="rc-hcell rc-col-th" style="justify-content:center;">수량</div>';
+  html += '<div class="rc-hcell rc-col-th">통관번호</div>';
+  html += '<div class="rc-hcell rc-col-th">휴대폰1</div>';
+  html += '<div class="rc-hcell rc-col-th">휴대폰2</div>';
+  html += '<div class="rc-hcell rc-col-th">배송지주소</div>';
+  html += '<div class="rc-hcell rc-col-th" style="justify-content:flex-end;">결제금액</div>';
+  html += '<div class="rc-hcell rc-col-th" style="justify-content:flex-end;">정산예정</div>';
+  html += '<div class="rc-hcell rc-col-th" style="justify-content:flex-end;">tao</div>';
+  html += '<div class="rc-hcell rc-col-th" style="justify-content:flex-end;">이익</div>';
+  html += '<div class="rc-hcell rc-col-th" style="justify-content:flex-end;">마진율</div>';
+  html += '</div>';
+
+  // 카드 리스트 (기존과 동일한 .list 안에 그리기)
+  html += '<div class="list">';
+
+  filtered.forEach((item, idx) => {
+    const bgColor = groupColors[item.group] || '#fff';
+    const grpLabel = groupLabels[item.group] || item.group;
+    const amount = parseFloat(item.amount) || 0;
+    const settleAmt = parseFloat(item.settleAmt) || 0;
+    const tao = parseFloat(item.taoAmt) || parseFloat(item.taoPay) || 0;
+    const profit = parseFloat(item.profit) || 0;
+    const marginRate = parseFloat(item.marginRate) || 0;
+
+    html += '<div class="card" style="background:' + bgColor + ';display:flex;border-bottom:1px solid #e5e7eb;">';
+    html += '<div class="rc-cell">' + (idx + 1) + '</div>';
+    html += '<div class="rc-cell" style="justify-content:center;font-weight:700;color:#A04545;">' + grpLabel + '</div>';
+    html += '<div class="rc-cell">' + (item.bizName || '-') + '</div>';
+    html += '<div class="rc-cell">' + (item.orderDate || '-') + '</div>';
+    html += '<div class="rc-cell" style="font-family:monospace;font-size:12px;">' + (item.orderNo || '-') + '</div>';
+    html += '<div class="rc-cell">' + (item.name || '-') + '</div>';
+    html += '<div class="rc-cell">' + (item.product || '-') + '</div>';
+    html += '<div class="rc-cell">' + (item.option || '-') + '</div>';
+    html += '<div class="rc-cell" style="justify-content:center;">' + (item.qty || 1) + '</div>';
+    html += '<div class="rc-cell">' + (item.customs || '-') + '</div>';
+    html += '<div class="rc-cell">' + (item.phone || '-') + '</div>';
+    html += '<div class="rc-cell">' + (item.phone2 || '-') + '</div>';
+    html += '<div class="rc-cell">' + (item.address || '-') + '</div>';
+    html += '<div class="rc-cell" style="justify-content:flex-end;">' + (amount > 0 ? Math.round(amount).toLocaleString() : '-') + '</div>';
+    html += '<div class="rc-cell" style="justify-content:flex-end;">' + (settleAmt > 0 ? Math.round(settleAmt).toLocaleString() : '-') + '</div>';
+    html += '<div class="rc-cell" style="justify-content:flex-end;">' + (tao > 0 ? tao.toLocaleString() : '-') + '</div>';
+    html += '<div class="rc-cell" style="justify-content:flex-end;">' + (profit > 0 ? Math.round(profit).toLocaleString() : '-') + '</div>';
+    html += '<div class="rc-cell" style="justify-content:flex-end;">' + (marginRate > 0 ? (marginRate * 100).toFixed(1) + '%' : '-') + '</div>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+
+  // ★ 기존 모다허브와 동일한 컬럼 리사이저 적용
+  if (typeof applyColWidths === 'function') {
+    setTimeout(() => {
+      applyColWidths();
+      if (typeof initColResizers === 'function') initColResizers();
+    }, 50);
+  }
+}
+
+
+
+async function removeLclItem(orderNo) {
+  if (!confirm('LCL 진행건에서 제거하시겠습니까?')) return;
+  try {
+    const r = await jsonp(GAS_BASE + '?action=lclRemove&orderNo=' + orderNo);
+    if (r && r.success && r.removed) {
+      showToast('✅ 제거 완료');
+      refreshLclList();
+    } else {
+      showToast('⚠ 제거 실패');
+    }
+  } catch(e) {
+    alert('오류: ' + e.message);
+  }
+}
+
+function openCookieModal() {
+  document.getElementById('cookie-modal-bg').classList.add('open');
+  document.getElementById('cookie-input').value = '';
+  document.getElementById('cookie-result').innerHTML = '';
+}
+function closeCookieModal() {
+  document.getElementById('cookie-modal-bg').classList.remove('open');
+}
+
+function closeCookieModalBG(e) {
+  if (e.target === document.getElementById('cookie-modal-bg')) closeCookieModal();
+}
+
+async function saveCookie() {
+  const cookie = document.getElementById('cookie-input').value.trim();
+  const target = document.getElementById('cookie-target').value;
+  const result = document.getElementById('cookie-result');
+  const btn    = document.getElementById('cookie-save-btn');
+
+  if (!cookie) {
+    result.innerHTML = '<span style="color:#c62828;">⚠ 쿠키값을 입력하세요</span>';
+    return;
+  }
+  if (cookie.indexOf('PHPSESSID=') < 0) {
+    result.innerHTML = '<span style="color:#c62828;">⚠ PHPSESSID가 포함되지 않았습니다</span>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 저장 + 검증 중...';
+  result.innerHTML = '<span style="color:#666;">패스트로 응답 확인 중...</span>';
+
+  try {
+    const url = GAS_BASE
+      + '?action=updateFastroCookie'
+      + '&targetSsId=' + encodeURIComponent(target)
+      + '&cookie=' + encodeURIComponent(cookie);
+    const r = await jsonp(url);
+
+    if (r && r.success) {
+      const verifiedIcon = r.verified ? '✅' : '⚠️';
+      const verifiedColor = r.verified ? '#2e7d32' : '#ef6c00';
+      result.innerHTML =
+        '<div style="background:#e8f5e9;border:1px solid #66bb6a;border-radius:8px;padding:10px;color:#1b5e20;">' +
+        '<b>✅ 저장 완료</b><br>' +
+        '갱신된 사업자: ' + r.updatedCount + '개 (' + r.updated.join(', ') + ')<br>' +
+        '<span style="color:' + verifiedColor + ';">' + verifiedIcon + ' ' + r.verifyMessage + '</span>' +
+        '</div>';
+      showToast('✅ 쿠키 갱신 완료');
+      // 3초 후 자동 닫기 (검증 성공 시만)
+      if (r.verified) setTimeout(closeCookieModal, 3000);
+    } else {
+      result.innerHTML = '<span style="color:#c62828;">❌ ' + (r.error || '알 수 없는 오류') + '</span>';
+    }
+  } catch(e) {
+    result.innerHTML = '<span style="color:#c62828;">❌ ' + e.message + '</span>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 저장 + 검증';
+  }
+}
+
+async function checkCookieStatus() {
+  const result = document.getElementById('cookie-result');
+  result.innerHTML = '<span style="color:#666;">⏳ 6개 사업자 쿠키 상태 확인 중... (약 5초)</span>';
+
+  try {
+    const r = await jsonp(GAS_BASE + '?action=checkFastroStatus');
+    if (r && r.success) {
+      const bizNames = {
+        '1':'모다mall','2':'모다mall2','3':'모다mall3',
+        '4':'모다mall4','5':'수기mall','6':'불사자(통합)'
+      };
+      let html = '<div style="text-align:left;background:#fafafa;border:1px solid #e0e0e0;border-radius:8px;padding:10px;font-size:12px;">';
+      r.statusList.forEach(s => {
+        const color = s.valid ? '#2e7d32' : '#c62828';
+        const bg    = s.valid ? '#e8f5e9' : '#ffebee';
+        html += '<div style="background:' + bg + ';padding:6px 10px;margin:3px 0;border-radius:4px;color:' + color + ';">' +
+          '<b>' + s.ssId + '. ' + (bizNames[s.ssId]||'') + '</b> (' + s.mbId + ') · ' + s.message +
+          '</div>';
+      });
+      html += '</div>';
+      result.innerHTML = html;
+    } else {
+      result.innerHTML = '<span style="color:#c62828;">❌ ' + (r.error || '오류') + '</span>';
+    }
+  } catch(e) {
+    result.innerHTML = '<span style="color:#c62828;">❌ ' + e.message + '</span>';
+  }
+}
+
 
 function closePasteModal() {
   document.getElementById('paste-modal-bg').classList.remove('open');
@@ -3001,68 +3956,117 @@ async function doPasteUpload() {
   const sel = document.getElementById('paste-sheet-select');
   const sheetNm = sel ? sel.value : ((selectedMonth && selectedMonth !== 'all') ? selectedMonth : monthSheetName);
 
-  let success = 0, fail = 0;
-
   // 헤더행 자동 제거 (첫 행이 숫자가 아니면 헤더로 판단)
   const firstCols = rows[0].split('\t');
   const isHeader = isNaN(parseInt(firstCols[1])) && firstCols[1] && firstCols[1].trim() !== '';
   const dataRows = isHeader ? rows.slice(1) : rows;
 
-  for (let i = 0; i < dataRows.length; i++) {
-    progress.textContent = '처리 중 (' + (i+1) + '/' + dataRows.length + ')...';
-    const cols = dataRows[i].split('\t');
+  // ★★★ 사업자별로 자동 분류 ★★★
+  // F열(인덱스 5) 첫 글자로 사업자 판정
+  // 1~5 = 해당 사업자 / 6~99 = 6번 불사자(통합)
+  const bizGroups = { '1':[], '2':[], '3':[], '4':[], '5':[], '6':[] };
+  const skipped = [];
 
-    // 주문번호(G열=인덱스6)가 없으면 건너뜀
-    if (!cols[6] || !cols[6].trim()) continue;
+  dataRows.forEach((row, idx) => {
+    const cols = row.split('\t');
+    if (!cols[6] || !cols[6].trim()) return; // 주문번호 없으면 스킵
 
-    // A~P열 (인덱스 0~15) + T열(인덱스 19) + U열(인덱스 20)
-    const rowData = {
-      A: cols[0]  || '', B: cols[1]  || '', C: cols[2]  || '', D: cols[3]  || '',
-      E: cols[4]  || '', F: cols[5]  || '', G: cols[6]  || '', H: cols[7]  || '',
-      I: cols[8]  || '', J: cols[9]  || '', K: cols[10] || '', L: cols[11] || '',
-      M: cols[12] || '', N: cols[13] || '', O: cols[14] || '', P: cols[15] || '',
-      Q: cols[19] || '', // T열(인덱스19) → Q열
-      U: cols[20] || '', // U열(인덱스20) → U열
-    };
+    const sourceVal = (cols[5] || '').trim();
+    const m = sourceVal.match(/^(\d+)/);
+    if (!m) {
+      skipped.push({ idx: idx+1, reason: '판매처 형식 오류', val: sourceVal });
+      return;
+    }
+    const num = parseInt(m[1], 10);
+    let bizId;
+    if (num >= 1 && num <= 5) bizId = String(num);
+    else if (num >= 6) bizId = '6';  // 6 이상은 모두 불사자
+    else {
+      skipped.push({ idx: idx+1, reason: '잘못된 사업자번호', val: sourceVal });
+      return;
+    }
+    bizGroups[bizId].push(cols);
+  });
 
-    try {
-      const url = GAS_BASE
-        + '?ssId='      + encodeURIComponent(currentBiz)
-        + '&action=appendRow'
-        + '&sheetName=' + encodeURIComponent(sheetNm)
-        + '&A=' + encodeURIComponent(rowData.A)
-        + '&B=' + encodeURIComponent(rowData.B)
-        + '&C=' + encodeURIComponent(rowData.C)
-        + '&D=' + encodeURIComponent(rowData.D)
-        + '&E=' + encodeURIComponent(rowData.E)
-        + '&F=' + encodeURIComponent(rowData.F)
-        + '&G=' + encodeURIComponent(rowData.G)
-        + '&H=' + encodeURIComponent(rowData.H)
-        + '&I=' + encodeURIComponent(rowData.I)
-        + '&J=' + encodeURIComponent(rowData.J)
-        + '&K=' + encodeURIComponent(rowData.K)
-        + '&L=' + encodeURIComponent(rowData.L)
-        + '&M=' + encodeURIComponent(rowData.M)
-        + '&N=' + encodeURIComponent(rowData.N)
-        + '&O=' + encodeURIComponent(rowData.O)
-        + '&P=' + encodeURIComponent(rowData.P)
-        + '&Q=' + encodeURIComponent(rowData.Q)
-        + '&U=' + encodeURIComponent(rowData.U);
-      const r = await jsonp(url);
-      if (r && r.success) success++;
-      else { fail++; console.log('행 추가 실패:', r && r.error); }
-    } catch(e) { fail++; console.log('행 추가 예외:', e.message); }
+  // 사업자별 건수 집계
+  const bizNames = { '1':'모다mall', '2':'모다mall2', '3':'모다mall3', '4':'모다mall4', '5':'수기mall', '6':'불사자(통합)' };
+  const summary = [];
+  for (const bid of ['1','2','3','4','5','6']) {
+    if (bizGroups[bid].length > 0) summary.push(bizNames[bid] + ' ' + bizGroups[bid].length + '건');
+  }
+  progress.textContent = '📊 분류 완료: ' + (summary.join(', ') || '없음');
+
+  // 사업자 데이터가 하나도 없으면 종료
+  const totalToUpload = Object.values(bizGroups).reduce((a, b) => a + b.length, 0);
+  if (totalToUpload === 0) {
+    btn.disabled = false;
+    showToast('⚠ 처리할 데이터가 없습니다');
+    return;
+  }
+
+  // 사업자별로 순차 업로드
+  let totalSuccess = 0, totalFail = 0;
+  let processedCount = 0;
+
+  for (const bid of ['1','2','3','4','5','6']) {
+    const bizCols = bizGroups[bid];
+    if (!bizCols.length) continue;
+
+    for (let i = 0; i < bizCols.length; i++) {
+      processedCount++;
+      progress.textContent = '🏪 ' + bizNames[bid] + ' (' + (i+1) + '/' + bizCols.length + ') · 전체 ' + processedCount + '/' + totalToUpload;
+      const cols = bizCols[i];
+
+      const rowData = {
+        A: cols[0]  || '', B: cols[1]  || '', C: cols[2]  || '', D: cols[3]  || '',
+        E: cols[4]  || '', F: cols[5]  || '', G: cols[6]  || '', H: cols[7]  || '',
+        I: cols[8]  || '', J: cols[9]  || '', K: cols[10] || '', L: cols[11] || '',
+        M: cols[12] || '', N: cols[13] || '', O: cols[14] || '', P: cols[15] || '',
+        Q: cols[19] || '', // T열(인덱스19) → Q열
+        U: cols[20] || '', // U열(인덱스20) → U열
+      };
+
+      try {
+        const url = GAS_BASE
+          + '?ssId='      + encodeURIComponent(bid)  // ★ 자동 분류된 사업자 ID
+          + '&action=appendRow'
+          + '&sheetName=' + encodeURIComponent(sheetNm)
+          + '&A=' + encodeURIComponent(rowData.A)
+          + '&B=' + encodeURIComponent(rowData.B)
+          + '&C=' + encodeURIComponent(rowData.C)
+          + '&D=' + encodeURIComponent(rowData.D)
+          + '&E=' + encodeURIComponent(rowData.E)
+          + '&F=' + encodeURIComponent(rowData.F)
+          + '&G=' + encodeURIComponent(rowData.G)
+          + '&H=' + encodeURIComponent(rowData.H)
+          + '&I=' + encodeURIComponent(rowData.I)
+          + '&J=' + encodeURIComponent(rowData.J)
+          + '&K=' + encodeURIComponent(rowData.K)
+          + '&L=' + encodeURIComponent(rowData.L)
+          + '&M=' + encodeURIComponent(rowData.M)
+          + '&N=' + encodeURIComponent(rowData.N)
+          + '&O=' + encodeURIComponent(rowData.O)
+          + '&P=' + encodeURIComponent(rowData.P)
+          + '&Q=' + encodeURIComponent(rowData.Q)
+          + '&U=' + encodeURIComponent(rowData.U);
+        const r = await jsonp(url);
+        if (r && r.success) totalSuccess++;
+        else { totalFail++; console.log('행 추가 실패:', r && r.error); }
+      } catch(e) { totalFail++; console.log('행 추가 예외:', e.message); }
+    }
   }
 
   btn.disabled = false;
-
-  // 모달 닫기
   closePasteModal();
 
-  if (success > 0) {
-    // 토스트 표시
-    showToast('✅ ' + success + '행 추가 완료!' + (fail ? ' (실패 ' + fail + '행)' : ''));
-    // 토스트 사라질 때 새로고침
+  if (totalSuccess > 0) {
+    let msg = '✅ ' + totalSuccess + '건 등록 완료';
+    msg += '\n' + summary.join(', ');
+    if (totalFail) msg += '\n(실패 ' + totalFail + '건)';
+    if (skipped.length) msg += '\n(스킵 ' + skipped.length + '건)';
+    showToast(msg);
+
+    // 현재 보고 있는 사업자 데이터 새로고침
     setTimeout(async () => {
       try {
         const r2 = await jsonp(GAS_BASE + '?ssId=' + encodeURIComponent(currentBiz) + '&action=getMonthData&sheetName=' + encodeURIComponent(sheetNm));
@@ -3544,6 +4548,7 @@ async function saveOptNote(pid, orderNo, sheetName, uid) {
 let openCards = new Set();
 
 function toggleCard(uid) {
+  const card = document.getElementById('card-' + uid);
   const body = document.getElementById('rc-body-' + uid);
   const act  = document.getElementById('rc-act-'  + uid);
   const exp  = document.getElementById('rc-exp-'  + uid);
@@ -3551,15 +4556,18 @@ function toggleCard(uid) {
   if (body) body.classList.toggle('open', !isOpen);
   if (act)  act.classList.toggle('open',  !isOpen);
   if (exp)  exp.classList.toggle('open',  !isOpen);
+  if (card) card.classList.toggle('expanded', !isOpen);
   if (isOpen) openCards.delete(uid);
   else openCards.add(uid);
 }
 
 function restoreOpenCards() {
   openCards.forEach(uid => {
+    const card = document.getElementById('card-' + uid);
     const body = document.getElementById('rc-body-' + uid);
     const act  = document.getElementById('rc-act-'  + uid);
     const exp  = document.getElementById('rc-exp-'  + uid);
+    if (card) card.classList.add('expanded');
     if (body) body.classList.add('open');
     if (act)  act.classList.add('open');
     if (exp)  exp.classList.add('open');
@@ -3678,7 +4686,7 @@ function updStats() {}
 
 function render() {
   const list = customers.filter(c => {
-    const s = status(c.orderNo);
+    const s = status(c.phone);
     if (activeFilter==='unsent') return s===0;
     if (activeFilter==='s1') return s===1;
     if (activeFilter==='s2') return s===2;
@@ -3694,18 +4702,18 @@ function render() {
 
 function cardHtml(c, idx, totalCount) {
   if (!c.phone) c.phone = c.orderNo.replace(/\D/g,'').slice(-11);
-  const pid = c.orderNo;
+  const pid = c.phone;
   const s   = status(pid);
   const sc  = ['s0','s1','s2'][s];
-  const isCancelled = smap[pid] && smap[pid].cancelled;
-  const ph  = (c.phone||'').replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
+  const isCancelled = smap[c.orderNo] && smap[c.orderNo].cancelled;
+  const ph  = pid.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
   const uid = 'c' + (idx !== undefined ? idx : Math.random().toString(36).slice(2));
   // 내림차순 번호: 전체 개수 - 현재 인덱스
   const rowNo = (totalCount !== undefined && idx !== undefined) ? (totalCount - idx) : '';
 
-  const _orig = monthData.find(d => d.orderNo === pid) || c;
+  const _orig = monthData.find(d => d.orderNo === c.orderNo && d.phone === pid) || c;
   const tabVal = calcTab(_orig);
-  const statusLabel = {all:'주문전',unsent:'주문완료',req:'주문요청중',baeji:'신청서작성',tao:'현지배송',recv:'배대지수령',s1:'배송',s2:'판매완료',cancel:'주문취소'}[tabVal]||'주문전';
+  const statusLabel = {all:'주문전',unsent:'주문완료',req:'주문요청중',baeji:'신청서작성',tao:'현지배송',recv:'발송처리',s1:'배송',s2:'판매완료',cancel:'주문취소'}[tabVal]||'주문전';
   const statusClass = tabVal || 'all';
   const cancelledCard = isCancelled || tabVal === 'cancel';
 
@@ -3750,36 +4758,69 @@ function cardHtml(c, idx, totalCount) {
     <!-- 헤더: 항상 보임 - 구글시트 행 스타일 -->
     <div class="rc-header" id="rch-${uid}">
       <div class="rc-hcell rc-hno" style="justify-content:center;font-weight:700;color:#212121;font-size:13px;background:#f5f5f5;">${rowNo}</div>
-      <div class="rc-hcell rc-hstatus" style="justify-content:center;flex-direction:column;gap:2px;padding:2px 4px;"
+      <div class="rc-hcell rc-hstatus ${(c.deliveryType || (smap[c.orderNo]&&smap[c.orderNo].dv))?'cell-shipped':''}" style="justify-content:center;flex-direction:column;gap:2px;padding:2px 4px;"
            ${(() => {
              const fastroInfo = parseFastroNote(c.recipientNote);
              return fastroInfo ? `onclick="event.stopPropagation();showFastroModal('${c.orderNo}')" style="cursor:pointer;justify-content:center;flex-direction:column;gap:2px;padding:2px 4px;"` : '';
            })()}>
-        <span class="status-badge ${statusClass}">${statusLabel}</span>
+        ${(() => {
+          const fastroInfo = parseFastroNote(c.recipientNote);
+          // 패스트로 "출고완료" + 모다허브 상태 "현지배송"이면 → 현지배송 배지 숨김
+          if (fastroInfo && fastroInfo.state === '출고완료' && statusClass === 'tao') {
+            return '';
+          }
+          return `<span class="status-badge ${statusClass}">${statusLabel}</span>`;
+        })()}
+        
         ${(() => {
           const fastroInfo = parseFastroNote(c.recipientNote);
           if (!fastroInfo) return '';
+          // ★ 판매완료 상태 + 출고완료 → 출고완료 라인 숨김 (판매완료만 표시)
+          if (fastroInfo.state === '출고완료' && statusClass === 's2') {
+            // 운송장만 표시 (CJ/경동 조회 링크는 유지)
+            let html = '';
+            if (fastroInfo.kdongInvoice) {
+              html += `<div class="fastro-invoice-line kdong-color" onclick="event.stopPropagation();trackKdong('${fastroInfo.kdongInvoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 경동택배 조회">경동 ${fastroInfo.kdongInvoice} 🔍</div>`;
+            } else if (fastroInfo.invoice) {
+              html += `<div class="fastro-invoice-line" onclick="event.stopPropagation();trackCJ('${fastroInfo.invoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 CJ대한통운 조회">CJ ${fastroInfo.invoice} 🔍</div>`;
+            }
+            return html;
+          }
           const stateLabel = fastroStateLabel(fastroInfo.state, !!fastroInfo.invoice);
           const stateCls = fastroStateClass(fastroInfo.state, !!fastroInfo.invoice);
           const icon = fastroInfo.state==='출고완료' ? '✅' : (fastroInfo.invoice ? '🚚' : '📦');
           let html = `<div class="rc-fastro-line ${stateCls}" title="클릭하여 상세보기">
             <span class="fastro-icon">${icon}</span>${stateLabel}
           </div>`;
+
+
           // 경동택배가 있으면 경동을 우선 표시 (마지막 단계 배송)
           // CJ는 경동이 없을 때만 표시 (한국 도착 후 경동 발송 전)
-          if (fastroInfo.kdongInvoice) {
-            html += `<div class="fastro-invoice-line kdong-color">경동 ${fastroInfo.kdongInvoice}</div>`;
+         if (fastroInfo.kdongInvoice) {
+            html += `<div class="fastro-invoice-line kdong-color" onclick="event.stopPropagation();trackKdong('${fastroInfo.kdongInvoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 경동택배 조회">경동 ${fastroInfo.kdongInvoice} 🔍</div>`;
           } else if (fastroInfo.invoice) {
-            html += `<div class="fastro-invoice-line">CJ ${fastroInfo.invoice}</div>`;
+            html += `<div class="fastro-invoice-line" onclick="event.stopPropagation();trackCJ('${fastroInfo.invoice}')" style="cursor:pointer;text-decoration:underline;" title="클릭하여 CJ대한통운 조회">CJ ${fastroInfo.invoice} 🔍</div>`;
           }
           return html;
         })()}
       </div>
-      <div class="rc-hcell rc-source rc-hcell-col ${(smap[pid]&&smap[pid].s==='fast')?'src-fast':(smap[pid]&&smap[pid].s==='joeun-air')?'src-jair':(smap[pid]&&smap[pid].s==='joeun-sea')?'src-jsea':(smap[pid]&&smap[pid].s==='lcl-out')?'src-lclout':''}">
+      <div class="rc-hcell rc-source rc-hcell-col ${(c.deliveryType || (smap[c.orderNo]&&smap[c.orderNo].dv))?'cell-shipped ':''}${(() => {
+        const f = (c.fBg||'').toLowerCase();
+        if (f.includes('ff9800') || f.includes('ff6d00') || f.includes('e65100') || f.includes('ffa726')) return 'src-fast';
+        if (f.includes('8bc34a') || f.includes('7cb342') || f.includes('689f38') || f.includes('33691e')) return 'src-jair';
+        if (f.includes('9c27b0') || f.includes('7b1fa2') || f.includes('6a1b9a')) return 'src-jsea';
+        if (f.includes('a04545') || f.includes('c62828') || f.includes('b71c1c')) return 'src-lclout';
+        if (smap[c.orderNo]&&smap[c.orderNo].s==='fast') return 'src-fast';
+        if (smap[c.orderNo]&&smap[c.orderNo].s==='joeun-air') return 'src-jair';
+        if (smap[c.orderNo]&&smap[c.orderNo].s==='joeun-sea') return 'src-jsea';
+        if (smap[c.orderNo]&&smap[c.orderNo].s==='lcl-out') return 'src-lclout';
+        return '';
+      })()}">
         <span class="rc-truncate ${(c.sourceNote && c.sourceNote.trim()!=='LCL출고')?'rc-has-memo':''}" id="hsrc-${uid}">${c.source||'-'}</span>
-        ${(smap[pid]&&smap[pid].s==='lcl-out') ? '<span class="lclout-label">LCL출고</span>' : ''}
+        ${(smap[c.orderNo]&&smap[c.orderNo].s==='lcl-out') ? '<span class="lclout-label">LCL출고</span>' : ''}
         <div class="rc-memo-inline" id="snote-line-${uid}">${(c.sourceNote && c.sourceNote.trim()!=='LCL출고') ? '<span class="rc-memo-text">' + c.sourceNote.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>' : ''}</div>
       </div>
+      <div class="rc-hcell rc-horderDate ${(c.deliveryType || (smap[c.orderNo]&&smap[c.orderNo].dv))?'cell-shipped':''} ${isGBlue(c.eBg)?'orderno-blue':(isOrangeCell(c.eBg)?'orderno-orange':(isYellow(c.eBg)?'orderno-sent':(isRed(c.eBg)?'cell-cancelled':'')))}" style="font-family:'Consolas','Courier New',monospace;font-size:12px;justify-content:center;text-align:center;">${formatOrderDate(c.orderDate)}</div>
       <div class="rc-hcell rc-horderNo rc-hcell-col ${isGBlue(c.gBg)?'orderno-blue':(isOrangeCell(c.gBg)?'orderno-orange':(isYellow(c.gBg)?'orderno-sent':''))}">
         <span class="rc-truncate ${c.orderNote?'rc-has-memo':''}">${c.orderNo||'-'}</span>
         <div class="rc-memo-inline" id="ordnote-line-${uid}">${c.orderNote ? '<span class="rc-memo-text">' + c.orderNote.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</span>' : ''}</div>
@@ -3787,7 +4828,8 @@ function cardHtml(c, idx, totalCount) {
 
       <div class="rc-hcell rc-hname ${isOrangeCell(c.hBg)?'name-orange':(isYellow(c.hBg)?'name-yellow':'')}">
         <span class="rc-truncate" id="hname-${uid}">${c.name}</span>
-        ${(c.baejiNo && (/^SH/i.test(String(c.baejiNo).trim()) || /^\d{8}$/.test(String(c.baejiNo).trim()))) ? `<div class="rc-baeji-no">${c.baejiNo}</div>` : ''}
+         ${(c.baejiNo && (/^SH/i.test(String(c.baejiNo).trim()) || /^\d{8}$/.test(String(c.baejiNo).trim()))) ? `<div class="rc-baeji-no">${c.baejiNo}</div>` : ''}
+
       </div>
       <div class="rc-hcell rc-hprod rc-hcell-col ${isYellow(c.iBg)?'prod-yellow':''}" onclick="event.stopPropagation()">
         <span class="rc-truncate ${c.prodNote?'rc-has-memo':''}" id="hprod-${uid}">${c.product||'-'}</span>
@@ -3831,9 +4873,9 @@ function cardHtml(c, idx, totalCount) {
 
       <!-- 2번: 액션 버튼 -->
       <div class="rc-act-row">
-        <button class="act-btn req ${smap[pid]&&smap[pid].r?'done':''}" id="reqbtn-${pid}" onclick="event.stopPropagation();requestOrder('${pid}','${c.orderNo}')">${smap[pid]&&smap[pid].r?'📤 주문요청중':'📤 주문요청'}</button>
-        <button class="act-btn cancel ${smap[pid]&&smap[pid].cancelled?'done':''}" id="cancelbtn-${pid}" onclick="event.stopPropagation();cancelOrder('${pid}','${c.orderNo}')">${smap[pid]&&smap[pid].cancelled?'🚫 취소':'🚫 주문취소'}</button>
-        <button class="act-btn order ${smap[pid]&&smap[pid].oo?'done':''}" id="orderbtn-${pid}" onclick="event.stopPropagation();orderToggle('${pid}','${c.orderNo}')">${smap[pid]&&smap[pid].oo?'✓ 주문완료':'🛒 주문'}</button>
+        <button class="act-btn req ${smap[c.orderNo]&&smap[c.orderNo].r?'done':''}" id="reqbtn-${pid}" onclick="event.stopPropagation();requestOrder('${pid}','${c.orderNo}')">${smap[c.orderNo]&&smap[c.orderNo].r?'📤 주문요청중':'📤 주문요청'}</button>
+        <button class="act-btn cancel ${smap[c.orderNo]&&smap[c.orderNo].cancelled?'done':''}" id="cancelbtn-${pid}" onclick="event.stopPropagation();cancelOrder('${pid}','${c.orderNo}')">${smap[c.orderNo]&&smap[c.orderNo].cancelled?'🚫 취소':'🚫 주문취소'}</button>
+        <button class="act-btn order ${smap[c.orderNo]&&smap[c.orderNo].oo?'done':''}" id="orderbtn-${pid}" onclick="event.stopPropagation();orderToggle('${pid}','${c.orderNo}')">${smap[c.orderNo]&&smap[c.orderNo].oo?'✓ 주문완료':'🛒 주문'}</button>
         <div class="act-baeji-inline" onclick="event.stopPropagation()">
           <span class="act-baeji-label">📋 배대지 신청</span>
           <input class="act-baeji-input" id="baeji-input-${pid}" type="text"
@@ -3854,7 +4896,7 @@ function cardHtml(c, idx, totalCount) {
         <!-- 발송처리 -->
         <button class="act-btn ship-done ${getShipDoneBtnClass(c)}" id="shipdonebtn-${pid}" onclick="event.stopPropagation();toggleShipDone('${pid}','${c.orderNo}','${c.sheetName}')">${getShipDoneBtnLabel(c)}</button>
         <div class="ship-wrap" id="shipwrap-${pid}">
-          <button class="act-btn ship ${getShipBtnClass(pid)}" id="shipbtn-${pid}" onclick="event.stopPropagation();toggleShipMenu('${pid}')">${getShipBtnLabel(pid)}</button>
+          <button class="act-btn ship ${getShipBtnClass(c.orderNo)}" id="shipbtn-${pid}" onclick="event.stopPropagation();toggleShipMenu('${pid}')">${getShipBtnLabel(c.orderNo)}</button>
           <div class="ship-dropdown" id="shipdrop-${pid}">
             <div class="ship-option fast-opt" onclick="selectShip('${pid}','${c.orderNo}','fast')">🟠 패스트로 항공</div>
             <div class="ship-option jair-opt" onclick="selectShip('${pid}','${c.orderNo}','joeun-air')">🟢 조은직구 항공</div>
@@ -3863,17 +4905,17 @@ function cardHtml(c, idx, totalCount) {
           </div>
         </div>
         <div class="ship-wrap" id="kdongwrap-${pid}">
-          <button class="act-btn kdong" id="kdongbtn-${pid}" onclick="event.stopPropagation();toggleKdongMenu('${pid}')">🚚 경동</button>
+          <button class="act-btn kdong" id="kdongbtn-${pid}" onclick="event.stopPropagation();toggleKdongMenu('${pid}','${c.orderNo}')">🚚 경동</button>
           <div class="kdong-dropdown" id="kdongdrop-${pid}">
-            <div class="kdong-option k-k1 ${(smap[pid]&&smap[pid].k==='k1')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k1')"><span class="opt-icon">📦</span> 경동포함${(smap[pid]&&smap[pid].k==='k1')?' <span class="opt-check">✓</span>':''}</div>
-            <div class="kdong-option k-k2 ${(smap[pid]&&smap[pid].k==='k2')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k2')"><span class="opt-icon">📦</span> 경동관부포함${(smap[pid]&&smap[pid].k==='k2')?' <span class="opt-check">✓</span>':''}</div>
-            <div class="kdong-option k-k3 ${(smap[pid]&&smap[pid].k==='k3')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k3')"><span class="opt-icon">🚚</span> 개인용달${(smap[pid]&&smap[pid].k==='k3')?' <span class="opt-check">✓</span>':''}</div>
-            <div class="kdong-option k-k4 ${(smap[pid]&&smap[pid].k==='k4')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k4')"><span class="opt-icon">🚚</span> 개인용달포함${(smap[pid]&&smap[pid].k==='k4')?' <span class="opt-check">✓</span>':''}</div>
-            <div class="kdong-option k-k5 ${(smap[pid]&&smap[pid].k==='k5')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k5')"><span class="opt-icon">🚚</span> 개인용달관부포함${(smap[pid]&&smap[pid].k==='k5')?' <span class="opt-check">✓</span>':''}</div>
+            <div class="kdong-option k-k1 ${(smap[c.orderNo]&&smap[c.orderNo].k==='k1')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k1')"><span class="opt-icon">📦</span> 경동포함${(smap[c.orderNo]&&smap[c.orderNo].k==='k1')?' <span class="opt-check">✓</span>':''}</div>
+            <div class="kdong-option k-k2 ${(smap[c.orderNo]&&smap[c.orderNo].k==='k2')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k2')"><span class="opt-icon">📦</span> 경동관부포함${(smap[c.orderNo]&&smap[c.orderNo].k==='k2')?' <span class="opt-check">✓</span>':''}</div>
+            <div class="kdong-option k-k3 ${(smap[c.orderNo]&&smap[c.orderNo].k==='k3')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k3')"><span class="opt-icon">🚚</span> 개인용달${(smap[c.orderNo]&&smap[c.orderNo].k==='k3')?' <span class="opt-check">✓</span>':''}</div>
+            <div class="kdong-option k-k4 ${(smap[c.orderNo]&&smap[c.orderNo].k==='k4')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k4')"><span class="opt-icon">🚚</span> 개인용달포함${(smap[c.orderNo]&&smap[c.orderNo].k==='k4')?' <span class="opt-check">✓</span>':''}</div>
+            <div class="kdong-option k-k5 ${(smap[c.orderNo]&&smap[c.orderNo].k==='k5')?'selected':''}" onclick="event.stopPropagation();selectKdong('${pid}','${c.orderNo}','k5')"><span class="opt-icon">🚚</span> 개인용달관부포함${(smap[c.orderNo]&&smap[c.orderNo].k==='k5')?' <span class="opt-check">✓</span>':''}</div>
           </div>
         </div>
         <div class="ship-wrap" id="finalwrap-${pid}">
-          <button class="act-btn final ${getFinalShipBtnClass(pid)}" id="finalbtn-${pid}" onclick="event.stopPropagation();toggleFinalShipMenu('${pid}')">🚚 ${getFinalShipBtnLabel(pid)}</button>
+          <button id="finalbtn-${pid}" class="act-btn final${(c.deliveryType || (smap[c.orderNo]&&smap[c.orderNo].dv))?' done':''}" onclick="event.stopPropagation();toggleFinalShipMenu('${pid}')">🚚 ${c.deliveryType || (smap[c.orderNo]&&smap[c.orderNo].dv) || '판매완료'}</button>
           <div class="ship-dropdown" id="finalshipdrop-${pid}" style="min-width:130px;">
             <div class="ship-option" onclick="selectDelivery('${pid}','${c.orderNo}','CJ대한통운')"><span class="opt-icon">🚚</span> CJ대한통운</div>
             <div class="ship-option" onclick="selectDelivery('${pid}','${c.orderNo}','경동화물')"><span class="opt-icon">🏭</span> 경동화물</div>
@@ -4026,7 +5068,7 @@ function cardHtml(c, idx, totalCount) {
 
       <!-- 4번: 문자발송 버튼 -->
       <div class="rc-msg-row">
-        <button class="gbtn ${smap[pid]&&smap[pid].c?'sent':''}" id="icon-${pid}" onclick="event.stopPropagation();previewContact('${pid}','${encName}','${encProd}','${encOpt}','${encSrc}','${c.orderNo}','${encCust}','${encMemo2}')">👤<span>${smap[pid]&&smap[pid].c?'저장완료':'주소록저장'}</span></button>
+        <button class="gbtn ${smap[c.orderNo]&&smap[c.orderNo].c?'sent':''}" id="icon-${pid}" onclick="event.stopPropagation();previewContact('${pid}','${encName}','${encProd}','${encOpt}','${encSrc}','${c.orderNo}','${encCust}','${encMemo2}')">👤<span>${smap[c.orderNo]&&smap[c.orderNo].c?'저장완료':'주소록저장'}</span></button>
         <button class="gbtn" onclick="event.stopPropagation();openContactSms('${pid}','${encName}','${encProd}','${encSrc}')">💬<span>문자보내기</span></button>
         <button class="gbtn" id="gb-order-${pid}" onclick="event.stopPropagation();openOrder('${pid}')">📋<span>주문내역</span></button>
         ${gbtns}
@@ -4081,8 +5123,8 @@ function openOrder(pid) {
   const isOpen = p1.classList.contains('open');
   closeAll(pid);
   if (!isOpen) {
-    // monthData에서 직접 찾기 (orderNo로 매칭)
-    const mc = monthData.find(c => c.orderNo === pid);
+    // monthData에서 직접 찾기 (phone으로 매칭)
+    const mc = monthData.find(c => c.phone === pid);
     const ta = document.getElementById('msg1-'+pid);
     if (ta && mc && mc.message) {
       ta.value = mc.message;
@@ -4137,8 +5179,7 @@ function send1edit(pid) {
   const ta = document.getElementById('msg1-'+pid);
   const msg = ta ? ta.value : '';
   if (!msg) return;
-  const _ph1e = (monthData.find(c => c.orderNo === pid) || {}).phone || '';
-  window.location.href = 'sms:' + _ph1e + '?body=' + encodeURIComponent(msg);
+  window.location.href = 'sms:' + pid + '?body=' + encodeURIComponent(msg);
   setTimeout(() => {
     ini(pid); smap[pid].o = true; save();
     const bb1 = document.getElementById('bb1-'+pid);
@@ -4148,8 +5189,8 @@ function send1edit(pid) {
     GROUPS.forEach((_,gi) => { const b=document.getElementById('gb-'+pid+'-'+gi); if(b) b.classList.remove('off'); });
     updCard(pid); updStats();
     // 월별 시트 해당 주문번호 행 노란색 색칠
-    const c = customers.find(c => c.orderNo === pid)
-           || monthData.find(c => c.orderNo === pid);
+    const c = customers.find(c => c.phone === pid)
+           || monthData.find(c => c.phone === pid);
     if (c && c.orderNo) highlightRow(c.orderNo);
   }, 800);
 }
@@ -4161,7 +5202,7 @@ function getFinalShipBtnClass(pid) {
 
 function getFinalShipBtnLabel(pid) {
   const dv = smap[pid] && smap[pid].dv || '';
-  return dv ? '🚚 ' + dv : '🚚 최종택배발송';
+  return dv ? '🚚 ' + dv : '🚚 판매완료';
 }
 
 function getShipBtnClass(pid) {
@@ -4280,13 +5321,15 @@ async function toggleShipDone(pid, orderNo, sheetName) {
   // 로컬 데이터 갱신
   if (mc) {
     if (isDone) {
-      mc.gBg = '#ffffff';
+      mc.hBg = '#ffffff';
       mc.orderNote = '';
     } else {
-      mc.gBg = '#81d4fa';
+      mc.hBg = '#FF9800';
       mc.orderNote = '발송처리완료';
     }
   }
+
+
   // 화면 즉시 갱신
   if (typeof renderMonthPage === 'function') renderMonthPage();
 
@@ -4343,24 +5386,25 @@ function toggleFinalShipMenu(pid) {
 async function selectDelivery(pid, orderNo, type) {
   const drop = document.getElementById('finalshipdrop-' + pid);
   if (drop) drop.classList.remove('open');
-  if (!smap[pid]) ini(pid);
+  if (!smap[orderNo]) ini(orderNo);
 
   // 같은 항목 다시 누르면 취소
-  const current = smap[pid].dv || '';
+  const current = smap[orderNo].dv || '';
   const newType = current === type ? '' : type;
 
-  smap[pid].dv = newType;
+  smap[orderNo].dv = newType;
   save();
   const btn = document.getElementById('finalbtn-' + pid);
   if (btn) {
-    btn.textContent = newType ? '🚚 ' + newType : '🚚 최종택배발송';
+    btn.textContent = newType ? '🚚 ' + newType : '🚚 판매완료';
     btn.className = 'act-btn final' + (newType ? ' done' : '');
   }
 
-  // ★ G열 색상: 선택시 파란색, 취소시 주황색 (배대지수령)
+  // ★ G열 색상 + 카드 전체 색칠
   monthData.forEach(c => {
     if (c.orderNo === orderNo) {
-      c.gBg = newType ? '#87ceeb' : '#ff9800';
+      c.gBg = newType ? '#81D4FA' : '#ff9800';
+      c.deliveryType = newType;  // ★ 시트값도 즉시 업데이트
     }
   });
 
@@ -4368,14 +5412,15 @@ async function selectDelivery(pid, orderNo, type) {
   monthPage = 1;
   renderMonthPage();
 
-  // 백그라운드에서 시트 업데이트
+  // 백그라운드에서 시트 업데이트 (행 전체 색칠) - 현재 보는 월 우선
   try {
-    await jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=deliverySelect&orderNo=' + encodeURIComponent(orderNo) + '&type=' + encodeURIComponent(newType));
-    showToast(newType ? '✅ ' + newType + ' 선택완료' : '✅ 선택 취소');
+    const _mc_ds = monthData.find(c => c.orderNo === orderNo);
+    const _sh_ds = _mc_ds && _mc_ds.sheetName ? '&sheetName=' + encodeURIComponent(_mc_ds.sheetName) : '';
+    await jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=deliverySelect&orderNo=' + encodeURIComponent(orderNo) + '&type=' + encodeURIComponent(newType) + _sh_ds);
+    showToast(newType ? '✅ ' + newType + ' - 완료 처리됨' : '✅ 선택 취소');
   } catch(e) { showToast('⚠ 저장실패'); }
 }
-
-function toggleKdongMenu(pid) {
+function toggleKdongMenu(pid, orderNo) {
   document.querySelectorAll('.kdong-dropdown.open').forEach(d => {
     if (d.id !== 'kdongdrop-'+pid) d.classList.remove('open');
   });
@@ -4386,7 +5431,7 @@ function toggleKdongMenu(pid) {
   drop.style.left = Math.max(4, rect.left - 60) + 'px';
 
   // 현재 선택 상태에 따라 체크 표시 업데이트
-  const currentK = (smap[pid] && smap[pid].k) || '';
+  const currentK = (smap[orderNo] && smap[orderNo].k) || '';
   drop.querySelectorAll('.kdong-option').forEach(opt => {
     const cls = Array.from(opt.classList).find(c => c.startsWith('k-k'));
     const optType = cls ? cls.replace('k-', '') : '';
@@ -4410,11 +5455,11 @@ function toggleKdongMenu(pid) {
 async function selectKdong(pid, orderNo, type) {
   document.getElementById('kdongdrop-'+pid).classList.remove('open');
 
-  ini(pid);
-  const current = smap[pid].k || 'none';
+  ini(orderNo);
+  const current = smap[orderNo].k || 'none';
   const newType = (current === type) ? 'none' : type;
 
-  smap[pid].k = newType;
+  smap[orderNo].k = newType;
   save();
 
   // 주문번호 셀(G열) 메모 즉시 반영
@@ -4445,16 +5490,119 @@ async function selectShip(pid, orderNo, type) {
   document.getElementById('shipdrop-'+pid).classList.remove('open');
 
   // 같은 항목 다시 누르면 취소
-  ini(pid);
-  const current = smap[pid].s || 'none';
+  ini(orderNo);
+  const current = smap[orderNo].s || 'none';
   const newType = (current === type) ? 'none' : type;
 
-  smap[pid].s = newType;
+  // ★ LCL 출고 신규 선택 시 → 바로 출고대기(A)로 LCL현황 시트 추가
+  if (newType === 'lcl-out' && current !== 'lcl-out') {
+    smap[orderNo].s = newType;
+    smap[orderNo].lclGroup = 'A';  // 기본값: 출고대기
+    save();
+    renderMonthPage();
+
+    // 1) 운송방식 LCL로 저장
+    jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=shipMethod&orderNo=' + orderNo + '&type=lcl-out')
+      .catch(e => console.log('운송 오류:', e.message));
+
+    // 2) 주문 정보 가져오기 + LCL현황 시트 추가
+    const order = monthData.find(c => c.orderNo === orderNo);
+    if (order) {
+      const bizName = (document.querySelector('.biz-btn.active')?.textContent || '').trim();
+      // ★ 디버그: 어떤 값이 들어가는지 확인
+      console.log('[LCL Add] order data:', {
+        orderNo: orderNo,
+        name: order.name,
+        payAmt: order.payAmt,
+        amount: order.amount,
+        settleAmt: order.settleAmt,
+        taoAmt: order.taoAmt,
+        shipFee: order.shipFee,
+        addShip: order.addShip,
+        profitRate: order.profitRate,
+        marginRate: order.marginRate
+      });
+
+      const params = new URLSearchParams({
+        action: 'lclAdd',
+        ssId: currentBiz,
+        bizName: bizName,
+        orderNo: orderNo,
+        group: 'A',  // 출고대기
+        name: order.name || '',
+        phone: order.phone || '',
+        phone2: order.phone2 || '',
+        product: order.product || '',
+        option: order.option || '',
+        qty: order.qty || '1',
+        amount: order.payAmt || order.amount || '0',
+        address: order.address || '',
+        zipCode: order.zipCode || '',
+        customs: order.customs || '',
+        orderDate: order.orderDate || '',
+        // ★ 손익 관련 필드 (이익은 시트 수식이 자동 계산)
+        settleAmt: order.settleAmt || '0',     // 정산예정금액
+        taoAmt: order.taoAmt || '',             // taobao 오더번호
+        shipFee: order.shipFee || '0',          // 배대지배송비
+        addShip: order.addShip || '0'           // 추가배송비
+      });
+
+      jsonp(GAS_BASE + '?' + params.toString())
+        .then(r => showToast(r && r.success ? '✅ LCL현황 추가 (출고대기)' : '⚠ 시트 추가 실패'))
+        .catch(e => console.log('LCL 추가 오류:', e.message));
+    } else {
+      showToast('⚠ 주문 정보 못 찾음');
+    }
+    return;
+  }
+
+  // ★ LCL 출고 해제 시 → LCL현황 시트에서 제거
+  if (current === 'lcl-out' && newType === 'none') {
+    smap[orderNo].s = newType;
+    delete smap[orderNo].lclGroup;
+    save();
+    renderMonthPage();
+    // 시트 업데이트 (LCL 해제)
+    jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=shipMethod&orderNo=' + orderNo + '&type=' + newType)
+      .catch(e => console.log('운송 오류:', e.message));
+
+    // LCL현황 시트에서 제거 (사업자+수령자+결제금액으로 매칭)
+    const orderForRemove = monthData.find(c => c.orderNo === orderNo);
+    if (orderForRemove) {
+      const bizNameRm = (document.querySelector('.biz-btn.active')?.textContent || '').trim();
+      // ★ 시트에 들어간 값과 동일하게 payAmt 사용
+      const amountForRemove = orderForRemove.payAmt || orderForRemove.amount || '0';
+
+      console.log('[LCL Remove] 매칭 조건:', {
+        bizName: bizNameRm,
+        name: orderForRemove.name,
+        amount: amountForRemove
+      });
+
+      const removeParams = new URLSearchParams({
+        action: 'lclRemove',
+        orderNo: orderNo,
+        bizName: bizNameRm,
+        name: orderForRemove.name || '',
+        amount: amountForRemove
+      });
+      jsonp(GAS_BASE + '?' + removeParams.toString())
+        .then(r => {
+          console.log('[LCL Remove] 결과:', r);
+          showToast(r && r.success && r.removed ? '✅ LCL 해제 완료' : '⚠ 시트에서 제거 못함 (수동 삭제 필요)');
+        })
+        .catch(e => {
+          console.log('LCL 제거 오류:', e.message);
+          showToast('⚠ 오류: ' + e.message);
+        });
+    }
+    return;
+  }
+
+  // 다른 운송 방식 (FAST, JOEUN 등)
+  smap[orderNo].s = newType;
   save();
-
-  // 화면 즉시 갱신
   renderMonthPage();
-
   jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=shipMethod&orderNo=' + orderNo + '&type=' + newType)
     .then(r => showToast(r && r.success ? '✅ 저장완료' : '⚠ 저장실패'))
     .catch(e => console.log('운송 오류:', e.message));
@@ -4470,46 +5618,48 @@ document.addEventListener('click', (e) => {
 async function orderToggle(pid, orderNo) {
   const btn = document.getElementById('orderbtn-'+pid);
   if (!btn) return;
-  ini(pid);
-  const isDone = smap[pid].oo;
-  smap[pid].oo = !isDone;
+  ini(orderNo);
+  const isDone = smap[orderNo].oo;
+  smap[orderNo].oo = !isDone;
   save();
 
   // 데이터 업데이트
   const mIdx = monthData.findIndex(c => c.orderNo === orderNo);
   if (mIdx >= 0) {
-    monthData[mIdx].iBg = smap[pid].oo ? '#ffff00' : '#ffffff';
-    if (smap[pid].oo) {
+    monthData[mIdx].iBg = smap[orderNo].oo ? '#ffff00' : '#ffffff';
+    if (smap[orderNo].oo) {
       monthData[mIdx].lBg = '#ffffff';
-      if (smap[pid].r) smap[pid].r = false;
+      if (smap[orderNo].r) smap[orderNo].r = false;
     }
   }
 
   // 화면 즉시 갱신
   renderMonthPage();
 
-  // 시트 업데이트 (백그라운드)
-  jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=orderToggle&orderNo=' + orderNo + '&cancel=' + (isDone?'1':'0'))
+  // 시트 업데이트 (백그라운드) - 현재 보는 월 우선
+  const _mc_ot = monthData.find(c => c.orderNo === orderNo);
+  const _sh_ot = _mc_ot && _mc_ot.sheetName ? '&sheetName=' + encodeURIComponent(_mc_ot.sheetName) : '';
+  jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=orderToggle&orderNo=' + orderNo + '&cancel=' + (isDone?'1':'0') + _sh_ot)
     .catch(e => console.log('주문 오류:', e.message));
 }
 
 async function cancelOrder(pid, orderNo) {
-  ini(pid);
-  const isDone = smap[pid].cancelled;
-  smap[pid].cancelled = !isDone;
+  ini(orderNo);
+  const isDone = smap[orderNo].cancelled;
+  smap[orderNo].cancelled = !isDone;
   save();
 
   // 데이터 업데이트
   const cIdx = monthData.findIndex(c => c.orderNo === orderNo);
   if (cIdx >= 0) {
-    monthData[cIdx].cancelled = smap[pid].cancelled;
+    monthData[cIdx].cancelled = smap[orderNo].cancelled;
   }
 
   // 화면 즉시 갱신
   renderMonthPage();
 
   // 시트 업데이트 (백그라운드)
-  jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=cancelOrder&orderNo=' + orderNo + '&cancel=' + (smap[pid].cancelled ? '1' : '0'))
+  jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=cancelOrder&orderNo=' + orderNo + '&cancel=' + (smap[orderNo].cancelled ? '1' : '0'))
     .catch(e => console.log('주문취소 오류:', e.message));
 }
 
@@ -4534,19 +5684,21 @@ document.addEventListener('click', (e) => {
 async function baejiRequest(pid, orderNo) {
   const btn = document.getElementById('baejibtn-'+pid);
   if (!btn) return;
-  ini(pid);
-  const isDone = smap[pid].b;
+  ini(orderNo);
+  const isDone = smap[orderNo].b;
 
   if (isDone) {
-    smap[pid].b = false;
-    smap[pid].baejiNo = '';
+    smap[orderNo].b = false;
+    smap[orderNo].baejiNo = '';
     save();
     monthData.forEach(c => { if (c.orderNo === orderNo) { c.hBg = '#ffffff'; } });
 
     // 화면 즉시 갱신
     renderMonthPage();
 
-    jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=baejiRequest&orderNo=' + orderNo + '&cancel=1&baejiNo=')
+    const _mc_bc = monthData.find(c => c.orderNo === orderNo);
+    const _sh_bc = _mc_bc && _mc_bc.sheetName ? '&sheetName=' + encodeURIComponent(_mc_bc.sheetName) : '';
+    jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=baejiRequest&orderNo=' + orderNo + '&cancel=1&baejiNo=' + _sh_bc)
       .then(r => showToast(r && r.success ? '✅ 취소완료' : '⚠ 저장실패'))
       .catch(e => console.log('배대지 오류:', e.message));
   } else {
@@ -4589,9 +5741,9 @@ async function confirmBaeji(pid, orderNo) {
   const modal = document.getElementById('baeji-modal');
   if (modal) modal.remove();
 
-  ini(pid);
-  smap[pid].b = true;
-  smap[pid].baejiNo = finalNo;
+  ini(orderNo);
+  smap[orderNo].b = true;
+  smap[orderNo].baejiNo = finalNo;
   save();
 
   // 데이터 업데이트
@@ -4604,7 +5756,9 @@ async function confirmBaeji(pid, orderNo) {
   renderMonthPage();
 
   showToast('💾 배대지 신청 저장 중...');
-  jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=baejiRequest&orderNo=' + orderNo + '&cancel=0&baejiNo=' + encodeURIComponent(finalNo))
+  const _mc_bj = monthData.find(c => c.orderNo === orderNo);
+  const _sh_bj = _mc_bj && _mc_bj.sheetName ? '&sheetName=' + encodeURIComponent(_mc_bj.sheetName) : '';
+  jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=baejiRequest&orderNo=' + orderNo + '&cancel=0&baejiNo=' + encodeURIComponent(finalNo) + _sh_bj)
     .then(r => showToast(r && r.success ? '✅ 배대지 저장완료' : '⚠ 저장실패'))
     .catch(e => console.log('배대지 오류:', e.message));
 }
@@ -4613,23 +5767,27 @@ async function requestOrder(pid, orderNo) {
   const btn = document.getElementById('reqbtn-'+pid);
   if (!btn) return;
 
-  ini(pid);
-  const isDone = smap[pid].r;
+  ini(orderNo);
+  const isDone = smap[orderNo].r;
 
   btn.textContent = '⏳ 처리중...';
   btn.style.pointerEvents = 'none';
 
+  // ★ monthData에서 sheetName 가져와서 전달 (현재월 우선 검색용)
+  const mc = monthData.find(c => c.orderNo === orderNo);
+  const shParam = mc && mc.sheetName ? '&sheetName=' + encodeURIComponent(mc.sheetName) : '';
+
   try {
-    await jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=requestOrder&orderNo=' + orderNo + '&cancel=' + (isDone ? '1' : '0'));
+    await jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=requestOrder&orderNo=' + orderNo + '&cancel=' + (isDone ? '1' : '0') + shParam);
 
     if (isDone) {
       // 취소
-      smap[pid].r = false;
-      delete smap[pid].reqTime;
+      smap[orderNo].r = false;
+      delete smap[orderNo].reqTime;
     } else {
       // 요청
-      smap[pid].r = true;
-      smap[pid].reqTime = Date.now();
+      smap[orderNo].r = true;
+      smap[orderNo].reqTime = Date.now();
     }
     save();
 
@@ -4664,8 +5822,7 @@ function send1Direct(pid) {
   const msg = ta ? ta.value : '';
   if (!msg) return;
   const encoded = encodeURIComponent(msg);
-  const _ph1d = (monthData.find(c => c.orderNo === pid) || {}).phone || '';
-  window.location.href = 'sms:' + _ph1d + '?body=' + encoded;
+  window.location.href = 'sms:' + pid + '?body=' + encoded;
   setTimeout(() => {
     ini(pid); smap[pid].o = true; save();
     const bb1 = document.getElementById('bb1-'+pid);
@@ -4676,7 +5833,7 @@ function send1Direct(pid) {
     const p1 = document.getElementById('p1-'+pid);
     if (p1) p1.classList.remove('open');
     // E열 진한노란 배경 설정
-    const mIdx = monthData.findIndex(c => c.orderNo === pid);
+    const mIdx = monthData.findIndex(c => c.phone === pid);
     if (mIdx >= 0) {
       monthData[mIdx].sent = true;
       const uid2 = 'c' + mIdx;
@@ -4693,8 +5850,7 @@ function send1Direct(pid) {
 }
 
 function send1(pid, encMsg) {
-  const _ph1 = (monthData.find(c => c.orderNo === pid) || {}).phone || '';
-  window.location.href = 'sms:' + _ph1 + '?body=' + decodeURIComponent(encMsg);
+  window.location.href = 'sms:' + pid + '?body=' + decodeURIComponent(encMsg);
   setTimeout(() => {
     ini(pid); smap[pid].o = true; save();
     const bb1 = document.getElementById('bb1-'+pid);
@@ -4713,8 +5869,7 @@ function send2(pid) {
   const ta = document.getElementById('p2b-'+pid);
   const msg = ta ? ta.value : decodeURIComponent(sb2.dataset.msg||'');
   if (!msg) return;
-  const _ph2 = (monthData.find(c => c.orderNo === pid) || {}).phone || '';
-  window.location.href = 'sms:' + _ph2 + '?body=' + encodeURIComponent(msg);
+  window.location.href = 'sms:' + pid + '?body=' + encodeURIComponent(msg);
   setTimeout(() => {
     ini(pid); smap[pid].g[gi]=true; save();
     const gb = document.getElementById('gb-'+pid+'-'+gi);
@@ -4758,10 +5913,10 @@ function openContactSms(pid, encName, encProd, encSrc) {
     '시간되실때 연락부탁드립니다.';
 
   // 휴대폰2 번호 가져오기
-  const c = customers.find(x => x.orderNo === pid)
-         || monthData.find(x => x.orderNo === pid)
+  const c = customers.find(x => x.phone === pid)
+         || monthData.find(x => x.phone === pid)
          || {};
-  const phone2 = (c.phone2 || c.phone || '').replace(/-/g,'');
+  const phone2 = (c.phone2 || c.phone || pid || '').replace(/-/g,'');
   const phoneFmt = phone2.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
 
   // 인라인 패널 열기
@@ -4796,8 +5951,7 @@ function previewContact(pid, encName, encProd, encOpt, encSrc, orderNo, encCust,
   const prod = decodeURIComponent(encProd);
   const opt  = decodeURIComponent(encOpt);
   const src  = decodeURIComponent(encSrc);
-  const _c0  = monthData.find(c => c.orderNo === pid) || customers.find(c => c.orderNo === pid) || {};
-  const ph   = (_c0.phone||'').replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
+  const ph   = pid.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
 
   let lastName='', dashIdx=src.indexOf('-');
   if (dashIdx>0) lastName=src.substring(0,dashIdx).trim();
@@ -4852,7 +6006,7 @@ async function doSave() {
   try {
     const params = new URLSearchParams({
       action: 'saveContact',
-      name: firstName, phone: phone, product: prod,
+      name: firstName, phone: phone||pid, product: prod,
       source: src, orderNo,
       memo_f: lastName || '',
       memo_j: memo     || ''
@@ -4892,7 +6046,7 @@ async function doSaveInline(pid) {
   try {
     const params = new URLSearchParams({
       action: 'saveContact',
-      name: firstName, phone: phone, product: prod,
+      name: firstName, phone: phone||pid, product: prod,
       source: src, orderNo,
       memo_f: lastName || '',
       memo_j: memo     || ''
@@ -4943,7 +6097,7 @@ loadAll();
 
 // ── 컬럼 리사이즈 ────────────────────────────────────
 const COL_WIDTHS_KEY = 'rc_col_widths_v2';
-const COL_DEFAULTS = [36, 110, 80, 110, 100, 130, 120, 50, 90, 90, 90, 140, 70, 70, 55, 80, 65];
+const COL_DEFAULTS = [36, 110, 80, 70, 110, 100, 130, 120, 50, 90, 90, 90, 140, 70, 70, 55, 80, 65];
 let colWidths = (() => {
   try { return JSON.parse(localStorage.getItem(COL_WIDTHS_KEY)) || COL_DEFAULTS.slice(); }
   catch(e) { return COL_DEFAULTS.slice(); }
@@ -4970,8 +6124,16 @@ function applyColWidths() {
 }
 
 function initColResizers() {
-  const headerRow = document.querySelector('.rc-col-header');
-  if (!headerRow) return;
+  // 모든 .rc-col-header 처리 (월별 + LCL)
+  const headerRows = document.querySelectorAll('.rc-col-header');
+  if (!headerRows.length) return;
+
+  headerRows.forEach(headerRow => {
+    initSingleColResizer(headerRow);
+  });
+}
+
+function initSingleColResizer(headerRow) {
   const cells = headerRow.querySelectorAll('.rc-col-th');
   cells.forEach((cell, i) => {
     // 기존 리사이저 제거
@@ -5025,7 +6187,8 @@ const _rcObserver = new MutationObserver(() => {
     initColResizers();
   }
 });
-_rcObserver.observe(document.getElementById('content') || document.body, { childList:true, subtree:true });
+// 전체 body 감지 (LCL현황도 자동 감지되도록)
+_rcObserver.observe(document.body, { childList:true, subtree:true });
 // ─────────────────────────────────────────────────────
 
 // 툴팁 - 클릭으로 열고 외부 클릭시 닫기
@@ -5101,8 +6264,20 @@ function switchView(view) {
     if (statsPage) statsPage.style.display = 'block';
     btnMain.classList.remove('active');
     btnStats.classList.add('active');
-    if (!statsLoaded) loadStats();
+    // ★ 통계 진입 시 일자별 모드 자동 켜기 (속도 빠른 일자별 우선)
+    if (!dailyViewActive) {
+      dailyViewActive = true;
+      const btn = document.getElementById('daily-toggle-btn');
+      if (btn) {
+        btn.textContent = '📊 월별/년별 보기';
+        btn.style.background = '#1976D2';
+      }
+      loadDailyStats();
+    } else if (Object.keys(dailyStatsData || {}).length === 0) {
+      loadDailyStats();
+    }
   } else {
+
     if (mainHeader) mainHeader.style.display = '';
     if (searchBar) searchBar.style.display = '';
     if (content) content.style.display = '';
@@ -5114,15 +6289,26 @@ function switchView(view) {
 
 function setStatsBiz(bizId) {
   statsCurrentBiz = bizId;
+  if (typeof clearDayOrdersCache === 'function') clearDayOrdersCache();
   document.querySelectorAll('.stat-biz-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.biz === bizId);
   });
   if (dailyViewActive) {
-    renderDailyStats();
+    // 일자별 데이터가 비어있으면 로드
+    if (Object.keys(dailyStatsData || {}).length === 0) {
+      loadDailyStats();
+    } else {
+      renderDailyStats();
+    }
   } else {
-    renderStats();
+    if (statsLoaded) {
+      renderStats();
+    } else {
+      loadStats();
+    }
   }
 }
+
 
 async function loadStats(force) {
   const contentDiv = document.getElementById('stats-content');
@@ -5446,16 +6632,23 @@ function toggleDailyView() {
   dailyViewActive = !dailyViewActive;
   const btn = document.getElementById('daily-toggle-btn');
   if (dailyViewActive) {
-    btn.textContent = '📊 월별로';
-    btn.style.background = '#4CAF50';
-    loadDailyStats();
+    // 일자별 모드 (빠른 화면 - 기본)
+    btn.textContent = '📊 월별/년별 보기';
+    btn.style.background = '#1976D2';
+    if (Object.keys(dailyStatsData || {}).length === 0) {
+      loadDailyStats();
+    } else {
+      renderDailyStats();
+    }
   } else {
-    btn.textContent = '📅 일자별';
+    // 월별 모드 (느림 - 추가 데이터 필요)
+    btn.textContent = '📅 일자별로 돌아가기';
     btn.style.background = '#FF9800';
     if (statsLoaded) renderStats();
     else loadStats();
   }
 }
+
 
 function refreshStatsBtn() {
   if (dailyViewActive) {
@@ -5499,6 +6692,130 @@ async function loadDailyStats() {
 
   renderDailyStats();
 }
+
+
+
+// ★★★ 일자별 주문 상세 펼침/접힘 ★★★
+let dayOrdersCache = {};  // { 'YYYY-MM-DD': [orders] }
+
+async function toggleDayDetail(dayKey, trEl) {
+  const detailRow = document.getElementById('detail-' + dayKey);
+  const arrow = document.getElementById('arrow-' + dayKey);
+  const content = document.getElementById('detail-content-' + dayKey);
+  if (!detailRow) return;
+
+  // 토글
+  const isOpen = detailRow.style.display !== 'none';
+  if (isOpen) {
+    detailRow.style.display = 'none';
+    if (arrow) arrow.textContent = '▶';
+    return;
+  }
+
+  detailRow.style.display = '';
+  if (arrow) arrow.textContent = '▼';
+
+  // 캐시 확인
+  if (dayOrdersCache[dayKey]) {
+    content.innerHTML = renderDayOrders(dayOrdersCache[dayKey], dayKey);
+    return;
+  }
+
+  // 로딩 표시
+  content.innerHTML = '<div style="color:#666;text-align:center;padding:20px;">⏳ 불러오는 중...</div>';
+
+  try {
+    // 모든 사업자 또는 선택된 사업자
+    const showAll = (statsCurrentBiz === 'all');
+    const targetBizs = showAll ? STATS_BIZ_LIST.map(b => b.id) : [statsCurrentBiz];
+    let allOrders = [];
+
+    // 병렬로 모든 사업자에서 가져오기
+    const results = await Promise.all(targetBizs.map(bizId =>
+      jsonp(GAS_BASE + '?action=dayOrders&ssId=' + bizId + '&date=' + dayKey)
+        .then(r => ({ bizId, orders: (r && r.orders) || [] }))
+        .catch(e => ({ bizId, orders: [], error: e.message }))
+    ));
+
+    results.forEach(r => {
+      const bizName = STATS_BIZ_LIST.find(b => b.id === r.bizId)?.name || r.bizId;
+      r.orders.forEach(o => {
+        o._bizName = bizName;
+        allOrders.push(o);
+      });
+    });
+
+    dayOrdersCache[dayKey] = allOrders;
+    content.innerHTML = renderDayOrders(allOrders, dayKey);
+  } catch (e) {
+    content.innerHTML = '<div style="color:#c62828;text-align:center;padding:20px;">오류: ' + e.message + '</div>';
+  }
+}
+
+function renderDayOrders(orders, dayKey) {
+  if (!orders || orders.length === 0) {
+    return '<div style="color:#666;text-align:center;padding:20px;">주문 내역이 없습니다</div>';
+  }
+
+  // 사업자별로 그룹화
+  const byBiz = {};
+  orders.forEach(o => {
+    const biz = o._bizName || '기타';
+    if (!byBiz[biz]) byBiz[biz] = [];
+    byBiz[biz].push(o);
+  });
+
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+
+  // 총합 표시
+  const totalOrders = orders.filter(o => !o.cancelled).length;
+  const totalRevenue = orders.filter(o => !o.cancelled).reduce((s, o) => s + (Number(o.amount) || 0), 0);
+  const cancelCount = orders.filter(o => o.cancelled).length;
+
+  html += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px 12px;font-size:13px;display:flex;gap:16px;flex-wrap:wrap;">';
+  html += '<span><b>총 ' + orders.length + '건</b></span>';
+  html += '<span style="color:#2e7d32;">매출 ' + Math.round(totalRevenue).toLocaleString() + '원</span>';
+  if (cancelCount > 0) html += '<span style="color:#c62828;">취소 ' + cancelCount + '건</span>';
+  html += '</div>';
+
+  Object.keys(byBiz).forEach(bizName => {
+    const list = byBiz[bizName];
+    html += '<div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">';
+    html += '<div style="background:#f3f4f6;padding:6px 12px;font-size:12px;font-weight:600;color:#374151;">🏪 ' + bizName + ' (' + list.length + '건)</div>';
+    html += '<table style="width:100%;font-size:12px;border-collapse:collapse;">';
+    html += '<thead><tr style="background:#fafafa;color:#666;">';
+    html += '<th style="padding:6px 8px;text-align:left;border-bottom:1px solid #e5e7eb;">수령자</th>';
+    html += '<th style="padding:6px 8px;text-align:left;border-bottom:1px solid #e5e7eb;">상품/옵션</th>';
+    html += '<th style="padding:6px 8px;text-align:center;border-bottom:1px solid #e5e7eb;">수량</th>';
+    html += '<th style="padding:6px 8px;text-align:right;border-bottom:1px solid #e5e7eb;">금액</th>';
+    html += '<th style="padding:6px 8px;text-align:left;border-bottom:1px solid #e5e7eb;">주문번호</th>';
+    html += '</tr></thead><tbody>';
+
+    list.forEach(o => {
+      const cancelStyle = o.cancelled ? 'color:#c62828;text-decoration:line-through;' : '';
+      html += '<tr style="border-bottom:1px solid #f3f4f6;' + cancelStyle + '">';
+      html += '<td style="padding:6px 8px;">' + (o.recipient || '-') + '</td>';
+      html += '<td style="padding:6px 8px;">' + (o.product || '-') + (o.option ? ' / ' + o.option : '') + '</td>';
+      html += '<td style="padding:6px 8px;text-align:center;">' + (o.qty || 1) + '</td>';
+      html += '<td style="padding:6px 8px;text-align:right;">' + (o.amount > 0 ? Math.round(o.amount).toLocaleString() : '-') + '</td>';
+      html += '<td style="padding:6px 8px;font-family:Consolas,monospace;font-size:11px;color:#666;">' + (o.orderNo || '-') + '</td>';
+      html += '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+  });
+
+  html += '</div>';
+  return html;
+}
+
+// 일자별 상세 캐시 클리어 (사업자 변경시)
+function clearDayOrdersCache() {
+  dayOrdersCache = {};
+  document.querySelectorAll('.day-detail-row').forEach(r => r.style.display = 'none');
+  document.querySelectorAll('.day-arrow').forEach(a => a.textContent = '▶');
+}
+
 
 function renderDailyStats() {
   // 기준 연/월 (첫 사업자 응답에서)
@@ -5553,7 +6870,24 @@ function renderDailyStats() {
   const todayDay = new Date().getDate();
   const bizName = showAll ? '전체통합' : (STATS_BIZ_LIST.find(b => b.id === statsCurrentBiz)?.name || '');
 
+   
   let html = '';
+ // ── ★ 1-A. 금일/이번주/이번달 요약 카드 (3개 한 줄) ──
+  const todayStats = calcPeriodStats(days, 'today', year, month);
+  const weekStats  = calcPeriodStats(days, 'thisWeek', year, month);
+  const monthStats = calcPeriodStats(days, 'thisMonth', year, month);
+
+  html += `
+    <div class="stats-section">
+      <h3>⭐ ${year}년 ${month}월 빠른 요약 (${bizName})</h3>
+      <div class="stats-cards" style="grid-template-columns:repeat(3, 1fr);">
+        ${renderQuickCard('🌅 오늘', todayStats, '#1976D2', '#42a5f5')}
+        ${renderQuickCard('📊 이번 주 (월~일)', weekStats, '#43a047', '#66bb6a')}
+        ${renderQuickCard('📅 이번 달', monthStats, '#ef6c00', '#fb8c00')}
+      </div>
+    </div>
+  `;
+
 
   // ── 1. 요약 카드 ──
   html += `
@@ -5620,9 +6954,14 @@ function renderDailyStats() {
     const isToday = (d.day === todayDay) ? ' style="background:#FFF9C4;font-weight:600;"' : '';
     const isWeekend = (dt.getDay() === 0 || dt.getDay() === 6) ? ' style="color:#D32F2F;"' : '';
     const margin = d.revenue > 0 ? (d.profit / d.revenue * 100) : 0;
+    const hasOrders = d.orders > 0;
+    const dayKey = year + '-' + String(month).padStart(2,'0') + '-' + String(d.day).padStart(2,'0');
+    // ★ 클릭 가능: 주문 있을 때만 펼침 가능
+    const clickAttr = hasOrders ? ` onclick="toggleDayDetail('${dayKey}', this)" style="cursor:pointer;"` : '';
+    const arrowIcon = hasOrders ? '<span class="day-arrow" id="arrow-' + dayKey + '">▶</span> ' : '';
     html += `
-      <tr${isToday}>
-        <td>${month}/${d.day}</td>
+      <tr${isToday} class="day-row" data-day="${dayKey}"${clickAttr}>
+        <td>${arrowIcon}${month}/${d.day}</td>
         <td${isWeekend}>${dow}</td>
         <td>${d.orders > 0 ? d.orders.toLocaleString() + '건' : '-'}</td>
         <td>${d.revenue > 0 ? Math.round(d.revenue).toLocaleString() : '-'}</td>
@@ -5630,6 +6969,13 @@ function renderDailyStats() {
         <td style="color:${d.profit>=0?'#2e7d32':'#c62828'};">${d.profit !== 0 ? Math.round(d.profit).toLocaleString() : '-'}</td>
         <td>${d.revenue > 0 ? margin.toFixed(1)+'%' : '-'}</td>
         <td style="color:#c62828;">${d.cancelled > 0 ? d.cancelled : '-'}</td>
+      </tr>
+      <tr class="day-detail-row" id="detail-${dayKey}" style="display:none;">
+        <td colspan="8" style="padding:0;background:#f9fafb;border-top:0;">
+          <div id="detail-content-${dayKey}" style="padding:12px 16px;">
+            <div style="color:#666;text-align:center;padding:20px;">클릭해서 펼치기...</div>
+          </div>
+        </td>
       </tr>
     `;
   });
@@ -5691,7 +7037,70 @@ function renderDailyStats() {
   // 일자별 차트
   setTimeout(() => drawDailyChart(days, year, month), 100);
 }
+// ─── 기간별 합계 계산 ───
+function calcPeriodStats(days, period, year, month) {
+  const now = new Date();
+  const today = now.getDate();
+  // 이번달인지 확인 (다른 달 통계 보고 있으면 today가 의미 없음)
+  const isCurrentMonth = (year === now.getFullYear() && month === (now.getMonth() + 1));
+  
+  let targetDays = [];
+  if (period === 'today') {
+    if (!isCurrentMonth) return null;  // 다른 달이면 표시 안 함
+    targetDays = days.filter(d => d.day === today);
+  } else if (period === 'thisWeek') {
+    if (!isCurrentMonth) return null;
+    // 월~일 기준: 오늘이 화요일이면 어제(월)부터 오늘까지
+    const todayDate = new Date(year, month-1, today);
+    const dayOfWeek = todayDate.getDay();  // 0=일, 1=월, ..., 6=토
+    const daysSinceMonday = (dayOfWeek === 0) ? 6 : (dayOfWeek - 1);
+    const monday = today - daysSinceMonday;
+    const sunday = monday + 6;
+    targetDays = days.filter(d => d.day >= monday && d.day <= sunday && d.day <= today);
+  } else if (period === 'thisMonth') {
+    targetDays = days;
+  }
+  
+  const sum = targetDays.reduce((acc, d) => ({
+    orders: acc.orders + d.orders,
+    revenue: acc.revenue + d.revenue,
+    settlement: acc.settlement + d.settlement,
+    profit: acc.profit + d.profit,
+    cancelled: acc.cancelled + d.cancelled
+  }), { orders: 0, revenue: 0, settlement: 0, profit: 0, cancelled: 0 });
+  
+  sum.marginRate = sum.revenue > 0 ? (sum.profit / sum.revenue) : 0;
+  return sum;
+}
 
+// ─── 빠른 요약 카드 HTML ───
+function renderQuickCard(title, stats, color1, color2) {
+  if (!stats) {
+    return `
+      <div class="stat-card" style="background:linear-gradient(135deg,#9e9e9e,#bdbdbd);">
+        <div class="label">${title}</div>
+        <div class="value" style="font-size:14px;">-</div>
+        <div class="sub">표시 가능한 데이터 없음</div>
+      </div>
+    `;
+  }
+  const margin = (stats.marginRate * 100).toFixed(1);
+  return `
+    <div class="stat-card" style="background:linear-gradient(135deg,${color1},${color2});">
+      <div class="label">${title}</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
+        <div class="value" style="font-size:22px;">${stats.orders}건</div>
+        <div style="font-size:11px;opacity:0.85;">취소 ${stats.cancelled}</div>
+      </div>
+      <div style="font-size:13px;margin-top:6px;line-height:1.5;">
+        💰 ${Math.round(stats.revenue).toLocaleString()}원<br>
+        ✅ 이익 ${Math.round(stats.profit).toLocaleString()}원 (${margin}%)
+      </div>
+    </div>
+  `;
+}
+
+  
 let chartDailyRevenue = null;
 function drawDailyChart(days, year, month) {
   const ctx = document.getElementById('chart-daily-revenue');
@@ -5701,7 +7110,6 @@ function drawDailyChart(days, year, month) {
   const labels = days.map(d => month + '/' + d.day);
   const revenues = days.map(d => Math.round(d.revenue));
   const profits = days.map(d => Math.round(d.profit));
-  const orders = days.map(d => d.orders);
 
   chartDailyRevenue = new Chart(ctx, {
     type: 'bar',
@@ -5709,39 +7117,52 @@ function drawDailyChart(days, year, month) {
       labels,
       datasets: [
         {
-          type: 'bar', label: '매출', data: revenues,
-          backgroundColor: 'rgba(33,150,243,0.6)',
-          borderColor: 'rgba(33,150,243,1)', borderWidth: 1, yAxisID: 'y'
+          label: '매출',
+          data: revenues,
+          backgroundColor: 'rgba(33,150,243,0.75)',
+          borderColor: 'rgba(33,150,243,1)',
+          borderWidth: 1
         },
         {
-          type: 'line', label: '이익', data: profits,
+          label: '이익',
+          data: profits,
+          backgroundColor: 'rgba(76,175,80,0.75)',
           borderColor: 'rgba(76,175,80,1)',
-          backgroundColor: 'rgba(76,175,80,0.2)',
-          tension: 0.3, yAxisID: 'y'
-        },
-        {
-          type: 'line', label: '주문건수', data: orders,
-          borderColor: 'rgba(255,152,0,1)',
-          backgroundColor: 'rgba(255,152,0,0.2)',
-          tension: 0.3, yAxisID: 'y1', borderDash: [5,5]
+          borderWidth: 1
         }
       ]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       scales: {
-        y:  { beginAtZero: true, position: 'left',  title: { display: true, text: '금액 (원)' } },
-        y1: { beginAtZero: true, position: 'right', title: { display: true, text: '주문수' }, grid: { drawOnChartArea: false } }
+        x: {
+          title: { display: true, text: '날짜', font: { weight: 'bold' } },
+          ticks: { font: { size: 11 } }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: '금액 (원)', font: { weight: 'bold' } },
+          ticks: {
+            font: { size: 11 },
+            callback: function(v) {
+              if (v >= 10000000) return (v / 10000000).toFixed(1) + '천만';
+              if (v >= 10000) return (v / 10000).toFixed(0) + '만';
+              return v.toLocaleString();
+            }
+          }
+        }
       },
       plugins: {
-        legend: { position: 'bottom' },
+        legend: {
+          position: 'bottom',
+          labels: { font: { size: 13 } }
+        },
         tooltip: {
           callbacks: {
-            label: (ctx) => {
-              const v = ctx.parsed.y;
-              if (ctx.dataset.label === '주문건수') return ctx.dataset.label + ': ' + v + '건';
-              return ctx.dataset.label + ': ' + v.toLocaleString() + '원';
+            label: function(ctx) {
+              return ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString() + '원';
             }
           }
         }
@@ -5749,6 +7170,8 @@ function drawDailyChart(days, year, month) {
     }
   });
 }
+
+
 
 function drawCharts(data) {
   const labels = data.map(m => m.month);
@@ -5857,10 +7280,29 @@ function drawCharts(data) {
       <div class="footer-address">📍 경기도 안양시 만안구 덕천로 152번길 25 17층 1712B호</div>
     </div>
     <div class="footer-right">
-      <span class="footer-version" id="footer-version">v1.0.4</span>
+      <span class="footer-version" id="footer-version">v1.0.3</span>
     </div>
   </div>
 </footer>
+<script>
+(function(){
+  setTimeout(function(){
+    if(localStorage.getItem('moda_auth_v1')){
+      var bar=document.querySelector('.biz-bar');
+      if(!bar)return;
+      var b=document.createElement('button');
+      b.textContent='🚪 로그아웃';
+      b.className='view-btn';
+      b.style.cssText='margin-left:4px;border-color:#c62828;color:#c62828;background:#fff;font-weight:700;';
+      b.onmouseover=function(){this.style.background='#c62828';this.style.color='#fff';};
+      b.onmouseout=function(){this.style.background='#fff';this.style.color='#c62828';};
+      b.onclick=function(){if(confirm('로그아웃하시겠습니까?')){localStorage.removeItem('moda_auth_v1');location.reload();}};
+      document.querySelectorAll('button').forEach(function(x){if(x.textContent.includes('🚪 로그아웃')&&x!==b)x.remove();});
+      bar.appendChild(b);
+    }
+  },2000);
+})();
+</script>
 
 </body>
 </html>
