@@ -1,0 +1,62 @@
+{
+  "timeZone": "Asia/Seoul",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "People",
+        "serviceId": "peopleapi",
+        "version": "v1"
+      }
+    ]
+  },
+  "webapp": {
+    "executeAs": "USER_DEPLOYING",
+    "access": "ANYONE_ANONYMOUS"
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/contacts"
+  ],
+  "runtimeVersion": "V8",
+  "sheets": {
+    "macros": [
+      {
+        "menuName": "LCL",
+        "functionName": "LCL1",
+        "defaultShortcut": "Ctrl+Alt+Shift+7"
+      },
+      {
+        "menuName": "노랑",
+        "functionName": "myFunction13",
+        "defaultShortcut": "Ctrl+Alt+Shift+1"
+      },
+      {
+        "menuName": "빨강",
+        "functionName": "myFunction14",
+        "defaultShortcut": "Ctrl+Alt+Shift+5"
+      },
+      {
+        "menuName": "주황",
+        "functionName": "myFunction15",
+        "defaultShortcut": "Ctrl+Alt+Shift+3"
+      },
+      {
+        "menuName": "초록",
+        "functionName": "myFunction16",
+        "defaultShortcut": "Ctrl+Alt+Shift+6"
+      },
+      {
+        "menuName": "하늘",
+        "functionName": "myFunction17",
+        "defaultShortcut": "Ctrl+Alt+Shift+2"
+      },
+      {
+        "menuName": "흰색",
+        "functionName": "myFunction18",
+        "defaultShortcut": "Ctrl+Alt+Shift+4"
+      }
+    ]
+  }
+}
