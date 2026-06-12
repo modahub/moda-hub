@@ -1382,7 +1382,7 @@ body {
       <option value="all">🐢 전체 검색 (모든 사업자 + 전체)</option>
     </select>
     <button class="search-refresh-btn" onclick="onRefreshSearch()" title="새 데이터로 다시 검색 (캐시 무시)">🔄</button>
-    <button class="search-direct-btn" onclick="openDirectModal()" title="주문 한 건 직접 입력">📝 직접입력</button>
+    <button class="search-direct-btn" onclick="toggleDirectInline()" title="주문 한 건 직접 입력">📝 직접입력</button>
   </div>
   <div class="search-divider"></div>
   <div class="search-progress-bar" id="search-progress-bar" style="display:none;">
@@ -1587,6 +1587,82 @@ body {
   </div>
 </div>
 
+<!-- ★ 직접입력 인라인 카드 (검색바와 카드 영역 사이에 토글로 표시) -->
+<div id="direct-inline-wrap" style="display:none;margin:8px 12px;border:2.5px solid #7b1fa2;border-radius:12px;background:#faf5ff;box-shadow:0 4px 12px rgba(123,31,162,0.15);overflow:hidden;">
+  <!-- 카드 헤더 (NO/상태/판매처/주문일자/주문번호 한 줄) -->
+  <div style="display:flex;align-items:center;background:linear-gradient(135deg,#7b1fa2,#6a1b9a);color:#fff;padding:10px 14px;gap:12px;flex-wrap:wrap;">
+    <span style="font-size:14px;font-weight:700;">📝 신규 직접입력</span>
+    <span style="font-size:12px;opacity:0.9;">→ <span id="direct-target-info">사업자 / 시트</span> 행 <span id="direct-target-row" style="font-weight:700;">?</span>에 추가됨</span>
+    <span style="flex:1;"></span>
+    <button onclick="toggleDirectInline()" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;">✕ 닫기</button>
+  </div>
+
+  <div style="padding:14px;">
+    <!-- 1행: 수령자 / 상품명 -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#7b1fa2;">👤 수령자 *</label>
+        <input id="d-name" type="text" placeholder="이름" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#7b1fa2;">📦 상품명 *</label>
+        <input id="d-product" type="text" placeholder="상품명" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;">
+      </div>
+    </div>
+
+    <!-- 2행: 옵션 / 수량 / 휴대폰1 / 휴대폰2 -->
+    <div style="display:grid;grid-template-columns:2fr 0.7fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">🎨 옵션</label>
+        <input id="d-option" type="text" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">📊 수량</label>
+        <input id="d-qty" type="number" value="1" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;text-align:right;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#7b1fa2;">📱 휴대폰1 *</label>
+        <input id="d-phone" type="text" placeholder="01000000000" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;font-family:monospace;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">📱 휴대폰2</label>
+        <input id="d-phone2" type="text" placeholder="01000000000" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;font-family:monospace;">
+      </div>
+    </div>
+
+    <!-- 3행: 통관 / 우편 / 주소 -->
+    <div style="display:grid;grid-template-columns:1.3fr 0.8fr 3fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">🛃 통관번호</label>
+        <input id="d-customs" type="text" placeholder="P123456789012" maxlength="13" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;font-family:monospace;text-transform:uppercase;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">📮 우편</label>
+        <input id="d-zipCode" type="text" placeholder="12345" maxlength="7" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;font-family:monospace;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#7b1fa2;">🏠 배송지 주소 *</label>
+        <input id="d-address" type="text" placeholder="서울시..." style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;">
+      </div>
+    </div>
+
+    <!-- 4행: 결제금액 / 정산예정 / 등록버튼 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:10px;align-items:end;">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#7b1fa2;">💰 결제금액 (Q) *</label>
+        <input id="d-amount" type="number" placeholder="0" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;text-align:right;font-family:monospace;">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">💵 정산예정 (U)</label>
+        <input id="d-settleAmt" type="number" placeholder="0" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #d1c4e9;border-radius:6px;font-size:13px;outline:none;text-align:right;font-family:monospace;">
+      </div>
+      <button onclick="saveDirectOrder()" style="padding:10px;background:linear-gradient(135deg,#7b1fa2,#6a1b9a);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);">💾 등록</button>
+    </div>
+
+    <div id="d-progress" style="text-align:center;font-size:13px;font-weight:700;color:#7b1fa2;margin-top:8px;min-height:18px;"></div>
+  </div>
+</div>
+
 <div id="content">
   <div class="loading"><div class="spinner"></div><div>불러오는 중...</div></div>
 </div>
@@ -1712,77 +1788,6 @@ body {
     <div class="paste-progress" id="paste-progress"></div>
     <button class="paste-btn" id="paste-btn" onclick="doPasteUpload()" disabled>📤 데이터 업로드</button>
     <button class="paste-btn-cancel" onclick="closePasteModal()">취소</button>
-  </div>
-</div>
-
-<!-- 직접입력 모달 (주문 한 건 폼 입력) - 현재 사업자/현재월 자동 -->
-<div class="paste-modal-bg" id="direct-modal-bg" onclick="closeDirectModalBG(event)">
-  <div class="paste-modal" style="max-width:440px;">
-    <div style="float:right;font-size:20px;cursor:pointer;color:#888;" onclick="closeDirectModal()">✕</div>
-    <h3>📝 주문 직접입력</h3>
-    <div class="paste-modal-sub" style="font-size:12px;">
-      <span id="direct-info-line" style="color:#7b1fa2;font-weight:700;"></span><br>
-      한 건의 주문을 폼으로 입력합니다.
-    </div>
-
-    <!-- 필수 -->
-    <div style="margin-bottom:8px;">
-      <label style="font-size:11px;font-weight:700;color:#c62828;">👤 수령자 *</label>
-      <input id="direct-name" type="text" placeholder="이름 입력" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;">
-    </div>
-    <div style="margin-bottom:8px;">
-      <label style="font-size:11px;font-weight:700;color:#c62828;">📦 상품명 *</label>
-      <input id="direct-product" type="text" placeholder="상품명 입력" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;">
-    </div>
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px;">
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">🎨 옵션명</label>
-        <input id="direct-option" type="text" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">📊 수량</label>
-        <input id="direct-qty" type="number" value="1" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;">
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#c62828;">📱 휴대폰1 *</label>
-        <input id="direct-phone" type="text" placeholder="01000000000" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;font-family:monospace;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">📱 휴대폰2</label>
-        <input id="direct-phone2" type="text" placeholder="01000000000" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;font-family:monospace;">
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">🛃 통관번호</label>
-        <input id="direct-customs" type="text" placeholder="P123456789012" maxlength="13" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;font-family:monospace;text-transform:uppercase;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">📮 우편번호</label>
-        <input id="direct-zipCode" type="text" placeholder="12345" maxlength="7" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;font-family:monospace;">
-      </div>
-    </div>
-    <div style="margin-bottom:8px;">
-      <label style="font-size:11px;font-weight:700;color:#c62828;">🏠 배송지 주소 *</label>
-      <textarea id="direct-address" placeholder="(우)12345 서울시..." style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;resize:vertical;min-height:44px;font-family:inherit;"></textarea>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#c62828;">💰 결제금액 (Q) *</label>
-        <input id="direct-amount" type="number" placeholder="0" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;text-align:right;font-family:monospace;">
-      </div>
-      <div>
-        <label style="font-size:11px;font-weight:700;color:#5b8fa8;">💵 정산예정 (U)</label>
-        <input id="direct-settleAmt" type="number" placeholder="0" style="width:100%;box-sizing:border-box;margin-top:3px;padding:8px;border:1.5px solid #dce8f0;border-radius:6px;font-size:13px;outline:none;text-align:right;font-family:monospace;">
-      </div>
-    </div>
-
-    <div id="direct-progress" style="text-align:center;font-size:13px;font-weight:700;color:#7b1fa2;margin-top:6px;min-height:18px;"></div>
-
-    <button onclick="saveDirectOrder()" style="margin-top:10px;width:100%;padding:13px;background:linear-gradient(135deg,#7b1fa2,#6a1b9a);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(123,31,162,0.3);">💾 직접입력 등록</button>
-    <button onclick="closeDirectModal()" style="margin-top:6px;width:100%;padding:10px;background:#f0f0f0;color:#888;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;">취소</button>
   </div>
 </div>
 
@@ -4172,56 +4177,58 @@ async function doPasteUpload() {
 }
 
 // ════════════════════════════════════════════════════════════
-// ★ 직접입력 - 한 건의 주문 (현재 사업자 + 현재 보고 있는 달에 자동 등록)
+// ★ 직접입력 인라인 카드 (검색바 아래 펼침/접힘)
 // ════════════════════════════════════════════════════════════
 const BIZ_NAMES = { '1':'모다mall', '2':'모다mall2', '3':'모다mall3', '4':'모다mall4', '5':'수기mall', '6':'불사자(통합)' };
 
-function openDirectModal() {
-  // 입력값 초기화
-  document.getElementById('direct-name').value = '';
-  document.getElementById('direct-product').value = '';
-  document.getElementById('direct-option').value = '';
-  document.getElementById('direct-qty').value = '1';
-  document.getElementById('direct-phone').value = '';
-  document.getElementById('direct-phone2').value = '';
-  document.getElementById('direct-customs').value = '';
-  document.getElementById('direct-zipCode').value = '';
-  document.getElementById('direct-address').value = '';
-  document.getElementById('direct-amount').value = '';
-  document.getElementById('direct-settleAmt').value = '';
-  document.getElementById('direct-progress').textContent = '';
+// 직접입력 인라인 카드 토글
+function toggleDirectInline() {
+  const wrap = document.getElementById('direct-inline-wrap');
+  if (wrap.style.display === 'none') {
+    // 펼치기
+    wrap.style.display = 'block';
+    // 입력값 초기화
+    ['d-name','d-product','d-option','d-phone','d-phone2','d-customs','d-zipCode','d-address','d-amount','d-settleAmt'].forEach(function(id){
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('d-qty').value = '1';
+    document.getElementById('d-progress').textContent = '';
 
-  // 현재 사업자 + 현재 달 안내
-  const bizName = BIZ_NAMES[currentBiz] || ('사업자' + currentBiz);
-  const sheetN = monthSheetName || '이번달';
-  document.getElementById('direct-info-line').textContent = '→ ' + bizName + ' / ' + sheetN + ' 시트에 추가';
+    // 사업자/시트/추가될 행 표시
+    const bizName = BIZ_NAMES[currentBiz] || ('사업자' + currentBiz);
+    const sheetN = monthSheetName || '이번달';
+    document.getElementById('direct-target-info').textContent = bizName + ' / ' + sheetN;
 
-  document.getElementById('direct-modal-bg').classList.add('open');
-  setTimeout(() => document.getElementById('direct-name').focus(), 100);
-}
+    // 추가될 행 미리보기: 현재 monthData의 최대 row + 1
+    let maxRow = 1;
+    (monthData || []).forEach(function(c){
+      if (c.row && c.row > maxRow) maxRow = c.row;
+    });
+    document.getElementById('direct-target-row').textContent = String(maxRow + 1);
 
-function closeDirectModal() {
-  document.getElementById('direct-modal-bg').classList.remove('open');
-}
-
-function closeDirectModalBG(e) {
-  if (e.target === document.getElementById('direct-modal-bg')) closeDirectModal();
+    // 스크롤 + 포커스
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    setTimeout(function(){ document.getElementById('d-name').focus(); }, 200);
+  } else {
+    // 접기
+    wrap.style.display = 'none';
+  }
 }
 
 // 직접입력 저장 - 현재 사업자 + 현재 보고 있는 달 시트에 자동 추가
 async function saveDirectOrder() {
-  const name      = document.getElementById('direct-name').value.trim();
-  const product   = document.getElementById('direct-product').value.trim();
-  const option    = document.getElementById('direct-option').value.trim();
-  const qty       = document.getElementById('direct-qty').value.trim() || '1';
-  const phone     = document.getElementById('direct-phone').value.trim().replace(/-/g,'');
-  const phone2    = document.getElementById('direct-phone2').value.trim().replace(/-/g,'');
-  const customs   = document.getElementById('direct-customs').value.trim().toUpperCase();
-  const zipCode   = document.getElementById('direct-zipCode').value.trim();
-  const address   = document.getElementById('direct-address').value.trim();
-  const amount    = document.getElementById('direct-amount').value.trim() || '0';
-  const settleAmt = document.getElementById('direct-settleAmt').value.trim() || '0';
-  const prog      = document.getElementById('direct-progress');
+  const name      = document.getElementById('d-name').value.trim();
+  const product   = document.getElementById('d-product').value.trim();
+  const option    = document.getElementById('d-option').value.trim();
+  const qty       = document.getElementById('d-qty').value.trim() || '1';
+  const phone     = document.getElementById('d-phone').value.trim().replace(/-/g,'');
+  const phone2    = document.getElementById('d-phone2').value.trim().replace(/-/g,'');
+  const customs   = document.getElementById('d-customs').value.trim().toUpperCase();
+  const zipCode   = document.getElementById('d-zipCode').value.trim();
+  const address   = document.getElementById('d-address').value.trim();
+  const amount    = document.getElementById('d-amount').value.trim() || '0';
+  const settleAmt = document.getElementById('d-settleAmt').value.trim() || '0';
+  const prog      = document.getElementById('d-progress');
 
   // 필수값 체크
   if (!name) { prog.style.color='#c62828'; prog.textContent='⚠ 수령자를 입력해주세요'; return; }
@@ -4251,9 +4258,9 @@ async function saveDirectOrder() {
 
   try {
     const params = new URLSearchParams({
-      ssId: currentBiz,            // ★ 현재 보고 있는 사업자
+      ssId: currentBiz,
       action: 'directOrderAdd',
-      sheetName: monthSheetName,   // ★ 현재 보고 있는 달
+      sheetName: monthSheetName,
       orderDate: today,
       source: '직접입력',
       orderNo, name, product, option, qty,
@@ -4265,7 +4272,8 @@ async function saveDirectOrder() {
       prog.textContent = '✅ 행 ' + r.row + '에 등록완료! (' + orderNo + ')';
       showToast('✅ ' + name + ' 주문 등록 (행 ' + r.row + ')');
       setTimeout(async () => {
-        closeDirectModal();
+        // 인라인 카드 접기 + 화면 새로고침
+        document.getElementById('direct-inline-wrap').style.display = 'none';
         try {
           const r2 = await jsonp(GAS_BASE + '?ssId=' + currentBiz + '&action=getMonthData&sheetName=' + encodeURIComponent(monthSheetName));
           if (r2 && r2.list) { monthData = r2.list; renderMonthPage(); }
